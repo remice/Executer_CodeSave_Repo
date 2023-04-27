@@ -12,6 +12,7 @@
 #define PATH_IA_DASH TEXT("/Game/Input/Action/IA_Dash.IA_Dash")
 #define PATH_IA_CAMERAAUTO TEXT("/Game/Input/Action/IA_CameraAuto.IA_CameraAuto")
 #define PATH_IA_CAMERAFIXED TEXT("/Game/Input/Action/IA_CameraFixed.IA_CameraFixed")
+#define PATH_IA_COMBOATTACK TEXT("/Game/Input/Action/IA_ComboAttack.IA_ComboAttack")
 
 AMainPlayerController::AMainPlayerController()
 {
@@ -22,6 +23,7 @@ AMainPlayerController::AMainPlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_DASH(PATH_IA_DASH);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_CAMERAAUTO(PATH_IA_CAMERAAUTO);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_CAMERAFIXED(PATH_IA_CAMERAFIXED);
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_COMBOATTACK(PATH_IA_COMBOATTACK);
 
 	check(IMC.Succeeded());
 	check(IA_LOOK.Succeeded());
@@ -30,6 +32,7 @@ AMainPlayerController::AMainPlayerController()
 	check(IA_DASH.Succeeded());
 	check(IA_CAMERAAUTO.Succeeded());
 	check(IA_CAMERAFIXED.Succeeded());
+	check(IA_COMBOATTACK.Succeeded());
 
 	PlayerMappingContext = IMC.Object;
 	LookAction = IA_LOOK.Object;
@@ -38,4 +41,5 @@ AMainPlayerController::AMainPlayerController()
 	DashAction = IA_DASH.Object;
 	CameraAutoAction = IA_CAMERAAUTO.Object;
 	CameraFixedAction = IA_CAMERAFIXED.Object;
+	ComboAttackAction = IA_COMBOATTACK.Object;
 }

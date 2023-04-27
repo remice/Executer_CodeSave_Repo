@@ -37,4 +37,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> CameraFixedAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> ComboAttackAction;
 };

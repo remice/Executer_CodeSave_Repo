@@ -101,6 +101,8 @@ private:
 	TObjectPtr<class UCharacterDodgeManager> DodgeManager;
 	UPROPERTY()
 	TObjectPtr<class UCharacterCameraManager> CameraManager;
+	UPROPERTY()
+	TObjectPtr<class UCharacterMontageManager> MontageManager;
 
 	float DisableDodgeDelay;
 
@@ -146,4 +148,11 @@ private:
 	// Player default setting data
 	UPROPERTY(EditAnywhere, Category = Data)
 	TObjectPtr<class UPlayerCharacterSettingData> PlayerCharacterSettingData;
+
+// animation section
+private:
+	UPROPERTY(EditAnywhere, Category = Data)
+	TObjectPtr<class UComboAttackDataAsset> PlayerComboAttackData;
+
+	void ComboAttack();
 };

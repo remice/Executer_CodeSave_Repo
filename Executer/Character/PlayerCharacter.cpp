@@ -6,15 +6,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Character/MainPlayerController.h"
-#include "Character/PlayerCharacterSettingData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Character/MainPlayerController.h"
+#include "Character/PlayerCharacterSettingData.h"
 #include "Character/CharacterDodgeManager.h"
 #include "Character/CharacterCameraManager.h"
+#include "Character/CharacterMontageManager.h"
 
 /***********************
 * Addresses of Asset
@@ -38,6 +39,7 @@ APlayerCharacter::APlayerCharacter()
 	Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Cam"));
 	DodgeManager = CreateDefaultSubobject<UCharacterDodgeManager>(TEXT("DodgeManager"));
 	CameraManager = CreateDefaultSubobject<UCharacterCameraManager>(TEXT("CameraManager"));
+	MontageManager = CreateDefaultSubobject<UCharacterMontageManager>(TEXT("MontageManager"));
 
 	// Set collision size
 	GetCapsuleComponent()->InitCapsuleSize(34.f, 88.0f);
@@ -168,6 +170,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(PlayerController->DashAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Dash);
 	EnhancedInputComponent->BindAction(PlayerController->CameraAutoAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CameraAutoPosMode);
 	EnhancedInputComponent->BindAction(PlayerController->CameraFixedAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CameraFixedMode);
+	EnhancedInputComponent->BindAction(PlayerController->ComboAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ComboAttack);
 
 	// Get local player
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -213,6 +216,11 @@ void APlayerCharacter::SetupManagers()
 	// TODO : Use data asset
 	CameraManager->InitManager(Cam, CamArm, GetController(), 0.5f);
 	DodgeManager->InitManager();
+	bool bHasAnimation = IsValid(GetMesh()->GetAnimInstance()) && PlayerComboAttackData != nullptr;
+	if (bHasAnimation)
+	{
+		MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
+	}
 }
 
 void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData* Settingdata)
@@ -398,4 +406,9 @@ void APlayerCharacter::CameraAutoPosMode()
 void APlayerCharacter::CameraFixedMode()
 {
 	CameraManager->ToggleFixedMode();
+}
+
+void APlayerCharacter::ComboAttack()
+{
+	MontageManager->GetComboAttackCommand();
 }
