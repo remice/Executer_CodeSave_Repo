@@ -27,6 +27,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	virtual void SetupPattern(AActor* InPlayerCharacter);
+
+	UFUNCTION()
+	virtual void Fire();
+
 
 protected:
 	float CurPatternTime;
@@ -50,9 +56,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UArrowComponent> Body;
 
-public:
-	UFUNCTION()
-	virtual void Fire();
+	TObjectPtr<AActor> PlayerCharacter;
 
 protected:
 	UFUNCTION()

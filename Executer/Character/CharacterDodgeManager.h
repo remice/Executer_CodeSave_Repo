@@ -25,15 +25,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void InitManager(const float InGaugeMultiflier = 1.f, const float InDodgeRange = 150.f) 
+	void InitManager(const float InGaugeMultiflier = 1.f, const float InDodgeRange = 150.f, const float InDodgeDisableTime = 1.f) 
 	{
-		GaugeMultiflier = InGaugeMultiflier; DodgeRange = InDodgeRange;
+		GaugeMultiflier = InGaugeMultiflier; DodgeRange = InDodgeRange; DodgeDisableTime = InDodgeDisableTime;
 	}
 
 // enable option section
 public:
 	UFUNCTION()
-	void SetTickEnable(bool Enable);
+	void OnDodgeDisable(float CurHp);
 
 // dynamic dodge section
 public:
@@ -51,6 +51,12 @@ private:
 	UFUNCTION()
 	void AddSpecialAttackGauge(const int32 ProjectileCount);
 
+	UFUNCTION()
+	void SetTickEnable(bool Enable);
+
+	UFUNCTION()
+	void OnDodgeEnable();
+
 // dynamic dodge value section
 private:
 	UPROPERTY()
@@ -67,4 +73,7 @@ private:
 		
 	UPROPERTY()
 	float DodgeRange;
+
+	FTimerHandle DisableDodgeTimerHandle;
+	float DodgeDisableTime = 1.f;
 };

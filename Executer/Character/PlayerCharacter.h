@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Player/ExecuterPlayerState.h"
+#include "Interface/CanDodgeActor.h"
 #include "PlayerCharacter.generated.h"
 
 USTRUCT()
@@ -32,7 +33,7 @@ struct FDashBone
 };
 
 UCLASS()
-class EXECUTER_API APlayerCharacter : public ACharacter
+class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor
 {
 	GENERATED_BODY()
 
@@ -55,7 +56,9 @@ public:
 
 	virtual void StopJumping() override;
 
-	void DisableDodge(float DelayTime);
+// Hit Section
+protected:
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 // Setting section
 protected:
@@ -66,7 +69,7 @@ protected:
 // Dynamic dodge section
 public:
 	UFUNCTION()
-	void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds);
+	virtual void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds) override;
 
 // Tick section
 private:
@@ -93,7 +96,7 @@ private:
 	UFUNCTION()
 	void CameraAutoPosMode();
 	UFUNCTION()
-	void CameraFixedMode();	
+	void CameraFixedMode();
 
 // manager section
 private:
@@ -104,7 +107,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UCharacterMontageManager> MontageManager;
 
-	float DisableDodgeDelay;
+	float DisableDodgeDelay = 1.f;
 
 // component section
 private:

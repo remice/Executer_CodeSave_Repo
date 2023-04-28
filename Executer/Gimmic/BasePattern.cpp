@@ -61,6 +61,11 @@ void ABasePattern::Tick(float DeltaTime)
 	}
 }
 
+void ABasePattern::SetupPattern(AActor* InPlayerCharacter)
+{
+	PlayerCharacter = InPlayerCharacter;
+}
+
 void ABasePattern::Fire()
 {
 	PatternIndex = 0;

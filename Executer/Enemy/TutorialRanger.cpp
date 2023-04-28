@@ -5,6 +5,7 @@
 #include "Gimmic/BasePattern.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #define PATH_SPHERE TEXT("/Engine/BasicShapes/Sphere.Sphere")
 
@@ -83,6 +84,13 @@ void ATutorialRanger::SpawnPatternManager(TSubclassOf<ABasePattern> NewPatternCl
 		PatternManager = nullptr;
 	}
 
+	AActor* PlayerActor = Cast<AActor>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (IsValid(PlayerActor) == false)
+	{
+		return;
+	}
+
 	// Spawn bullet
 	FVector3d SpawnPos = RootComponent->GetComponentLocation();
 	SpawnPos += FVector3d(70.f, 0.f, 0.f);
@@ -96,6 +104,7 @@ void ATutorialRanger::SpawnPatternManager(TSubclassOf<ABasePattern> NewPatternCl
 	PatternManager = GetWorld()->SpawnActor<ABasePattern>(NewPatternClass, SpawnPos, SpawnRot, SpawnParameters);
 	if (PatternManager)
 	{
+		PatternManager->SetupPattern(PlayerActor);
 		PatternManager->AttachToActor(this, AttachmentRules, NAME_None);
 		PatternManager->OnEnd.BindUFunction(this, TEXT("ExNextPattern"));
 		//PatternManager->OnEnd.BindSP(this, &ATutorialRanger::ExNextPattern);

@@ -3,7 +3,7 @@
 
 #include "Character/CharacterDodgeManager.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Gimmic/Projectile.h"
+#include "Interface/CanBeDodgedActor.h"
 
 // Sets default values for this component's properties
 UCharacterDodgeManager::UCharacterDodgeManager()
@@ -66,9 +66,9 @@ TSet<int32> UCharacterDodgeManager::CheckNearProjectiles()
 
 	for (const auto TraceHit : TraceHits)
 	{
-		if (AProjectile* HitProjectile = Cast<AProjectile>(TraceHit.GetActor()))
+		if (ICanBeDodgedActor* DodgedActor = Cast<ICanBeDodgedActor>(TraceHit.GetActor()))
 		{
-			ResultSet.Add(HitProjectile->GetId());
+			ResultSet.Add(DodgedActor->GetId());
 		}
 	}
 
@@ -102,4 +102,18 @@ void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 
 	SpecialAttackGauge += GaugeMultiflier * ProjectileCount;
 	UE_LOG(LogTemp, Log, TEXT("%s"), *FString::SanitizeFloat(SpecialAttackGauge));
+}
+
+void UCharacterDodgeManager::OnDodgeDisable(float CurHp)
+{
+	DisableDodgeTimerHandle.Invalidate();
+
+	SetTickEnable(false);
+
+	GetWorld()->GetTimerManager().SetTimer(DisableDodgeTimerHandle, this, &UCharacterDodgeManager::OnDodgeEnable, DodgeDisableTime, false);
+}
+
+void UCharacterDodgeManager::OnDodgeEnable()
+{
+	SetTickEnable(true);
 }

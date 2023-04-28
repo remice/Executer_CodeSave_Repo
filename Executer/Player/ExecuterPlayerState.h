@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerState.h"
 #include "ExecuterPlayerState.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnPlayerDeadDelegate)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /*CurHp*/)
+
 /**
  * 
  */
@@ -18,7 +21,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	UFUNCTION()
-	void GetDamaged(const float Damage);
+	float GetDamaged(const float Damage);
 
 	UFUNCTION()
 	void SetupHealth(const float InMaxHealth);
@@ -28,6 +31,14 @@ public:
 
 	UFUNCTION()
 	FORCEINLINE float GetHealth() const { return CurHealth; }
+
+// Delegate Section
+public:
+	FOnPlayerDeadDelegate OnPlayerDead;
+	FOnHpChangedDelegate OnHpChanged;
+
+private:
+	void ChangeHealth(const float NewHp);
 	
 private:
 	UPROPERTY()

@@ -2,7 +2,7 @@
 
 
 #include "Projectile.h"
-#include "Character/PlayerCharacter.h"
+#include "Engine/DamageEvents.h"
 
 #define PATH_SPHERE TEXT("/Engine/BasicShapes/Sphere.Sphere")
 
@@ -57,13 +57,12 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<APlayerCharacter>(OtherActor))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Hit main character"));
-		Destroy();
-		return;
-	}
-	
-	UE_LOG(LogTemp, Log, TEXT("Hit something."));
+	FDamageEvent DamageEvent;
+	OtherActor->TakeDamage(Damage, DamageEvent, nullptr, this);
 	Destroy();
+}
+
+int32 AProjectile::GetId()
+{
+	return Id;
 }

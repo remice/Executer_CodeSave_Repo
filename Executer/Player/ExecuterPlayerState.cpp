@@ -2,7 +2,6 @@
 
 
 #include "ExecuterPlayerState.h"
-#include "Character/PlayerCharacter.h"
 
 void AExecuterPlayerState::PostInitializeComponents()
 {
@@ -12,40 +11,45 @@ void AExecuterPlayerState::PostInitializeComponents()
 	SetupArmor(5);
 }
 
-void AExecuterPlayerState::GetDamaged(const float Damage)
+float AExecuterPlayerState::GetDamaged(const float Damage)
 {
-	if (IsValid(Character) == false)
-	{
-		Character = Cast<APlayerCharacter>(GetPawn());
+	const float DamageModulator = 100 / (Armor + 100);
 
-		if (IsValid(Character) == false)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Player state doesn't have player!!"));
-			return;
-		}
-	}
-	Character->DisableDodge(1.f);
-
-	float DamageModulator = 100 / (Armor + 100);
 	float FinalDamage = Damage - Armor;
 	FinalDamage *= DamageModulator;
 	FinalDamage = FinalDamage < 1 ? 1 : FinalDamage;
 
-	CurHealth -= FinalDamage;
+	ChangeHealth(CurHealth - FinalDamage);
 
-	if (CurHealth <= 0)
-	{
-		// player death
-	}
+	return FinalDamage;
 }
 
 void AExecuterPlayerState::SetupHealth(const float InMaxHealth)
 {
 	MaxHealth = InMaxHealth;
-	CurHealth = MaxHealth;
+	ChangeHealth(MaxHealth);
 }
 
 void AExecuterPlayerState::SetupArmor(const float InArmor)
 {
 	Armor = InArmor;
+}
+
+void AExecuterPlayerState::ChangeHealth(const float NewHp)
+{
+	const float ActualHealth = FMath::Clamp(NewHp, 0, MaxHealth);
+
+	if (CurHealth == ActualHealth)
+	{
+		return;
+	}
+
+	CurHealth = ActualHealth;
+
+	if (CurHealth < KINDA_SMALL_NUMBER)
+	{
+		OnPlayerDead.Broadcast();
+	}
+
+	OnHpChanged.Broadcast(CurHealth);
 }

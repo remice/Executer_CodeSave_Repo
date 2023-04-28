@@ -3,13 +3,13 @@
 
 #include "InstancedPattern.h"
 #include "Interface/IRotatableObject.h"
-#include "Character/PlayerCharacter.h"
+#include "Interface/CanDodgeActor.h"
 #include "Components/ArrowComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Engine/DamageEvents.h"
 
 AInstancedPattern::AInstancedPattern()
 {
@@ -37,10 +37,10 @@ AInstancedPattern::AInstancedPattern()
 
 	// Delay collision check values
 	CheckLevel1Distance = 500.f;
-	CheckLevel2Distance = 2000.f;
+	CheckLevel2Distance = 3000.f;
 	CheckLevel3Distance = 5000.f;
 	Level1CollisionCheckDelay = 0.25f;
-	Level2CollisionCheckDelay = 1.f;
+	Level2CollisionCheckDelay = 5.f;
 	NexLevel1CollisionCheckDelay = 0.f;
 	NexLevel2CollisionCheckDelay = 0.f;
 }
@@ -58,8 +58,6 @@ void AInstancedPattern::BeginPlay()
 // Tick life time = actor life time
 void AInstancedPattern::Tick(float DeltaTime)
 {
-	// Check character isvalid & get character location
-	APawn* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (IsValid(PlayerCharacter))
 	{
 		CharacterLocation = PlayerCharacter->GetActorLocation();
@@ -142,17 +140,8 @@ void AInstancedPattern::SpawnBullets(int32 BulletIndex)
 
 void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform)
 {
-	APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(HitResult.GetActor());
-	if (IsValid(HitCharacter))
-	{
-		AExecuterPlayerState* HitPlayerState = Cast<AExecuterPlayerState>(HitCharacter->GetPlayerState());
-		if (IsValid(HitPlayerState))
-		{
-			HitPlayerState->GetDamaged(BulletDamage);
-
-			UE_LOG(LogTemp, Log, TEXT("%d"), (int32)HitPlayerState->GetHealth());
-		}
-	}
+	FDamageEvent DamageEvent;
+	HitResult.GetActor()->TakeDamage(BulletDamage, DamageEvent, nullptr, this);
 
 	FHitResult TraceHit;
 	bool IsNearCharacter = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), ComponentTransform.GetLocation(),
@@ -160,7 +149,7 @@ void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FT
 
 	if (IsNearCharacter && IsValid(HitEffect))
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, ComponentTransform.GetLocation(), FRotator(0.f));
+		
 	}
 }
 
@@ -190,18 +179,14 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 		float YAxisDistance = FMath::Abs(DistanceToPlayer.Y);
 		float ZAxisDistance = FMath::Abs(DistanceToPlayer.Z);
 
-		// Check distance level to check distances
-		bool bIsDistanceLevel0 = XAxisDistance < CheckLevel1Distance && YAxisDistance < CheckLevel1Distance && ZAxisDistance < CheckLevel1Distance;
-		bool bIsDistanceLevel1 = XAxisDistance > CheckLevel1Distance || YAxisDistance > CheckLevel1Distance || ZAxisDistance > CheckLevel1Distance;
-		bool bIsDistanceLevel2 = XAxisDistance > CheckLevel2Distance || YAxisDistance > CheckLevel2Distance || ZAxisDistance > CheckLevel2Distance;
 		bool bIsDistanceLevel3 = XAxisDistance > CheckLevel3Distance || YAxisDistance > CheckLevel3Distance || ZAxisDistance > CheckLevel3Distance;
-
 		// if distance > check level 3, don't check collision
 		if (bIsDistanceLevel3)
 		{
 			continue;
 		}
 
+		bool bIsDistanceLevel2 = XAxisDistance > CheckLevel2Distance || YAxisDistance > CheckLevel2Distance || ZAxisDistance > CheckLevel2Distance;
 		// if distance > check level 2, check collision for every one second
 		if (bIsDistanceLevel2)
 		{
@@ -211,6 +196,7 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 			}
 		}
 
+		bool bIsDistanceLevel1 = XAxisDistance > CheckLevel1Distance || YAxisDistance > CheckLevel1Distance || ZAxisDistance > CheckLevel1Distance;
 		// if distance > check level 1, check collision for every 1/4 second
 		if (bIsDistanceLevel1)
 		{
@@ -224,7 +210,6 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 		FHitResult TraceHit;
 		bool IsCollide = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), ISMTrans.GetLocation(), ISMTrans.GetLocation(),
 			CollisionRadius * ComponentSize, CollisionObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::None, TraceHit, true);
-		
 		if (IsCollide)
 		{
 			OnCollideSomething(TraceHit, ISMTrans);
@@ -232,7 +217,8 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 			InstancedStaticMeshes->UpdateInstanceTransform(ix, FTransform(FRotator(0.f, 0.f, 0.f), FVector(0.f, 0.f, 100000.f)), true, true);
 			continue;
 		}
-		
+
+		bool bIsDistanceLevel0 = XAxisDistance < CheckLevel1Distance && YAxisDistance < CheckLevel1Distance && ZAxisDistance < CheckLevel1Distance;
 		// if distance < check level 1, check whether exist character near to instance
 		if (bIsDistanceLevel0 == false)
 		{
@@ -269,9 +255,9 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 	}
 
 	// Update character projectile set
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter && NearCharacterInstanceIds.Num() != 0)
+	ICanDodgeActor* DodgeActor = Cast<ICanDodgeActor>(PlayerCharacter);
+	if (DodgeActor && NearCharacterInstanceIds.Num() != 0)
 	{
-		PlayerCharacter->AddProjectileIdsToSet(NearCharacterInstanceIds);
+		DodgeActor->AddProjectileIdsToSet(NearCharacterInstanceIds);
 	}
 }

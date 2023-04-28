@@ -111,6 +111,7 @@ APlayerCharacter::APlayerCharacter()
 	MaxDashTime = 0.f;
 	CurDashTime = 0.f;
 	bOnDash = false;
+	DisableDodgeDelay = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -136,12 +137,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	DisableDodgeDelay -= DeltaTime;
-	if (DisableDodgeDelay <= 0.f)
-	{
-		DodgeManager->SetTickEnable(true);
-	}
 
 	if (bOnDash)
 	{
@@ -204,23 +199,35 @@ void APlayerCharacter::StopJumping()
 	CurJumpTime = LongJumpTime;
 }
 
-void APlayerCharacter::DisableDodge(float DelayTime)
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	DodgeManager->SetTickEnable(false);
-	DisableDodgeDelay = DelayTime;
-	SetTickEnable(true);
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	AExecuterPlayerState* EPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
+	ensure(IsValid(EPlayerState));
+	EPlayerState->GetDamaged(DamageAmount);
+
+	return 0.0f;
 }
 
 void APlayerCharacter::SetupManagers()
 {
+	ensure(CameraManager && DodgeManager && MontageManager);
+
+	AExecuterPlayerState* EPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
+	ensure(EPlayerState);
+
+	bool bHasAnimation = IsValid(GetMesh()->GetAnimInstance()) && PlayerComboAttackData != nullptr;
+	ensure(bHasAnimation);
+
+
 	// TODO : Use data asset
 	CameraManager->InitManager(Cam, CamArm, GetController(), 0.5f);
-	DodgeManager->InitManager();
-	bool bHasAnimation = IsValid(GetMesh()->GetAnimInstance()) && PlayerComboAttackData != nullptr;
-	if (bHasAnimation)
-	{
-		MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
-	}
+	DodgeManager->InitManager(1.f, 150.f, DisableDodgeDelay);
+	MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
+
+	EPlayerState->OnHpChanged.AddUObject(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
+	//EPlayerState->OnPlayerDead.AddUObject()
 }
 
 void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData* Settingdata)
@@ -257,11 +264,6 @@ void APlayerCharacter::SetTickEnable(bool IsOn)
 	{
 		// tick enable
 		PrimaryActorTick.SetTickFunctionEnable(IsOn);
-		return;
-	}
-
-	if (DisableDodgeDelay > 0.f)
-	{
 		return;
 	}
 

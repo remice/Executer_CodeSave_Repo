@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Interface/CanBeDodgedActor.h"
 #include "Projectile.generated.h"
 
 UCLASS()
-class EXECUTER_API AProjectile : public AActor
+class EXECUTER_API AProjectile : public AActor, public ICanBeDodgedActor
 {
 	GENERATED_BODY()
 	
@@ -42,10 +43,11 @@ protected:
 	virtual void OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
-	FORCEINLINE void SetDamage(const float& InDamage) { Damage = InDamage; }
+	virtual int32 GetId() override;
+
 	FORCEINLINE float GetDamage() const { return Damage; }
 	FORCEINLINE void SetId(const int32& InId) { Id = InId; }
-	FORCEINLINE int32 GetId() const { return Id; }
+
 	FORCEINLINE UStaticMeshComponent* GetBody() const { return Body; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 };
