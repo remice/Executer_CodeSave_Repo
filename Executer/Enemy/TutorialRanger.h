@@ -32,10 +32,10 @@ protected:
 	TObjectPtr<class UArrowComponent> Arrow;
 
 	UPROPERTY(EditAnywhere, Category=Pattern)
-	TArray<TSubclassOf<class ABasePattern>> PatternClass;
+	TArray<TSubclassOf<class APatternBase>> PatternClass;
 
 	UPROPERTY()
-	TObjectPtr<class ABasePattern> PatternManager;
+	TObjectPtr<class APatternBase> PatternManager;
 
 	UPROPERTY(EditAnywhere, Category=Pattern)
 	TArray<float> DelayArray;
@@ -47,10 +47,10 @@ protected:
 
 	uint8 bOnPattern : 1;
 
-private:
+protected:
 	UFUNCTION()
 	void ExNextPattern();
 
 	UFUNCTION()
-	void SpawnPatternManager(TSubclassOf<ABasePattern> NewPatternClass);
+	void SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass);
 };

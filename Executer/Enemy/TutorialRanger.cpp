@@ -2,7 +2,7 @@
 
 
 #include "TutorialRanger.h"
-#include "Gimmic/BasePattern.h"
+#include "Gimmic/PatternBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -67,7 +67,7 @@ void ATutorialRanger::ExNextPattern()
 	bOnPattern = false;
 }
 
-void ATutorialRanger::SpawnPatternManager(TSubclassOf<ABasePattern> NewPatternClass)
+void ATutorialRanger::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass)
 {
 	bOnPattern = true;
 	CurDelay = 0.f;
@@ -101,14 +101,14 @@ void ATutorialRanger::SpawnPatternManager(TSubclassOf<ABasePattern> NewPatternCl
 	FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules::SnapToTargetNotIncludingScale;
 
 	// Spawn pattern and execute attack
-	PatternManager = GetWorld()->SpawnActor<ABasePattern>(NewPatternClass, SpawnPos, SpawnRot, SpawnParameters);
+	PatternManager = GetWorld()->SpawnActor<APatternBase>(NewPatternClass, SpawnPos, SpawnRot, SpawnParameters);
 	if (PatternManager)
 	{
 		PatternManager->SetupPattern(PlayerActor);
 		PatternManager->AttachToActor(this, AttachmentRules, NAME_None);
 		PatternManager->OnEnd.BindUFunction(this, TEXT("ExNextPattern"));
 		//PatternManager->OnEnd.BindSP(this, &ATutorialRanger::ExNextPattern);
+		//PatternManager->OnEnd.BindUObject(this, &ATutorialRanger::ExNextPattern);
 		PatternManager->Fire();
 	}
-	//AProjectile* TempBullet = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), SpawnPos, SpawnRot, SpawnParameters);
 }

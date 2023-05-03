@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePattern.h"
+#include "PatternBase.h"
 #include "InstancedPattern.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EXECUTER_API AInstancedPattern : public ABasePattern
+class EXECUTER_API AInstancedPattern : public APatternBase
 {
 	GENERATED_BODY()
 	
@@ -24,13 +24,10 @@ protected:
 
 	virtual void ExFire() override;
 
-	virtual void SpawnBullets(int32 BulletIndex) override;
+	virtual void SpawnBullets() override;
 
 	UFUNCTION()
 	virtual void OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform);
-
-public:
-	FORCEINLINE void SetPatternId(const float& InPatternId) { PatternId = InPatternId; }
 
 private:
 	UPROPERTY(EditAnywhere, Category = Pattern)
@@ -41,9 +38,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	float NextDelay;
-
-	UPROPERTY(EditAnywhere, Category = Pattern)
-	float MaxDelay;
 
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	float ProjectileSpeed;

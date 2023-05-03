@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BasePattern.generated.h"
+#include "PatternBase.generated.h"
 
 DECLARE_DELEGATE(FPatternOnEndSignature)
 
 UCLASS()
-class EXECUTER_API ABasePattern : public AActor
+class EXECUTER_API APatternBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABasePattern();
+	APatternBase();
 
 	FPatternOnEndSignature OnEnd;
 
@@ -23,7 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -33,22 +33,20 @@ public:
 	UFUNCTION()
 	virtual void Fire();
 
+	FORCEINLINE void SetPatternId(const float& InPatternId) { PatternId = InPatternId; }
 
 protected:
+	UPROPERTY(EditAnywhere, Category = Pattern)
+	float MaxPatternTime;
+
+	UPROPERTY(EditAnywhere, Category = Pattern)
+	float DestroyTime;
+
 	float CurPatternTime;
-
-	int32 PatternIndex;
-
-	uint8 bOnFire:1;
-
-	UPROPERTY(EditAnywhere, Category=Pattern)
-	TArray<TSubclassOf<class AProjectile>> BulletArray;
+	uint8 bOnFire : 1;
 
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	TArray<TObjectPtr<class UArrowComponent>> FirePointArray;
-
-	UPROPERTY(EditAnywhere, Category=Pattern)
-	TArray<float> DelayArray;
 
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	int32 PatternId;
@@ -63,5 +61,6 @@ protected:
 	virtual void ExFire();
 
 	UFUNCTION()
-	virtual void SpawnBullets(int32 BulletIndex);
+	virtual void SpawnBullets();
+
 };

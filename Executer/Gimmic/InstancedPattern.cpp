@@ -2,8 +2,8 @@
 
 
 #include "InstancedPattern.h"
-#include "Interface/IRotatableObject.h"
 #include "Interface/CanDodgeActor.h"
+#include "Interface/IRotatableObject.h"
 #include "Components/ArrowComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -27,10 +27,8 @@ AInstancedPattern::AInstancedPattern()
 
 	// Setup default pattern info
 	BulletDamage = 50.f;
-	CurPatternTime = 0.f;
 	DelayBetweenSpawn = 0.1f;
 	NextDelay = 0.f;
-	MaxDelay = 7.f;
 	ComponentSize = 1.f;
 	CollisionRadius = 30.f;
 	ProjectileSpeed = 10.f;
@@ -55,9 +53,10 @@ void AInstancedPattern::BeginPlay()
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 }
 
-// Tick life time = actor life time
 void AInstancedPattern::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	if (IsValid(PlayerCharacter))
 	{
 		CharacterLocation = PlayerCharacter->GetActorLocation();
@@ -68,53 +67,30 @@ void AInstancedPattern::Tick(float DeltaTime)
 	}
 
 	UpdateTransformInstanceMeshes();
-	// add delay time
-	CurPatternTime += DeltaTime;
+}
 
-	if (bOnFire == false)
-	{
-		return;
-	}
+// Setting bullet spawn
+void AInstancedPattern::ExFire()
+{
+	APatternBase::ExFire();
 
 	if (CurPatternTime < NextDelay)
 	{
 		return;
 	}
 
-	ExFire();
-}
-
-// Setting bullet spawn
-void AInstancedPattern::ExFire()
-{
 	// Update next delay 
 	NextDelay += DelayBetweenSpawn;
 
-	// Check end
-	bool IsOverTime = NextDelay > MaxDelay;
-	if (IsOverTime)
-	{
-		bOnFire = false;
-		CurPatternTime = 0.f;
-		NextDelay = 0.f;
-		OnEnd.Execute();
-		return;
-	}
-
-	// Select bullet
-	int32 BulletIndex = PatternIndex;
-	while (BulletIndex >= BulletArray.Num())
-	{
-		BulletIndex -= BulletArray.Num();
-	}
-
-	SpawnBullets(BulletIndex);
+	SpawnBullets();
 }
 
 // Spawn bullets at locations
-void AInstancedPattern::SpawnBullets(int32 BulletIndex)
+void AInstancedPattern::SpawnBullets()
 {
-	// If mesh class 
+	APatternBase::SpawnBullets();
+
+	// If static mesh is nullptr, Do nothing
 	if (InstancedStaticMeshes->GetStaticMesh() == nullptr)
 	{
 		return;
@@ -143,6 +119,9 @@ void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FT
 	FDamageEvent DamageEvent;
 	HitResult.GetActor()->TakeDamage(BulletDamage, DamageEvent, nullptr, this);
 
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, ComponentTransform.GetLocation(), FRotator(0.f));
+
+	/* deprecate code
 	FHitResult TraceHit;
 	bool IsNearCharacter = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), ComponentTransform.GetLocation(),
 		ComponentTransform.GetLocation(), 2500.f, ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::None, TraceHit, true);
@@ -151,6 +130,7 @@ void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FT
 	{
 		
 	}
+	*/
 }
 
 void AInstancedPattern::UpdateTransformInstanceMeshes()
