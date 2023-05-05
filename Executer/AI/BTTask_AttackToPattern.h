@@ -14,4 +14,13 @@ class EXECUTER_API UBTTask_AttackToPattern : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+public:
+	UBTTask_AttackToPattern();
+	
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Task")
+	TObjectPtr<class UBossPatternData> BossPatternData;
 };

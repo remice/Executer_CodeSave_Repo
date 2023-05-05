@@ -14,4 +14,18 @@ class EXECUTER_API AFirstBossAIController : public AAIController
 {
 	GENERATED_BODY()
 	
+public:
+	AFirstBossAIController();
+
+	void RunAI();
+	void StopAI();
+	
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
+
+	UPROPERTY()
+	TObjectPtr<class UBlackboardData> BBAsset;
+
+	UPROPERTY()
+	TObjectPtr<class UBehaviorTree> BTAsset;
 };

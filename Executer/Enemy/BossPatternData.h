@@ -21,6 +21,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> LinkAnimationMontage;
 
-	UPROPERTY(EditAnywhere, Category = Socket)
-	FString SocketName;
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (ClampMin = "0.1"))
+	float PlayRate;
 };

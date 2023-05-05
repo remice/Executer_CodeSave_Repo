@@ -22,9 +22,9 @@ public:
 
 	// Spawn pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AnimNotify")
-	TSubclassOf<class APatternBase> Pattern;
+	TSubclassOf<class APatternBase> PatternClass;
 
 	// Socket or bone name to attach pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AnimNotify")
-	FName AttachName;
+	FString AttachSocketName;
 };
