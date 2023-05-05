@@ -15,8 +15,11 @@ public class Executer : ModuleRules
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput",
-			"Niagara"
-		});
+			"Niagara",
+            "NavigationSystem",
+            "AIModule",
+            "GameplayTasks"
+        });
 
 		PublicIncludePaths.AddRange(new string[]
 		{

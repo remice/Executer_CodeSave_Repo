@@ -7,6 +7,8 @@
 #include "Components/CapsuleComponent.h"
 #include "BaseEnemy.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedSignature, float /*CurrenHp*/)
+
 UCLASS()
 class EXECUTER_API ABaseEnemy : public APawn
 {
@@ -24,8 +26,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category=Character)
@@ -38,15 +39,9 @@ protected:
 	float HP;
 
 public:
-	UFUNCTION()
 	FORCEINLINE UCapsuleComponent* GetCollider() const { return Collider; }
-	
-	UFUNCTION()
 	FORCEINLINE float GetMaxHP() const { return MaxHP; }
-
-	UFUNCTION()
 	FORCEINLINE float GetHP() const { return HP; }
 
-	UFUNCTION()
-	virtual float GetDamage(float InDamage);
+	FOnHpChangedSignature OnHpChanged;
 };

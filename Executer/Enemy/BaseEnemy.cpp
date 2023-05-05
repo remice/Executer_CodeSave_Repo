@@ -45,23 +45,17 @@ void ABaseEnemy::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void ABaseEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-float ABaseEnemy::GetDamage(float InDamage)
-{
-	HP -= InDamage;
+	float NewHP = FMath::Clamp(HP - DamageAmount, 0, MaxHP);
+	float ActualDamage = FMath::Clamp(HP - NewHP, 0, MaxHP);
+	HP = NewHP;
+	OnHpChanged.Broadcast(HP);
 
 	if (HP <= 0)
 	{
-		bool cannotDestory = Destroy();
-		check(cannotDestory);
+		Destroy();
 	}
 
-	return 0.0f;
+	return ActualDamage;
 }
-
