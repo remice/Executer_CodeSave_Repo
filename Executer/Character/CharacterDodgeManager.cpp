@@ -62,7 +62,7 @@ TSet<int32> UCharacterDodgeManager::CheckNearProjectiles()
 	
 	TArray<FHitResult> TraceHits;
 	bool IsNearCharacter = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), GetOwner()->GetActorLocation(),
-		GetOwner()->GetActorLocation(), 150.f, ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForOneFrame, TraceHits, true);
+		GetOwner()->GetActorLocation(), 150.f, ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::None, TraceHits, true);
 
 	for (const auto TraceHit : TraceHits)
 	{

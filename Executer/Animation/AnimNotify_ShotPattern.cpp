@@ -3,17 +3,25 @@
 
 #include "Animation/AnimNotify_ShotPattern.h"
 #include "Gimmic/PatternBase.h"
+#include "Interface/PatternSpawnable.h"
 
 UAnimNotify_ShotPattern::UAnimNotify_ShotPattern()
 {
+	bAttachLocation = false;
+	bAttachRotation = false;
 }
 
 void UAnimNotify_ShotPattern::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	ensure(IsValid(Pattern));
+	Super::Notify(MeshComp, Animation, EventReference);
 
-	UWorld* World = MeshComp->GetWorld();
-	ensure(IsValid(World));
+	ensure(IsValid(PatternClass));
 
-	AActor* OwnerPawn = MeshComp->GetOwner();
+	IPatternSpawnable* PatternSpawnPawn = Cast<IPatternSpawnable>(MeshComp->GetOwner());
+	if (PatternSpawnPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ShotPattern Notify] SkeletalMesh owner doesn't inherit IPatternSpawnable"));
+		return;
+	}
+	PatternSpawnPawn->SpawnPatternManager(PatternClass, FName(AttachSocketName), bAttachLocation, bAttachRotation);
 }

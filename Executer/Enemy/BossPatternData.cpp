@@ -5,4 +5,6 @@
 
 UBossPatternData::UBossPatternData()
 {
+	PlayRate = 1.f;
+	bOnMove = false;
 }
