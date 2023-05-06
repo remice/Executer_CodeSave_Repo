@@ -16,6 +16,7 @@
 #include "Character/CharacterDodgeManager.h"
 #include "Character/CharacterCameraManager.h"
 #include "Character/CharacterMontageManager.h"
+#include "Curves/CurveVector.h"
 
 /***********************
 * Addresses of Asset
@@ -112,6 +113,12 @@ APlayerCharacter::APlayerCharacter()
 	CurDashTime = 0.f;
 	bOnDash = false;
 	DisableDodgeDelay = 1.f;
+	SkillQMontageIndex = 0;
+	SkillEMontageIndex = 1;
+	SkillRMontageIndex = 2;
+	SkillTMontageIndex = 3;
+	bOnCurveMove = false;
+	bLockMove = false;
 }
 
 // Called when the game starts or when spawned
@@ -143,6 +150,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 		ExDash(DeltaTime);
 	}
 
+	if (bOnCurveMove)
+	{
+		ExCurveMove(DeltaTime);
+	}
+
 	SetTickEnable(false);
 }
 
@@ -166,6 +178,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(PlayerController->CameraAutoAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CameraAutoPosMode);
 	EnhancedInputComponent->BindAction(PlayerController->CameraFixedAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CameraFixedMode);
 	EnhancedInputComponent->BindAction(PlayerController->ComboAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ComboAttack);
+	EnhancedInputComponent->BindAction(PlayerController->SkillAction, ETriggerEvent::Triggered, this, &APlayerCharacter::QERTSkill);
 
 	// Get local player
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -182,6 +195,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void APlayerCharacter::Jump()
 {
 	Super::Jump();
+
+	if (bLockMove)
+	{
+		return;
+	}
 
 	if (GetCharacterMovement()->IsFalling())
 	{
@@ -258,6 +276,43 @@ void APlayerCharacter::AddProjectileIdsToSet(const TSet<int32> NearProjectileIds
 	DodgeManager->AddProjectileIdsToSet(NearProjectileIds);
 }
 
+void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMove, bool LookControlRot)
+{
+	if (bOnCurveMove || bOnDash)
+	{
+		return;
+	}
+
+	if (IsValid(CurveData) == false)
+	{
+		return;
+	}
+
+	// Tick on
+	SetTickEnable(true);
+
+	bOnCurveMove = true;
+	MoveCurveVector = CurveData;
+	MoveCurveVector->GetTimeRange(CurCurveMoveTime, MaxCurveMoveTime);
+	LastInputVector = GetCharacterMovement()->GetLastInputVector();
+	if (GetCharacterMovement()->GetLastInputVector() == FVector::ZeroVector)
+	{
+		LastInputVector = GetControlRotation().Quaternion().GetForwardVector();
+	}
+	LastInputVector.Normalize();
+
+	if (LockPlayerMove)
+	{
+		bLockMove = true;
+	}
+
+	if (LookControlRot)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	}
+}
+
 void APlayerCharacter::SetTickEnable(bool IsOn)
 {
 	if (IsOn)
@@ -271,6 +326,12 @@ void APlayerCharacter::SetTickEnable(bool IsOn)
 	{
 		return;
 	}
+
+	if (bOnCurveMove)
+	{
+		return;
+	}
+
 	// tick unable
 	PrimaryActorTick.SetTickFunctionEnable(IsOn);
 }
@@ -318,9 +379,43 @@ void APlayerCharacter::ExDash(float DeltaTime)
 	GetCharacterMovement()->Velocity.Y = DashInputApplyCurve.Y;
 }
 
+void APlayerCharacter::ExCurveMove(float DeltaTime)
+{
+	CurCurveMoveTime += DeltaTime;
+
+	bool IsCurveMoveOver = CurCurveMoveTime > MaxCurveMoveTime;
+	if (IsCurveMoveOver)
+	{
+		EndCurveMove();
+		return;
+	}
+
+	FVector CurveVector = MoveCurveVector->GetVectorValue(CurCurveMoveTime);
+	FVector InputApplyCurve = CurveVector * GetCharacterMovement()->MaxWalkSpeed;
+	InputApplyCurve.Y = InputApplyCurve.X * LastInputVector.Y;
+	InputApplyCurve.X = InputApplyCurve.X * LastInputVector.X;
+	GetCharacterMovement()->Velocity.X = InputApplyCurve.X;
+	GetCharacterMovement()->Velocity.Y = InputApplyCurve.Y;
+	AddMovementInput(LastInputVector, 0.01f);
+}
+
+void APlayerCharacter::EndCurveMove()
+{
+	bOnCurveMove = false;
+	bLockMove = false;
+	CurCurveMoveTime = 0.f;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+}
+
 void APlayerCharacter::Move(const FInputActionValue& ActionValue)
 {
 	if (bOnDash)
+	{
+		return;
+	}
+
+	if (bLockMove)
 	{
 		return;
 	}
@@ -356,6 +451,11 @@ void APlayerCharacter::Look(const FInputActionValue& ActionValue)
 void APlayerCharacter::Dash(const FInputActionValue& ActionValue)
 {
 	if (bOnDash == true)
+	{
+		return;
+	}
+
+	if (bLockMove == true)
 	{
 		return;
 	}
@@ -408,6 +508,45 @@ void APlayerCharacter::CameraAutoPosMode()
 void APlayerCharacter::CameraFixedMode()
 {
 	CameraManager->ToggleFixedMode();
+}
+
+void APlayerCharacter::QERTSkill(const FInputActionValue& ActionValue)
+{
+	if (bOnDash == true)
+	{
+		return;
+	}
+
+	FVector2D InputValue = ActionValue.Get<FVector2D>();
+
+	bool OnQSkill = InputValue.X > 0.5f;
+	bool OnESkill = InputValue.X < -0.5f;
+	bool OnRSkill = InputValue.Y > 0.5f;
+	bool OnTSkill = InputValue.Y < -0.5f;
+
+	if (OnQSkill)
+	{
+		MontageManager->PlaySkillMontage(SkillQMontageIndex);
+		return;
+	}
+
+	if (OnESkill)
+	{
+		MontageManager->PlaySkillMontage(SkillEMontageIndex);
+		return;
+	}
+
+	if (OnRSkill)
+	{
+		MontageManager->PlaySkillMontage(SkillRMontageIndex);
+		return;
+	}
+
+	if (OnTSkill)
+	{
+		MontageManager->PlaySkillMontage(SkillTMontageIndex);
+		return;
+	}
 }
 
 void APlayerCharacter::ComboAttack()

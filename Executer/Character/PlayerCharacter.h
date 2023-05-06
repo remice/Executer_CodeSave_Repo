@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Player/ExecuterPlayerState.h"
 #include "Interface/CanDodgeActor.h"
+#include "Interface/CurveMovable.h"
 #include "PlayerCharacter.generated.h"
 
 USTRUCT()
@@ -33,7 +34,7 @@ struct FDashBone
 };
 
 UCLASS()
-class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor
+class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable
 {
 	GENERATED_BODY()
 
@@ -71,6 +72,10 @@ public:
 	UFUNCTION()
 	virtual void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds) override;
 
+// Curve movement section
+public:
+	virtual void StartCurveMove(class UCurveVector* CurveData, bool LockPlayerMove, bool LookControlRot) override;
+
 // Tick section
 private:
 	void SetTickEnable(bool IsOn);
@@ -83,7 +88,13 @@ private:
 	UFUNCTION()
 	void ExDash(float DeltaTime);
 
-	// input actions
+	UFUNCTION()
+	void ExCurveMove(float DeltaTime);
+
+	void EndCurveMove();
+
+// input actions
+private:
 	UFUNCTION()
 	void Move(const struct FInputActionValue& ActionValue);
 
@@ -97,6 +108,9 @@ private:
 	void CameraAutoPosMode();
 	UFUNCTION()
 	void CameraFixedMode();
+
+	UFUNCTION()
+	void QERTSkill(const struct FInputActionValue& ActionValue);
 
 // manager section
 private:
@@ -152,10 +166,33 @@ private:
 	UPROPERTY(EditAnywhere, Category = Data)
 	TObjectPtr<class UPlayerCharacterSettingData> PlayerCharacterSettingData;
 
+	// Skill Section
+	UPROPERTY(EditAnywhere, Category = Skill)
+	int32 SkillQMontageIndex;
+
+	UPROPERTY(EditAnywhere, Category = Skill)
+	int32 SkillEMontageIndex;
+
+	UPROPERTY(EditAnywhere, Category = Skill)
+	int32 SkillRMontageIndex;
+
+	UPROPERTY(EditAnywhere, Category = Skill)
+	int32 SkillTMontageIndex;
+
 // animation section
 private:
 	UPROPERTY(EditAnywhere, Category = Data)
 	TObjectPtr<class UComboAttackDataAsset> PlayerComboAttackData;
 
 	void ComboAttack();
+
+// Curve Movement Section
+private:
+	UPROPERTY()
+	TObjectPtr<class UCurveVector> MoveCurveVector;
+
+	float MaxCurveMoveTime = 1.f;
+	float CurCurveMoveTime = 1.f;
+	uint8 bOnCurveMove : 1;
+	uint8 bLockMove : 1;
 };

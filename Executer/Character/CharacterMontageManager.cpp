@@ -3,6 +3,11 @@
 
 #include "Character/CharacterMontageManager.h"
 #include "Character/ComboAttackDataAsset.h"
+#include "CharacterSkillDataAsset.h"
+#include "Interface/CurveMovable.h"
+#include "Curves/CurveVector.h"
+
+#define PATH_SKILLDATA TEXT("/Script/Executer.CharacterSkillDataAsset'/Game/DataAssets/DA_PlayerSkill.DA_PlayerSkill'")
 
 // Sets default values for this component's properties
 UCharacterMontageManager::UCharacterMontageManager()
@@ -11,8 +16,14 @@ UCharacterMontageManager::UCharacterMontageManager()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	static ConstructorHelpers::FObjectFinder<UCharacterSkillDataAsset> SK_SKILLDATA(PATH_SKILLDATA);
+
+	check(SK_SKILLDATA.Succeeded());
+
+	PlayerSkillData = SK_SKILLDATA.Object;
+
 	bHasNextComboCommand = false;
+	bCanStop = true;
 }
 
 void UCharacterMontageManager::InitManager(UAnimInstance* InAnimInstance, UComboAttackDataAsset* InPlayerComboAttackData)
@@ -23,6 +34,11 @@ void UCharacterMontageManager::InitManager(UAnimInstance* InAnimInstance, UCombo
 
 void UCharacterMontageManager::GetComboAttackCommand()
 {
+	if (bCanStop == false)
+	{
+		return;
+	}
+
 	if (CurComboIndex == 0)
 	{
 		ComboActionBegin();
@@ -37,6 +53,96 @@ void UCharacterMontageManager::GetComboAttackCommand()
 	{
 		bHasNextComboCommand = true;
 	}
+}
+
+void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
+{
+	if (CheckDataValid() == false)
+	{
+		return;
+	}
+
+	TArray<FSkillAnimMontageData> SkillMontages = PlayerSkillData->SkillAnimMontageDatas;
+	if (SkillMontages.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Skill anim montage data asset Montage is empty!!"));
+		return;
+	}
+
+	int32 ValidMontageIndex = FMath::Clamp(MontageIndex, 0, SkillMontages.Num() - 1);
+
+	if (SkillMontages.IsValidIndex(ValidMontageIndex) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Index %d SkillMontage doesn't exist!!"), ValidMontageIndex);
+		return;
+	}
+
+	UAnimMontage* ValidMontage = SkillMontages[ValidMontageIndex].Montage;
+	if (IsValid(ValidMontage) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Skill data asset Montage is empty!!"));
+		return;
+	}
+
+	if (bCanStop == false)
+	{
+		return;
+	}
+
+	StopMontage();
+
+	CurComboIndex = 0;
+	PawnAnimInstance->Montage_Play(ValidMontage);
+	FOnMontageEnded OnMontageEnd;
+	OnMontageEnd.BindUObject(this, &UCharacterMontageManager::EndAnimation);
+	PawnAnimInstance->Montage_SetEndDelegate(OnMontageEnd);
+
+	bCanStop = SkillMontages[ValidMontageIndex].bCanStop;
+	if (bCanStop == false)
+	{
+		GetWorld()->GetTimerManager().SetTimer(SkillTimerHandle, this, &UCharacterMontageManager::SetCanMove, SkillMontages[ValidMontageIndex].StopTime, false);
+	}
+
+	if (SkillMontages[ValidMontageIndex].bHasCurve)
+	{
+		ICurveMovable* OwnerPawn = Cast<ICurveMovable>(GetOwner());
+		if (OwnerPawn)
+		{
+			OwnerPawn->StartCurveMove(SkillMontages[ValidMontageIndex].CurveData, true, true);
+		}
+	}
+}
+
+bool UCharacterMontageManager::StopMontage()
+{
+	if (bCanStop == false)
+	{
+		return false;
+	}
+
+	if (ComboTimerHandle.IsValid())
+	{
+		ComboTimerHandle.Invalidate();
+		CurComboIndex = 0;
+	}
+
+	if (SkillTimerHandle.IsValid())
+	{
+		SkillTimerHandle.Invalidate();
+	}
+
+	PawnAnimInstance->Montage_Stop(0.f);
+	return true;
+}
+
+void UCharacterMontageManager::EndAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded)
+{
+	OnEndSkill.ExecuteIfBound();
+}
+
+void UCharacterMontageManager::SetCanMove()
+{
+	bCanStop = true;
 }
 
 void UCharacterMontageManager::ComboActionBegin()
@@ -62,7 +168,7 @@ void UCharacterMontageManager::ComboActionBegin()
 
 bool UCharacterMontageManager::CheckDataValid()
 {
-	bool bIsValidAllPtr = IsValid(PawnAnimInstance) && IsValid(PlayerComboAttackData);
+	bool bIsValidAllPtr = IsValid(PawnAnimInstance) && IsValid(PlayerComboAttackData) && IsValid(PlayerSkillData);
 
 	if (bIsValidAllPtr == false)
 	{
@@ -105,10 +211,8 @@ void UCharacterMontageManager::ComboCheck()
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("1"));
 	if (bHasNextComboCommand)
 	{
-		UE_LOG(LogTemp, Log, TEXT("2"));
 		CurComboIndex = FMath::Clamp(CurComboIndex + 1, 1, PlayerComboAttackData->MaxComboCount);
 		FName NextSection = *FString::Printf(TEXT("%s%d"), *PlayerComboAttackData->MontageSectionNamePrefix, CurComboIndex);
 		PawnAnimInstance->Montage_JumpToSection(NextSection, PlayerComboAttackData->ComboAttackMontage);

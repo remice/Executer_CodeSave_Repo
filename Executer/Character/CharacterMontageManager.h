@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "CharacterMontageManager.generated.h"
 
+DECLARE_DELEGATE(FOnEndSkillSigniture)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EXECUTER_API UCharacterMontageManager : public UActorComponent
@@ -24,6 +25,21 @@ public:
 public:
 	void GetComboAttackCommand();
 
+	void PlaySkillMontage(int32 MontageIndex);
+
+public:
+	FOnEndSkillSigniture OnEndSkill;
+
+// Animation Section
+private:
+	bool StopMontage();
+
+	UFUNCTION()
+	void EndAnimation(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
+
+	void SetCanMove();
+
+// Combo Animation Section
 private:
 	void ComboActionBegin();
 	bool CheckDataValid();
@@ -39,7 +55,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UComboAttackDataAsset> PlayerComboAttackData;
 
+	UPROPERTY(EditAnywhere, Category = Data)
+	TObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
+
 	uint8 CurComboIndex = 0;
 	FTimerHandle ComboTimerHandle;
+	FTimerHandle SkillTimerHandle;
 	uint8 bHasNextComboCommand : 1;
+	uint8 bCanStop : 1;
 };
