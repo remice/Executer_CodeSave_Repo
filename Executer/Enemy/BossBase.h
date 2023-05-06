@@ -19,15 +19,24 @@ class EXECUTER_API ABossBase : public ABaseEnemy, public IPatternSpawnable, publ
 public:
 	ABossBase();
 
+protected:
+	virtual void Tick(float DeltaTime) override;
+
 // Interface Section
 public:
-	virtual void SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName) override;
+	virtual void SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation) override;
 
 	virtual void PlayAnimationFromData(const class UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc) override;
 	virtual void StopAnimation() override;
 
 protected:
 	void EndAnimation(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
+
+// Curve Movement Section
+protected:
+	void StartCurveMove(class UCurveVector* CurveData);
+	void RunCurveMove();
+	void EndCurveMove();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh")
@@ -36,4 +45,13 @@ protected:
 	float AnimPlayRate = 1.0f;
 
 	FOnEndAnimationSigniture EndAnimationDelegate;
+
+// Curve Movement Section
+protected:
+	UPROPERTY()
+	TObjectPtr<class UCurveVector> AnimCurveData;
+
+	uint8 bOnCurve : 1;
+	float PlayRate = 1.f;
+	FVector SaveLocation;
 };

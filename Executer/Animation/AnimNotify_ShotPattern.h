@@ -27,4 +27,10 @@ public:
 	// Socket or bone name to attach pattern
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AnimNotify")
 	FString AttachSocketName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AnimNotify")
+	uint8 bAttachLocation : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AnimNotify")
+	uint8 bAttachRotation : 1;
 };

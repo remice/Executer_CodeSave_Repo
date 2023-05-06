@@ -22,5 +22,5 @@ class EXECUTER_API IPatternSpawnable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SpawnPatternManager(TSubclassOf<class APatternBase> NewPatternClass, FName SocketName) = 0;
+	virtual void SpawnPatternManager(TSubclassOf<class APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation) = 0;
 };

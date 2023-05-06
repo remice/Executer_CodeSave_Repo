@@ -7,6 +7,8 @@
 
 UAnimNotify_ShotPattern::UAnimNotify_ShotPattern()
 {
+	bAttachLocation = false;
+	bAttachRotation = false;
 }
 
 void UAnimNotify_ShotPattern::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -21,5 +23,5 @@ void UAnimNotify_ShotPattern::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		UE_LOG(LogTemp, Warning, TEXT("[ShotPattern Notify] SkeletalMesh owner doesn't inherit IPatternSpawnable"));
 		return;
 	}
-	PatternSpawnPawn->SpawnPatternManager(PatternClass, FName(AttachSocketName));
+	PatternSpawnPawn->SpawnPatternManager(PatternClass, FName(AttachSocketName), bAttachLocation, bAttachRotation);
 }

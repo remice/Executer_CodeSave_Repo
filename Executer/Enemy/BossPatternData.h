@@ -23,4 +23,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Animation, meta = (ClampMin = "0.1"))
 	float PlayRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	TObjectPtr<class UCurveVector> MoveCurve;
+
+	UPROPERTY(EditAnywhere, Category = Movement)
+	uint8 bOnMove : 1;
 };

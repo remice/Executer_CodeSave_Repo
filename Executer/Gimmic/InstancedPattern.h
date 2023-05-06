@@ -69,7 +69,7 @@ private:
 	float NexLevel1CollisionCheckDelay;
 	float NexLevel2CollisionCheckDelay;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Pattern")
 	TObjectPtr<class UInstancedStaticMeshComponent> InstancedStaticMeshes;
 
 	UPROPERTY()
