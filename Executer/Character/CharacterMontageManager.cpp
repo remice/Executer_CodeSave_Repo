@@ -142,6 +142,7 @@ void UCharacterMontageManager::EndAnimation(UAnimMontage* TargetMontage, bool Is
 
 void UCharacterMontageManager::SetCanMove()
 {
+	CurComboIndex = 0;
 	bCanStop = true;
 }
 

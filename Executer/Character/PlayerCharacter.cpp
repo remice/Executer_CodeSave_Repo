@@ -313,6 +313,27 @@ void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMo
 	}
 }
 
+bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
+{
+	FVector SocketLocation = GetLocationToSocket(SocketName);
+
+	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PreFrameLocation, SocketLocation,
+		ObjectTypesArray, true, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+
+	return IsCollide;
+}
+
+FVector APlayerCharacter::GetLocationToSocket(const FName& SocketName)
+{
+	if (GetMesh()->DoesSocketExist(SocketName))
+	{
+		FVector SocketLocation = GetMesh()->GetSocketLocation(SocketName);
+		return SocketLocation;
+	}
+
+	return FVector();
+}
+
 void APlayerCharacter::SetTickEnable(bool IsOn)
 {
 	if (IsOn)

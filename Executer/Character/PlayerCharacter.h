@@ -7,6 +7,7 @@
 #include "Player/ExecuterPlayerState.h"
 #include "Interface/CanDodgeActor.h"
 #include "Interface/CurveMovable.h"
+#include "Interface/AttackCheckable.h"
 #include "PlayerCharacter.generated.h"
 
 USTRUCT()
@@ -34,7 +35,7 @@ struct FDashBone
 };
 
 UCLASS()
-class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable
+class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable, public IAttackCheckable
 {
 	GENERATED_BODY()
 
@@ -75,6 +76,11 @@ public:
 // Curve movement section
 public:
 	virtual void StartCurveMove(class UCurveVector* CurveData, bool LockPlayerMove, bool LookControlRot) override;
+
+// Attack section
+public:
+	virtual bool CheckAttachToSocket(const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
+	virtual FVector GetLocationToSocket(const FName& SocketName) override;
 
 // Tick section
 private:
