@@ -18,7 +18,8 @@ public class Executer : ModuleRules
 			"Niagara",
             "NavigationSystem",
             "AIModule",
-            "GameplayTasks"
+            "GameplayTasks",
+            "PhysicsCore"
         });
 
 		PublicIncludePaths.AddRange(new string[]

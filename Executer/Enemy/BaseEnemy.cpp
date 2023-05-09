@@ -11,9 +11,9 @@ ABaseEnemy::ABaseEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create Capsule Component
-	Collider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collider"));
+	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	SetRootComponent(Collider);
-	Collider->SetCapsuleSize(44.f, 88.f);
+	Collider->SetBoxExtent(FVector(44.f, 44.f, 88.f));
 
 	// Set roation rule
 	bUseControllerRotationPitch = false;

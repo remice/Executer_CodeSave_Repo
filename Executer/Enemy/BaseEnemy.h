@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "BaseEnemy.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedSignature, float /*CurrenHp*/)
@@ -30,7 +30,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category=Character)
-	TObjectPtr<UCapsuleComponent> Collider;
+	TObjectPtr<UBoxComponent> Collider;
 
 	UPROPERTY(VisibleAnywhere, Category=Info)
 	float MaxHP;
@@ -39,7 +39,7 @@ protected:
 	float HP;
 
 public:
-	FORCEINLINE UCapsuleComponent* GetCollider() const { return Collider; }
+	FORCEINLINE UBoxComponent* GetCollider() const { return Collider; }
 	FORCEINLINE float GetMaxHP() const { return MaxHP; }
 	FORCEINLINE float GetHP() const { return HP; }
 

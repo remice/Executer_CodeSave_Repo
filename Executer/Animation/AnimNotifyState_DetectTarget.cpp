@@ -2,7 +2,6 @@
 
 
 #include "Animation/AnimNotifyState_DetectTarget.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Interface/AttackCheckable.h"
 
 UAnimNotifyState_DetectTarget::UAnimNotifyState_DetectTarget()
