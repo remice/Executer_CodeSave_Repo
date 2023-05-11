@@ -28,6 +28,8 @@ ABossBase::ABossBase()
 	GetCollider()->SetCollisionProfileName(TEXT("Boss"));
 
 	bOnCurve = false;
+	SaveLocation = FVector();
+	SaveForwardVector = FVector();
 }
 
 void ABossBase::Tick(float DeltaTime)
@@ -159,6 +161,9 @@ void ABossBase::StartCurveMove(UCurveVector* CurveData)
 	ensure(AnimCurveData);
 
 	SaveLocation = GetActorLocation();
+	SaveForwardVector = GetActorForwardVector();
+	SaveForwardVector.Z = 0;
+	SaveForwardVector.Normalize();
 	GetCollider()->SetSimulatePhysics(false);
 	bOnCurve = true;
 }
@@ -180,8 +185,9 @@ void ABossBase::RunCurveMove()
 	}
 
 	FVector CurveLocation = AnimCurveData->GetVectorValue(AnimPosition);
-	CurveLocation += SaveLocation;
-	SetActorLocation(CurveLocation);
+	FVector ActualLocation = FVector(CurveLocation.X * SaveForwardVector.X, CurveLocation.X * SaveForwardVector.Y, CurveLocation.Z);
+	ActualLocation += SaveLocation;
+	SetActorLocation(ActualLocation);
 }
 
 void ABossBase::EndCurveMove()

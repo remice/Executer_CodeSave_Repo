@@ -54,4 +54,5 @@ protected:
 	uint8 bOnCurve : 1;
 	float PlayRate = 1.f;
 	FVector SaveLocation;
+	FVector SaveForwardVector;
 };
