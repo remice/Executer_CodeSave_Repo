@@ -57,9 +57,9 @@ void AInstancedPattern::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(PlayerCharacter))
+	if (IsValid(TargetCharacter))
 	{
-		CharacterLocation = PlayerCharacter->GetActorLocation();
+		CharacterLocation = TargetCharacter->GetActorLocation();
 	}
 	else
 	{
@@ -235,7 +235,7 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 	}
 
 	// Update character projectile set
-	ICanDodgeActor* DodgeActor = Cast<ICanDodgeActor>(PlayerCharacter);
+	ICanDodgeActor* DodgeActor = Cast<ICanDodgeActor>(TargetCharacter);
 	if (DodgeActor && NearCharacterInstanceIds.Num() != 0)
 	{
 		DodgeActor->AddProjectileIdsToSet(NearCharacterInstanceIds);

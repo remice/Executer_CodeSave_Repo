@@ -54,7 +54,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UArrowComponent> Body;
 
-	TObjectPtr<AActor> PlayerCharacter;
+	UPROPERTY()
+	TObjectPtr<AActor> TargetCharacter;
 
 protected:
 	UFUNCTION()

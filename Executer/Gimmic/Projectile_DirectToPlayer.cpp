@@ -3,3 +3,12 @@
 
 #include "Gimmic/Projectile_DirectToPlayer.h"
 
+AProjectile_DirectToPlayer::AProjectile_DirectToPlayer()
+{
+}
+
+void AProjectile_DirectToPlayer::BeginPlay()
+{
+	FRotator LookAtRotator;
+	SetActorRotation(LookAtRotator);
+}

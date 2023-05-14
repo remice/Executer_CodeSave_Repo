@@ -68,7 +68,7 @@ void APatternBase::Tick(float DeltaTime)
 
 void APatternBase::SetupPattern(AActor* InPlayerCharacter)
 {
-	PlayerCharacter = InPlayerCharacter;
+	TargetCharacter = InPlayerCharacter;
 }
 
 void APatternBase::Fire()

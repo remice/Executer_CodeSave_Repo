@@ -14,4 +14,9 @@ class EXECUTER_API AProjectile_DirectToPlayer : public AProjectile
 {
 	GENERATED_BODY()
 	
+public:
+	AProjectile_DirectToPlayer();
+
+protected:
+	virtual void BeginPlay();
 };

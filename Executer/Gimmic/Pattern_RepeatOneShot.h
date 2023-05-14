@@ -14,4 +14,17 @@ class EXECUTER_API APattern_RepeatOneShot : public APatternBase
 {
 	GENERATED_BODY()
 	
+public:
+	APattern_RepeatOneShot();
+
+protected:
+	virtual void ExFire() override;
+	virtual void SpawnBullets() override;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Pattern")
+	TSubclassOf<class AProjectile> SpawnBulletClass;
+
+	float ShotDelay = 99999.f;
+	float CurShotDelay = 0.f;
 };
