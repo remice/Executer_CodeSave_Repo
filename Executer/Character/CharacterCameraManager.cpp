@@ -32,13 +32,6 @@ void UCharacterCameraManager::BeginPlay()
 
 	// Unable tick
 	PrimaryComponentTick.SetTickFunctionEnable(false);
-
-	UMyGameInstance* GI = Cast<UMyGameInstance>(GetOwner()->GetGameInstance());
-	if (GI)
-	{
-		Boss = GI->GetMapBoss();
-	}
-	
 }
 
 

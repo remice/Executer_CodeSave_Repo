@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/BoxComponent.h"
+#include "Interface/Initializable.h"
 #include "BaseEnemy.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedSignature, float /*CurrenHp*/)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHpChangedSignature, float, CurrentHp, float, MaxHp);
 
 UCLASS()
-class EXECUTER_API ABaseEnemy : public APawn
+class EXECUTER_API ABaseEnemy : public APawn, public IInitializable
 {
 	GENERATED_BODY()
 
@@ -20,13 +21,16 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
+	virtual void Initialize() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category=Character)
@@ -42,6 +46,8 @@ public:
 	FORCEINLINE UBoxComponent* GetCollider() const { return Collider; }
 	FORCEINLINE float GetMaxHP() const { return MaxHP; }
 	FORCEINLINE float GetHP() const { return HP; }
+	void SetupHp(float InMaxHp);
 
+	UPROPERTY(BlueprintAssignable, Category="Hp")
 	FOnHpChangedSignature OnHpChanged;
 };

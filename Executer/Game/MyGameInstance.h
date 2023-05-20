@@ -15,10 +15,10 @@ class EXECUTER_API UMyGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	void SetMapBoss(const TObjectPtr<class ABaseEnemy> InMapBoss) { MapBoss = InMapBoss; }
-	class ABaseEnemy* GetMapBoss() const { return MapBoss; }
+	void SetMapBoss(const TObjectPtr<AActor> InMapBoss) { MapBoss = InMapBoss; }
+	class AActor* GetMapBoss() const { return MapBoss; }
 
 private:
-	UPROPERTY()
-	TObjectPtr<class ABaseEnemy> MapBoss;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Boss", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AActor> MapBoss;
 };

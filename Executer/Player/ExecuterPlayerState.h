@@ -4,21 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "Interface/Initializable.h"
 #include "ExecuterPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeadDelegate)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /*CurHp*/)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float, CurHp, float, MaxHp);
 
 /**
  * 
  */
 UCLASS()
-class EXECUTER_API AExecuterPlayerState : public APlayerState
+class EXECUTER_API AExecuterPlayerState : public APlayerState, public IInitializable
 {
 	GENERATED_BODY()
 	
 public:
 	virtual void PostInitializeComponents() override;
+
+public:
+	virtual void Initialize() override;
 
 	UFUNCTION()
 	float GetDamaged(const float Damage);
@@ -35,6 +39,8 @@ public:
 // Delegate Section
 public:
 	FOnPlayerDeadDelegate OnPlayerDead;
+
+	UPROPERTY(BlueprintAssignable, Category = "Hp")
 	FOnHpChangedDelegate OnHpChanged;
 
 private:

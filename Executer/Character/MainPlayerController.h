@@ -17,6 +17,14 @@ class EXECUTER_API AMainPlayerController : public APlayerController
 public:
 	AMainPlayerController();
 
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	void InitHUDWidget();
+
+// Enhanced Input Section
+public:
 	UPROPERTY(VisibleAnywhere, Category=Input)
 	TObjectPtr<class UInputMappingContext> PlayerMappingContext;
 
@@ -43,4 +51,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> SkillAction;
+
+// UI Section
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<class UEXHUDWidget> HudWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HUD")
+	TObjectPtr<class UEXHUDWidget> HudWidget;
 };

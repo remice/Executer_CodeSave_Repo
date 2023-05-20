@@ -6,7 +6,10 @@
 void AExecuterPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+}
 
+void AExecuterPlayerState::Initialize()
+{
 	SetupHealth(1000);
 	SetupArmor(5);
 }
@@ -51,5 +54,5 @@ void AExecuterPlayerState::ChangeHealth(const float NewHp)
 		OnPlayerDead.Broadcast();
 	}
 
-	OnHpChanged.Broadcast(CurHealth);
+	OnHpChanged.Broadcast(CurHealth, MaxHealth);
 }

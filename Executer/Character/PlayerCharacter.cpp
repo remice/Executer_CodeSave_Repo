@@ -16,7 +16,9 @@
 #include "Character/CharacterDodgeManager.h"
 #include "Character/CharacterCameraManager.h"
 #include "Character/CharacterMontageManager.h"
+#include "Game/MyGameInstance.h"
 #include "Curves/CurveVector.h"
+#include "Engine/DamageEvents.h"
 
 /***********************
 * Addresses of Asset
@@ -238,13 +240,15 @@ void APlayerCharacter::SetupManagers()
 	bool bHasAnimation = IsValid(GetMesh()->GetAnimInstance()) && PlayerComboAttackData != nullptr;
 	ensure(bHasAnimation);
 
+	UMyGameInstance* GI = Cast<UMyGameInstance>(GetOwner()->GetGameInstance());
+	ensure(GI);
 
 	// TODO : Use data asset
-	CameraManager->InitManager(Cam, CamArm, GetController(), 0.5f);
+	CameraManager->InitManager(GI->GetMapBoss(), Cam, CamArm, GetController(), 0.5f);
 	DodgeManager->InitManager(1.f, 150.f, DisableDodgeDelay);
 	MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
 
-	EPlayerState->OnHpChanged.AddUObject(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
+	EPlayerState->OnHpChanged.AddDynamic(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
 	//EPlayerState->OnPlayerDead.AddUObject()
 }
 
@@ -319,6 +323,12 @@ bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVecto
 
 	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PreFrameLocation, SocketLocation,
 		ObjectTypesArray, true, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+
+	if (IsCollide)
+	{
+		FDamageEvent DamageEvent;
+		HitResult.GetActor()->TakeDamage(500.f, DamageEvent, GetController(), this);
+	}
 
 	return IsCollide;
 }

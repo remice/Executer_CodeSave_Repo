@@ -104,7 +104,7 @@ void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 	UE_LOG(LogTemp, Log, TEXT("%s"), *FString::SanitizeFloat(SpecialAttackGauge));
 }
 
-void UCharacterDodgeManager::OnDodgeDisable(float CurHp)
+void UCharacterDodgeManager::OnDodgeDisable(float CurHp, float MaxHp)
 {
 	DisableDodgeTimerHandle.Invalidate();
 

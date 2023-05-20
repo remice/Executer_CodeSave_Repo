@@ -33,7 +33,7 @@ public:
 // enable option section
 public:
 	UFUNCTION()
-	void OnDodgeDisable(float CurHp);
+	void OnDodgeDisable(float CurHp, float MaxHp);
 
 // dynamic dodge section
 public:

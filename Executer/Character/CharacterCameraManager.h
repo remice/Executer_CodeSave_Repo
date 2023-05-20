@@ -34,9 +34,9 @@ public:
 // Init section
 public:
 	UFUNCTION()
-	void InitManager(class UCameraComponent* InCamera, class USpringArmComponent* InSpringArm, class AController* InController, const float InAutoPosTime = 0.5f) 
+	void InitManager(AActor* InBoss, class UCameraComponent* InCamera, class USpringArmComponent* InSpringArm, class AController* InController, const float InAutoPosTime = 0.5f)
 	{
-		Camera = InCamera; SpringArm = InSpringArm; Controller = InController; AutoPosTime = InAutoPosTime;
+		Boss = InBoss; Camera = InCamera; SpringArm = InSpringArm; Controller = InController; AutoPosTime = InAutoPosTime;
 	}
 
 // Init Section
@@ -85,7 +85,7 @@ private:
 	TObjectPtr<class AController> Controller;
 
 	UPROPERTY()
-	TObjectPtr<class ABaseEnemy> Boss;
+	TObjectPtr<AActor> Boss;
 
 	UPROPERTY()
 	FRotator TargetRot;
