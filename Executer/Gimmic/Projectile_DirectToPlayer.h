@@ -18,5 +18,5 @@ public:
 	AProjectile_DirectToPlayer();
 
 protected:
-	virtual void BeginPlay();
+	virtual void PreInitializeComponents() override;
 };

@@ -33,6 +33,9 @@ protected:
 	UPROPERTY()
 	int32 Id;
 
+	UPROPERTY(EditAnywhere, Category = Effect)
+	TObjectPtr<class UNiagaraSystem> HitEffect;
+
 	UPROPERTY(VisibleAnywhere, Category=Mesh)
 	TObjectPtr<UStaticMeshComponent> Body;
 

@@ -2,6 +2,8 @@
 
 
 #include "Projectile.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 
 #define PATH_SPHERE TEXT("/Engine/BasicShapes/Sphere.Sphere")
@@ -10,7 +12,7 @@
 AProjectile::AProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Set default Subobjects
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
@@ -38,7 +40,7 @@ AProjectile::AProjectile()
 
 	InitialLifeSpan = 5.f;
 
-	Damage = 0.f;
+	Damage = 50.f;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +59,10 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (HitEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, GetActorLocation(), FRotator(0.f));
+	}
 	FDamageEvent DamageEvent;
 	OtherActor->TakeDamage(Damage, DamageEvent, nullptr, this);
 	Destroy();
