@@ -4,7 +4,7 @@
 #include "Gimmic/Pattern_RepeatOneShot.h"
 #include "Interface/IRotatableObject.h"
 #include "Components/ArrowComponent.h"
-#include "Projectile.h"
+#include "AttackBase.h"
 
 APattern_RepeatOneShot::APattern_RepeatOneShot()
 {
@@ -48,7 +48,7 @@ void APattern_RepeatOneShot::SpawnBullets()
 
 		FActorSpawnParameters SpawnParameters;
 		AActor* SpawnObject = GetWorld()->SpawnActor(SpawnBulletClass, &SpawnLoc, &SpawnRot, SpawnParameters);
-		AProjectile* Projectile = Cast<AProjectile>(SpawnObject);
+		AAttackBase* Projectile = Cast<AAttackBase>(SpawnObject);
 		if (Projectile == nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Pattern_RepeatOneShot/Cast to Projectil was failed."));

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AttackBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/CanBeDodgedActor.h"
 #include "Projectile.generated.h"
 
 UCLASS()
-class EXECUTER_API AProjectile : public AActor, public ICanBeDodgedActor
+class EXECUTER_API AProjectile : public AAttackBase, public ICanBeDodgedActor
 {
 	GENERATED_BODY()
 	
@@ -27,12 +27,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	UPROPERTY()
-	float Damage;
-
-	UPROPERTY()
-	int32 Id;
-
 	UPROPERTY(EditAnywhere, Category = Effect)
 	TObjectPtr<class UNiagaraSystem> HitEffect;
 
@@ -47,9 +41,6 @@ protected:
 
 public:
 	virtual int32 GetId() override;
-
-	FORCEINLINE float GetDamage() const { return Damage; }
-	FORCEINLINE void SetId(const int32& InId) { Id = InId; }
 
 	FORCEINLINE UStaticMeshComponent* GetBody() const { return Body; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
