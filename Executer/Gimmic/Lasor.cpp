@@ -72,7 +72,7 @@ void ALasor::Tick(float DeltaTime)
 void ALasor::RotateLasor(float DeltaTime)
 {
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	FRotator NewRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), LookRotation, DeltaTime, 1.f);
+	FRotator NewRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), LookRotation, DeltaTime, 20.f);
 	SetActorRotation(NewRotation);
 }
 
@@ -80,7 +80,7 @@ void ALasor::ExLasor()
 {
 	FHitResult HitResult;
 	bool bOnCollide = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 5000.f,
-		LasorWidth.Value * 0.5f, ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForOneFrame, HitResult, true);
+		LasorWidth.Value * 0.5f, ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::None, HitResult, true);
 
 	if (bOnCollide == false)
 	{
@@ -103,8 +103,6 @@ void ALasor::ExLasor()
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ALasor::ResetIgnoreActorArray, AttackDelay, false, AttackDelay);
-
-	LasorEndPoint.Value = GetActorLocation() + GetActorForwardVector() * 5000.f;
 }
 
 void ALasor::UpdateLasor()
