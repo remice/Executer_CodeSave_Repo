@@ -9,6 +9,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeadDelegate)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float, CurHp, float, MaxHp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpecialChangedDelegate, float, CurSpecialGauge, float, MaxSpecialGauge);
 
 /**
  * 
@@ -19,6 +20,8 @@ class EXECUTER_API AExecuterPlayerState : public APlayerState, public IInitializ
 	GENERATED_BODY()
 	
 public:
+	AExecuterPlayerState();
+
 	virtual void PostInitializeComponents() override;
 
 public:
@@ -33,8 +36,11 @@ public:
 	UFUNCTION()
 	void SetupArmor(const float InArmor);
 
+	void SetupSpecial(const float InMaxSpecialGauge);
+
 	UFUNCTION()
 	FORCEINLINE float GetHealth() const { return CurHealth; }
+	FORCEINLINE float GetSpecialGauge() const { return CurSpecialGauge; }
 
 // Delegate Section
 public:
@@ -43,19 +49,20 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Hp")
 	FOnHpChangedDelegate OnHpChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "SpecialGauge")
+	FOnSpecialChangedDelegate OnSpecialChanged;
+
 private:
-	void ChangeHealth(const float NewHp);
+	void ChangeHealth(const float& NewHp);
+	void ChangeSpecial(const float& NewSpecialGauge);
 	
 private:
 	UPROPERTY()
 	TObjectPtr<class APlayerCharacter> Character;
-
-	UPROPERTY()
+	
 	float CurHealth;
-
-	UPROPERTY()
 	float MaxHealth;
-
-	UPROPERTY()
 	float Armor;
+	float CurSpecialGauge;
+	float MaxSpecialGauge;
 };

@@ -4,6 +4,7 @@
 #include "Character/CharacterDodgeManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interface/CanBeDodgedActor.h"
+#include "Player/ExecuterPlayerState.h"
 
 // Sets default values for this component's properties
 UCharacterDodgeManager::UCharacterDodgeManager()
@@ -101,7 +102,14 @@ void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 	}
 
 	SpecialAttackGauge += GaugeMultiflier * ProjectileCount;
-	UE_LOG(LogTemp, Log, TEXT("%s"), *FString::SanitizeFloat(SpecialAttackGauge));
+
+	APawn* PlayerPawn = Cast<APawn>(GetOwner());
+	if (PlayerPawn)
+	{
+		AExecuterPlayerState* PlayerState = PlayerPawn->GetPlayerState<AExecuterPlayerState>();
+
+		PlayerState->SetupSpecial(SpecialAttackGauge);
+	}
 }
 
 void UCharacterDodgeManager::OnDodgeDisable(float CurHp, float MaxHp)

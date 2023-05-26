@@ -3,6 +3,15 @@
 
 #include "ExecuterPlayerState.h"
 
+AExecuterPlayerState::AExecuterPlayerState()
+{
+	CurHealth = -1.f;
+	MaxHealth = -1.f;
+	Armor = 0.f;
+	CurSpecialGauge = -1.f;
+	MaxSpecialGauge = -1.f;
+}
+
 void AExecuterPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -10,6 +19,7 @@ void AExecuterPlayerState::PostInitializeComponents()
 
 void AExecuterPlayerState::Initialize()
 {
+	SetupSpecial(100);
 	SetupHealth(1000);
 	SetupArmor(5);
 }
@@ -38,7 +48,13 @@ void AExecuterPlayerState::SetupArmor(const float InArmor)
 	Armor = InArmor;
 }
 
-void AExecuterPlayerState::ChangeHealth(const float NewHp)
+void AExecuterPlayerState::SetupSpecial(const float InMaxSpecialGauge)
+{
+	MaxSpecialGauge = InMaxSpecialGauge;
+	ChangeSpecial(0);
+}
+
+void AExecuterPlayerState::ChangeHealth(const float& NewHp)
 {
 	const float ActualHealth = FMath::Clamp(NewHp, 0, MaxHealth);
 
@@ -55,4 +71,17 @@ void AExecuterPlayerState::ChangeHealth(const float NewHp)
 	}
 
 	OnHpChanged.Broadcast(CurHealth, MaxHealth);
+}
+
+void AExecuterPlayerState::ChangeSpecial(const float& NewSpecialGauge)
+{
+	const float ActualGauge = FMath::Clamp(NewSpecialGauge, 0, MaxSpecialGauge);
+
+	if (CurSpecialGauge == ActualGauge)
+	{
+		return;
+	}
+
+	CurSpecialGauge = ActualGauge;
+	OnSpecialChanged.Broadcast(CurSpecialGauge, MaxSpecialGauge);
 }
