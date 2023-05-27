@@ -19,7 +19,7 @@ void AExecuterPlayerState::PostInitializeComponents()
 
 void AExecuterPlayerState::Initialize()
 {
-	SetupSpecial(100);
+	SetupSpecial(50);
 	SetupHealth(1000);
 	SetupArmor(5);
 }
@@ -35,6 +35,13 @@ float AExecuterPlayerState::GetDamaged(const float Damage)
 	ChangeHealth(CurHealth - FinalDamage);
 
 	return FinalDamage;
+}
+
+void AExecuterPlayerState::GetDodged(const float& DodgeLevel)
+{
+	float FinalDodgeValue = FMath::Clamp(CurSpecialGauge + DodgeLevel, 0, MaxSpecialGauge);
+
+	ChangeSpecial(FinalDodgeValue);
 }
 
 void AExecuterPlayerState::SetupHealth(const float InMaxHealth)

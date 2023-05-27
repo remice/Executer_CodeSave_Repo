@@ -13,7 +13,6 @@ UCharacterDodgeManager::UCharacterDodgeManager()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SpecialAttackGauge = 0.f;
 	GaugeMultiflier = 1.f;
 	DodgeRange = 150.f;
 }
@@ -46,6 +45,11 @@ void UCharacterDodgeManager::SetTickEnable(bool Enable)
 void UCharacterDodgeManager::AddProjectileIdsToSet(const TSet<int32> NearProjectileIds)
 {
 	CurNearInstanceIds.Append(NearProjectileIds);
+}
+
+void UCharacterDodgeManager::AddProjectileIdToSet(const int32& NearProjectileId)
+{
+	CurNearInstanceIds.Emplace(NearProjectileId);
 }
 
 TSet<int32> UCharacterDodgeManager::CheckNearProjectiles()
@@ -101,14 +105,14 @@ void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 		return;
 	}
 
-	SpecialAttackGauge += GaugeMultiflier * ProjectileCount;
+	float DodgeAmount = GaugeMultiflier * ProjectileCount;
 
 	APawn* PlayerPawn = Cast<APawn>(GetOwner());
 	if (PlayerPawn)
 	{
 		AExecuterPlayerState* PlayerState = PlayerPawn->GetPlayerState<AExecuterPlayerState>();
 
-		PlayerState->SetupSpecial(SpecialAttackGauge);
+		PlayerState->GetDodged(DodgeAmount);
 	}
 }
 

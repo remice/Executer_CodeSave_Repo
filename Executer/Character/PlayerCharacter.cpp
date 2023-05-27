@@ -128,16 +128,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetupManagers();
-
-	AExecuterPlayerState* ExecuterPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
-	check(ExecuterPlayerState);
-
-	ExecuterPlayerState->SetupHealth(1000);
-	ExecuterPlayerState->SetupArmor(0);
-
-	check(PlayerCharacterSettingData);
-	SetCharacterSettingData(PlayerCharacterSettingData);
+	Initialize();
 
 	SetTickEnable(false);
 }
@@ -192,6 +183,20 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// Add mapping context in subsystem
 	Subsystem->AddMappingContext(PlayerController->PlayerMappingContext, 0);
+}
+
+void APlayerCharacter::Initialize()
+{
+	SetupManagers();
+
+	AExecuterPlayerState* ExecuterPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
+	check(ExecuterPlayerState);
+
+	ExecuterPlayerState->SetupHealth(1000);
+	ExecuterPlayerState->SetupArmor(0);
+
+	check(PlayerCharacterSettingData);
+	SetCharacterSettingData(PlayerCharacterSettingData);
 }
 
 void APlayerCharacter::Jump()
@@ -278,6 +283,11 @@ void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData
 void APlayerCharacter::AddProjectileIdsToSet(const TSet<int32> NearProjectileIds)
 {
 	DodgeManager->AddProjectileIdsToSet(NearProjectileIds);
+}
+
+void APlayerCharacter::AddProjectileIdToSet(const int32& NearProjectileId)
+{
+	DodgeManager->AddProjectileIdToSet(NearProjectileId);
 }
 
 void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMove, bool LookControlRot)

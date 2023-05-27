@@ -59,10 +59,13 @@ protected:
 	virtual void RotateLasor(float DeltaTime);
 	virtual void ExLasor();
 	virtual void UpdateLasor();
+	virtual void DodgeLasor();
 	
 protected:
 	UFUNCTION()
 	void ResetIgnoreActorArray() {IgnoreActorArray.Empty(); }
+	UFUNCTION()
+	void ResetIgnoreDodgeActorArray() { IgnoreDodgeActorArray.Empty(); }
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "Effect")
@@ -79,6 +82,12 @@ protected:
 
 	UPROPERTY()
 	TArray<TObjectPtr<AActor>> IgnoreActorArray;
+
+	UPROPERTY()
+	TArray<TEnumAsByte<EObjectTypeQuery>> DodgeObjectTypesArray;
+
+	UPROPERTY()
+	TArray<TObjectPtr<AActor>> IgnoreDodgeActorArray;
 
 	FVector TargetLocation;
 	float AttackDelay;

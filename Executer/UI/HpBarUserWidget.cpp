@@ -24,6 +24,10 @@ void UHpBarUserWidget::SetTargetHp(const float& InTargetHp)
 {
 	CurHp = TargetHp;
 	TargetHp = InTargetHp;
+
+	if (MaxHp == 0) return;
+
+	K2_OnChangeTargetPercentCpp(TargetHp / MaxHp);
 }
 
 void UHpBarUserWidget::CalcCurHpToTarget(const float& DeltaTime)

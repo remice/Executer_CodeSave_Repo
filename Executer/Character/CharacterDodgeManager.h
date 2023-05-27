@@ -39,6 +39,7 @@ public:
 public:
 	UFUNCTION()
 	void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds);
+	void AddProjectileIdToSet(const int32& NearProjectileId);
 
 // dynamic dodge section
 private:
@@ -64,9 +65,6 @@ private:
 
 	UPROPERTY()
 	TSet<int32> CurNearInstanceIds;
-
-	UPROPERTY()
-	float SpecialAttackGauge;
 
 	UPROPERTY(EditAnywhere, Category = Dodge)
 	float GaugeMultiflier;

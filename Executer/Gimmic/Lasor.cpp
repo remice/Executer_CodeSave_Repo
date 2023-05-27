@@ -7,6 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Interface/CanDodgeActor.h"
 
 ALasor::ALasor()
 {
@@ -24,6 +25,8 @@ ALasor::ALasor()
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+
+	DodgeObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 
 	SetLifeSpan(5.f);
 }
@@ -67,6 +70,7 @@ void ALasor::Tick(float DeltaTime)
 	RotateLasor(DeltaTime);
 	ExLasor();
 	UpdateLasor();
+	DodgeLasor();
 }
 
 void ALasor::RotateLasor(float DeltaTime)
@@ -108,4 +112,23 @@ void ALasor::ExLasor()
 void ALasor::UpdateLasor()
 {
 	LasorEffectComponent->SetNiagaraVariableVec3(LasorEndPoint.Name, LasorEndPoint.Value);
+}
+
+void ALasor::DodgeLasor()
+{
+	FHitResult PawnHitResult;
+	bool bOnCollidePawn = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), GetActorLocation(), LasorEndPoint.Value,
+		150.f, DodgeObjectTypesArray, false, IgnoreDodgeActorArray, EDrawDebugTrace::None, PawnHitResult, true);
+
+	if (bOnCollidePawn == false) return;
+
+	ICanDodgeActor* DodgePawn = Cast<ICanDodgeActor>(PawnHitResult.GetActor());
+	if (DodgePawn)
+	{
+		DodgePawn->AddProjectileIdToSet(Id);
+		IgnoreDodgeActorArray.Emplace(PawnHitResult.GetActor());
+
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &ALasor::ResetIgnoreDodgeActorArray, AttackDelay, false, AttackDelay);
+	}
 }

@@ -24,4 +24,5 @@ class EXECUTER_API ICanDodgeActor
 public:
 	// Dodge system must have system based TSet
 	virtual void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds) = 0;
+	virtual void AddProjectileIdToSet(const int32& NearProjectileId) = 0;
 };

@@ -27,18 +27,12 @@ public:
 public:
 	virtual void Initialize() override;
 
-	UFUNCTION()
 	float GetDamaged(const float Damage);
-
-	UFUNCTION()
+	void GetDodged(const float& DodgeAmount);
 	void SetupHealth(const float InMaxHealth);
-
-	UFUNCTION()
 	void SetupArmor(const float InArmor);
-
 	void SetupSpecial(const float InMaxSpecialGauge);
-
-	UFUNCTION()
+	
 	FORCEINLINE float GetHealth() const { return CurHealth; }
 	FORCEINLINE float GetSpecialGauge() const { return CurSpecialGauge; }
 

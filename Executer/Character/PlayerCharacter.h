@@ -8,6 +8,7 @@
 #include "Interface/CanDodgeActor.h"
 #include "Interface/CurveMovable.h"
 #include "Interface/AttackCheckable.h"
+#include "Interface/Initializable.h"
 #include "PlayerCharacter.generated.h"
 
 USTRUCT()
@@ -35,7 +36,7 @@ struct FDashBone
 };
 
 UCLASS()
-class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable, public IAttackCheckable
+class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable, public IAttackCheckable, public IInitializable
 {
 	GENERATED_BODY()
 
@@ -54,8 +55,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void Jump() override;
+	virtual void Initialize() override;
 
+	virtual void Jump() override;
 	virtual void StopJumping() override;
 
 // Hit Section
@@ -72,6 +74,7 @@ protected:
 public:
 	UFUNCTION()
 	virtual void AddProjectileIdsToSet(const TSet<int32> NearProjectileIds) override;
+	virtual void AddProjectileIdToSet(const int32& NearProjectileId) override;
 
 // Curve movement section
 public:

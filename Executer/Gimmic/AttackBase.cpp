@@ -10,6 +10,6 @@ AAttackBase::AAttackBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Damage = 50.f;
-	Id = 0.f;
+	Id = FMath::Rand();
 }
 

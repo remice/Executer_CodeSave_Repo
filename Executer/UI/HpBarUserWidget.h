@@ -20,19 +20,21 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Hp", meta = (DisplayName = "GetHpPercent"))
+	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "GetHpPercent"))
 	FORCEINLINE float GetHpPercent() const { return (MaxHp == 0) ? 1.f : CurHp / MaxHp; }
 
-	UFUNCTION(BlueprintCallable, Category = "Hp", meta = (DisplayName = "SetTargetHp"))
+	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "SetTargetHp"))
 	void SetTargetHp(const float& InTargetHp);
 
-	UFUNCTION(BlueprintCallable, Category = "Hp", meta = (DisplayName = "SetMaxHp"))
+	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "SetMaxHp"))
 	FORCEINLINE void SetMaxHp(const float& InMaxHp) { MaxHp = InMaxHp; }
 
 protected:
 	void CalcCurHpToTarget(const float& DeltaTime);
-	UFUNCTION(BlueprintImplementableEvent, Category = "Hp", meta = (DisplayName = "OnChangeHpPercent"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnChangeHpPercent"))
 	void K2_OnChangeHpPercentCpp(const float& HpBarPercent);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnChangeTargetPercent"))
+	void K2_OnChangeTargetPercentCpp(const float& TargetPercent);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (AllowPrivateAccess = "true"))
