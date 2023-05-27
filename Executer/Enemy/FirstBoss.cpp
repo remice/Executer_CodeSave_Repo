@@ -4,6 +4,7 @@
 #include "Enemy/FirstBoss.h"
 #include "AI/FirstBossAIController.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "AITaskManager.h"
 
 #define PATH_ANIMINSTANCE_C TEXT("/Game/Character/Enemy/ABP_Gideon.ABP_Gideon_c")
 #define PATH_SKELETALMESH TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGideon/Characters/Heroes/Gideon/Skins/Inquisitor/Meshes/Gideon_Inquisitor.Gideon_Inquisitor'")
@@ -25,4 +26,6 @@ AFirstBoss::AFirstBoss()
 	GetCollider()->SetPhysMaterialOverride(PhysMaterialRef.Object);
 
 	AIControllerClass = AFirstBossAIController::StaticClass();
+
+	AITaskManager = CreateDefaultSubobject<UAITaskManager>(TEXT("AITaskManager"));
 }
