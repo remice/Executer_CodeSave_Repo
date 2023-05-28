@@ -16,14 +16,14 @@ class EXECUTER_API UAITaskManager : public UActorComponent, public IInitializabl
 public:	
 	UAITaskManager();
 
+public:
+	virtual void Initialize() override;
+
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Initialize() override;
-
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	virtual bool FindPlayerPawn(float CheckRadius, AActor* OutPawn);
-		
+	
+protected:
 };

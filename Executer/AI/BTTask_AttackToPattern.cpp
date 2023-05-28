@@ -7,6 +7,7 @@
 
 UBTTask_AttackToPattern::UBTTask_AttackToPattern()
 {
+	NodeName = TEXT("AttackToPattern");
 }
 
 EBTNodeResult::Type UBTTask_AttackToPattern::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
