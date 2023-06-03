@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Interface/Initializable.h"
 #include "BaseEnemy.generated.h"
 
@@ -34,7 +34,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category=Character)
-	TObjectPtr<UBoxComponent> Collider;
+	TObjectPtr<UCapsuleComponent> Collider;
 
 	UPROPERTY(VisibleAnywhere, Category=Info)
 	float MaxHP;
@@ -43,7 +43,7 @@ protected:
 	float HP;
 
 public:
-	FORCEINLINE UBoxComponent* GetCollider() const { return Collider; }
+	FORCEINLINE UCapsuleComponent* GetCollider() const { return Collider; }
 	FORCEINLINE float GetMaxHP() const { return MaxHP; }
 	FORCEINLINE float GetHP() const { return HP; }
 	void SetupHp(float InMaxHp);

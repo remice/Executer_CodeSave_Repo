@@ -2,6 +2,7 @@
 
 
 #include "Animation/AnimNotify_SpawnActor.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UAnimNotify_SpawnActor::UAnimNotify_SpawnActor()
 {
@@ -25,5 +26,18 @@ void UAnimNotify_SpawnActor::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	}
 	SpawnTransform.SetLocation(SpawnTransform.GetLocation() + AdjustSpawnPos);
 
-	OwningPawn->GetWorld()->SpawnActor(SpawnActorClass, &SpawnTransform);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeArray;
+	ObjectTypeArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	ObjectTypeArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+	TArray<AActor*> IgnoreActorArray;
+
+	FHitResult HitResult;
+	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(OwningPawn->GetWorld(), SpawnTransform.GetLocation(),
+		SpawnTransform.GetLocation() + FVector(0, 0, -500), ObjectTypeArray, false, IgnoreActorArray, EDrawDebugTrace::None, HitResult, true);
+
+	if (IsCollide)
+	{
+		SpawnTransform.SetLocation(HitResult.ImpactPoint);
+		OwningPawn->GetWorld()->SpawnActor(SpawnActorClass, &SpawnTransform);
+	}
 }

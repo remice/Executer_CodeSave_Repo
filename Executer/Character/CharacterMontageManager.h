@@ -27,6 +27,8 @@ public:
 
 	void PlaySkillMontage(int32 MontageIndex);
 
+	bool IsCoolTimeSkill(uint8 MontageIndex);
+
 public:
 	FOnEndSkillSigniture OnEndSkill;
 
@@ -38,6 +40,8 @@ private:
 	void EndAnimation(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
 
 	void SetCanMove();
+
+	void SetCoolTimeSkill(uint8 MontageIndex, bool InValue);
 
 // Combo Animation Section
 private:
@@ -58,7 +62,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = Data)
 	TObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
 
+	TArray<bool> SkillCoolTimes;
+
 	uint8 CurComboIndex = 0;
+	uint8 CurMontageIndex = 0;
 	FTimerHandle ComboTimerHandle;
 	FTimerHandle SkillTimerHandle;
 	uint8 bHasNextComboCommand : 1;

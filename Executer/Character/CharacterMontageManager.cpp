@@ -30,6 +30,11 @@ void UCharacterMontageManager::InitManager(UAnimInstance* InAnimInstance, UCombo
 {
 	PawnAnimInstance = InAnimInstance;
 	PlayerComboAttackData = InPlayerComboAttackData;
+
+	for (int Index = 0; Index < PlayerSkillData->SkillAnimMontageDatas.Num(); Index++)
+	{
+		SkillCoolTimes.Emplace(false);
+	}
 }
 
 void UCharacterMontageManager::GetComboAttackCommand()
@@ -113,6 +118,13 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 	}
 }
 
+bool UCharacterMontageManager::IsCoolTimeSkill(uint8 MontageIndex)
+{
+	uint8 ModifyIndex = FMath::Clamp(MontageIndex, 0, SkillCoolTimes.Num() - 1);
+
+	return SkillCoolTimes[ModifyIndex];
+}
+
 bool UCharacterMontageManager::StopMontage()
 {
 	if (bCanStop == false)
@@ -144,6 +156,13 @@ void UCharacterMontageManager::SetCanMove()
 {
 	CurComboIndex = 0;
 	bCanStop = true;
+}
+
+void UCharacterMontageManager::SetCoolTimeSkill(uint8 MontageIndex, bool InValue)
+{
+	uint8 ModifyIndex = FMath::Clamp(MontageIndex, 0, SkillCoolTimes.Num() - 1);
+
+	SkillCoolTimes[ModifyIndex] = InValue;
 }
 
 void UCharacterMontageManager::ComboActionBegin()

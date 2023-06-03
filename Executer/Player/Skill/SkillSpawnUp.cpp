@@ -30,7 +30,9 @@ ASkillSpawnUp::ASkillSpawnUp()
 	MovePoint = FVector::ZeroVector;
 	MoveTime = 1.f;
 	LifeDuration = 0.f;
+	MaxLifeTime = 5.f;
 	bOnMove = true;
+	bIsReverse = false;
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +49,13 @@ void ASkillSpawnUp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	LifeDuration += DeltaTime;
-	MoveUpMesh();
+	MoveUpMesh(bIsReverse);
+
+	if (LifeDuration >= MaxLifeTime)
+	{
+		bOnMove = true;
+		bIsReverse = true;
+	}
 }
 
 void ASkillSpawnUp::SpawnNiagaraEffect()
@@ -57,20 +65,35 @@ void ASkillSpawnUp::SpawnNiagaraEffect()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SpawnEffect, GetActorLocation(), GetActorRotation());
 }
 
-void ASkillSpawnUp::MoveUpMesh()
+void ASkillSpawnUp::MoveUpMesh(bool IsReverse)
 {
 	if (bOnMove == false) return;
 
 	float LerpAlpha = 0;
+	float ModifiedTime = LifeDuration;
+
+	if (IsReverse)
+	{
+		ModifiedTime -= MaxLifeTime;
+	}
+
 	if (MoveTime != 0)
 	{
-		LerpAlpha = LifeDuration / MoveTime;
+		LerpAlpha = ModifiedTime / MoveTime;
+		LerpAlpha = IsReverse ? 1 - LerpAlpha : LerpAlpha;
 	}
 
 	if (LerpAlpha >= 1)
 	{
 		BlockerMesh->SetRelativeLocation(MovePoint);
 		bOnMove = false;
+		return;
+	}
+	else if (LerpAlpha <= -1)
+	{
+		BlockerMesh->SetRelativeLocation(FVector::ZeroVector);
+		bOnMove = false;
+		Destroy();
 		return;
 	}
 

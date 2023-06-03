@@ -25,7 +25,7 @@ public:
 
 protected:
 	virtual void SpawnNiagaraEffect();
-	virtual void MoveUpMesh();
+	virtual void MoveUpMesh(bool IsReverse);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Spawn", meta = (AllowPrivateAccess = "true"))
 	float MoveTime;
 
+	UPROPERTY(EditAnywhere, Category = "Spawn", meta = (AllowPrivateAccess = "true"))
+	float MaxLifeTime;
+
 	float LifeDuration;
 	uint8 bOnMove : 1;
+	uint8 bIsReverse : 1;
 };

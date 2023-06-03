@@ -161,9 +161,6 @@ void ABossBase::StartCurveMove(UCurveVector* CurveData)
 	ensure(AnimCurveData);
 
 	SaveLocation = GetActorLocation();
-	SaveForwardVector = GetActorForwardVector();
-	SaveForwardVector.Z = 0;
-	SaveForwardVector.Normalize();
 	GetCollider()->SetSimulatePhysics(false);
 	bOnCurve = true;
 }
@@ -183,6 +180,10 @@ void ABossBase::RunCurveMove()
 	{
 		return;
 	}
+
+	SaveForwardVector = GetActorForwardVector();
+	SaveForwardVector.Z = 0;
+	SaveForwardVector.Normalize();
 
 	FVector CurveLocation = AnimCurveData->GetVectorValue(AnimPosition);
 	FVector ActualLocation = FVector(CurveLocation.X * SaveForwardVector.X, CurveLocation.X * SaveForwardVector.Y, CurveLocation.Z);

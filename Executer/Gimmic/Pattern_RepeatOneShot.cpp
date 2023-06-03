@@ -52,6 +52,7 @@ void APattern_RepeatOneShot::SpawnBullets()
 		if (Projectile == nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Pattern_RepeatOneShot/Cast to Projectil was failed."));
+			continue;
 		}
 		Projectile->SetId(PatternId);
 		PatternId++;
