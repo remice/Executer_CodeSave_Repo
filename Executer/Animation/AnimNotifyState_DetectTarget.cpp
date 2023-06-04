@@ -104,7 +104,6 @@ void UAnimNotifyState_DetectTarget::CheckCollision(USkeletalMeshComponent* MeshC
 			AActor* HitActor = TraceHit.GetActor();
 			if (IsValid(HitActor) && IgnoreActorArray.Contains(HitActor) == false)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Hit Actor!!"));
 				IgnoreActorArray.Emplace(HitActor);
 			}
 		}

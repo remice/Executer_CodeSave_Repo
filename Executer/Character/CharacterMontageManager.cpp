@@ -84,9 +84,6 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 		return;
 	}
 
-	if (IsCoolTimeSkill(ValidMontageIndex)) return;
-	OnCoolTimeSkill(ValidMontageIndex);
-
 	UAnimMontage* ValidMontage = SkillMontages[ValidMontageIndex].Montage;
 	if (IsValid(ValidMontage) == false)
 	{
@@ -98,6 +95,9 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 	{
 		return;
 	}
+
+	if (IsCoolTimeSkill(ValidMontageIndex)) return;
+	OnCoolTimeSkill(ValidMontageIndex);
 
 	StopMontage();
 

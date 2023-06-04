@@ -332,7 +332,7 @@ bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVecto
 	FVector SocketLocation = GetLocationToSocket(SocketName);
 
 	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PreFrameLocation, SocketLocation,
-		ObjectTypesArray, true, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+		ObjectTypesArray, true, IgnoreActorArray, EDrawDebugTrace::None, HitResult, true);
 
 	if (IsCollide)
 	{
