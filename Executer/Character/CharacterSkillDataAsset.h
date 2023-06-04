@@ -16,6 +16,7 @@ struct FSkillAnimMontageData
 		bHasCurve = false;
 		bCanStop = false;
 		StopTime = 0.1f;
+		CoolTime = 0.1f;
 	}
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
@@ -32,6 +33,9 @@ struct FSkillAnimMontageData
 
 	UPROPERTY(EditAnywhere, Category = "Animation", meta = (ClampMin = "0.1"))
 	float StopTime;
+
+	UPROPERTY(EditAnywhere, Category = "Animation", meta = (ClampMin = "0.1"))
+	float CoolTime;
 };
 
 /**

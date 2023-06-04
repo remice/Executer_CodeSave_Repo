@@ -2,7 +2,7 @@
 
 
 #include "Player/Skill/SkillSpawnUp.h"
-#include "Components/StaticMeshComponent.h"
+#include "EngineCustom/BlockerStaticMeshComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
@@ -18,7 +18,7 @@ ASkillSpawnUp::ASkillSpawnUp()
 	check(M_SPHERE.Succeeded());
 
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-	BlockerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlockerMesh"));
+	BlockerMesh = CreateDefaultSubobject<UBlockerStaticMeshComponent>(TEXT("BlockerMesh"));
 	SetRootComponent(RootSceneComponent);
 
 	BlockerMesh->SetStaticMesh(M_SPHERE.Object);
@@ -33,6 +33,7 @@ ASkillSpawnUp::ASkillSpawnUp()
 	MaxLifeTime = 5.f;
 	bOnMove = true;
 	bIsReverse = false;
+	BlockerHp = 100.f;
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +41,14 @@ void ASkillSpawnUp::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	FOnDeadSignature DeadEvent;
+	DeadEvent.BindLambda(
+		[&] {
+			Destroy();
+		});
+	BlockerMesh->OnDead = DeadEvent;
+	BlockerMesh->SetMaxHp(BlockerHp);
+
 	SpawnNiagaraEffect();
 }
 

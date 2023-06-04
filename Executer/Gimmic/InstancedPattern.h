@@ -31,6 +31,9 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = Pattern)
+	uint8 AttackLevel;
+
+	UPROPERTY(EditAnywhere, Category = Pattern)
 	float BulletDamage;
 
 	UPROPERTY(EditAnywhere, Category = Pattern)

@@ -31,9 +31,11 @@ void UCharacterMontageManager::InitManager(UAnimInstance* InAnimInstance, UCombo
 	PawnAnimInstance = InAnimInstance;
 	PlayerComboAttackData = InPlayerComboAttackData;
 
-	for (int Index = 0; Index < PlayerSkillData->SkillAnimMontageDatas.Num(); Index++)
+	for (const auto SkillDatas : PlayerSkillData->SkillAnimMontageDatas)
 	{
-		SkillCoolTimes.Emplace(false);
+		FSkillCoolTimeManager CoolTimeManager = FSkillCoolTimeManager(GetOwner()->GetWorld());
+		CoolTimeManager.CoolTime = SkillDatas.CoolTime;
+		SkillCoolTimes.Emplace(CoolTimeManager);
 	}
 }
 
@@ -82,6 +84,9 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 		return;
 	}
 
+	if (IsCoolTimeSkill(ValidMontageIndex)) return;
+	OnCoolTimeSkill(ValidMontageIndex);
+
 	UAnimMontage* ValidMontage = SkillMontages[ValidMontageIndex].Montage;
 	if (IsValid(ValidMontage) == false)
 	{
@@ -122,7 +127,7 @@ bool UCharacterMontageManager::IsCoolTimeSkill(uint8 MontageIndex)
 {
 	uint8 ModifyIndex = FMath::Clamp(MontageIndex, 0, SkillCoolTimes.Num() - 1);
 
-	return SkillCoolTimes[ModifyIndex];
+	return SkillCoolTimes[ModifyIndex].bOnCool;
 }
 
 bool UCharacterMontageManager::StopMontage()
@@ -158,11 +163,11 @@ void UCharacterMontageManager::SetCanMove()
 	bCanStop = true;
 }
 
-void UCharacterMontageManager::SetCoolTimeSkill(uint8 MontageIndex, bool InValue)
+void UCharacterMontageManager::OnCoolTimeSkill(uint8 MontageIndex)
 {
 	uint8 ModifyIndex = FMath::Clamp(MontageIndex, 0, SkillCoolTimes.Num() - 1);
 
-	SkillCoolTimes[ModifyIndex] = InValue;
+	SkillCoolTimes[ModifyIndex].ExecuteCooldown();
 }
 
 void UCharacterMontageManager::ComboActionBegin()
@@ -239,4 +244,29 @@ void UCharacterMontageManager::ComboCheck()
 		SetComboCheckTimer();
 		bHasNextComboCommand = false;
 	}
+}
+
+// Struct Section
+
+void FSkillCoolTimeManager::ExecuteCooldown()
+{
+	if (World.IsValid() == false)
+	{
+		return;
+	}
+
+	if (bOnCool == true)
+	{
+		return;
+	}
+
+	bOnCool = true;
+
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda(
+		[&] {
+			bOnCool = false;
+		});
+	World.Get()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, CoolTime, false);
 }

@@ -24,12 +24,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	UFUNCTION()
 	virtual void SpawnNiagaraEffect();
 	virtual void MoveUpMesh(bool IsReverse);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UStaticMeshComponent> BlockerMesh;
+	TObjectPtr<class UBlockerStaticMeshComponent> BlockerMesh;
 
 	UPROPERTY()
 	TObjectPtr<class USceneComponent> RootSceneComponent;
@@ -46,6 +47,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Spawn", meta = (AllowPrivateAccess = "true"))
 	float MaxLifeTime;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn", meta = (AllowPrivateAccess = "true", ClampMin = "0.1"))
+	float BlockerHp;
 
 	float LifeDuration;
 	uint8 bOnMove : 1;

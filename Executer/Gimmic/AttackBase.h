@@ -16,6 +16,9 @@ public:
 	AAttackBase();
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	int32 AttackLevel;
+
 	UPROPERTY()
 	float Damage;
 
@@ -23,6 +26,7 @@ protected:
 	int32 Id;
 
 public:
+	FORCEINLINE float GetAttackLevel() const { return AttackLevel; }
 	FORCEINLINE float GetDamage() const { return Damage; }
 	FORCEINLINE void SetId(const int32& InId) { Id = InId; }
 };

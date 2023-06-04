@@ -5,6 +5,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "EngineCustom/BlockerStaticMeshComponent.h"
 
 #define PATH_SPHERE TEXT("/Engine/BasicShapes/Sphere.Sphere")
 
@@ -59,6 +60,12 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(OtherComp);
+	if (BlockerMeshComponent)
+	{
+		BlockerMeshComponent->EvaluationDamage(AttackLevel, Damage);
+	}
+
 	if (HitEffect)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, GetActorLocation(), FRotator(0.f));

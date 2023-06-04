@@ -10,6 +10,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "EngineCustom/BlockerStaticMeshComponent.h"
 
 AInstancedPattern::AInstancedPattern()
 {
@@ -26,6 +27,7 @@ AInstancedPattern::AInstancedPattern()
 	InstancedStaticMeshes->SetCanEverAffectNavigation(false);
 
 	// Setup default pattern info
+	AttackLevel = 0;
 	BulletDamage = 50.f;
 	DelayBetweenSpawn = 0.1f;
 	NextDelay = 0.f;
@@ -49,6 +51,7 @@ void AInstancedPattern::BeginPlay()
 
 	CollisionObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 	CollisionObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	CollisionObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
 	CollisionObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 }
@@ -121,6 +124,12 @@ void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FT
 
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, ComponentTransform.GetLocation(), FRotator(0.f));
 
+	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(HitResult.GetComponent());
+	if (BlockerMeshComponent)
+	{
+		BlockerMeshComponent->EvaluationDamage(AttackLevel, BulletDamage);
+	}
+
 	/* deprecate code
 	FHitResult TraceHit;
 	bool IsNearCharacter = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), ComponentTransform.GetLocation(),
@@ -159,14 +168,14 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 		float YAxisDistance = FMath::Abs(DistanceToPlayer.Y);
 		float ZAxisDistance = FMath::Abs(DistanceToPlayer.Z);
 
-		bool bIsDistanceLevel3 = XAxisDistance > CheckLevel3Distance || YAxisDistance > CheckLevel3Distance || ZAxisDistance > CheckLevel3Distance;
+		bool bIsDistanceLevel3 = XAxisDistance > CheckLevel3Distance && YAxisDistance > CheckLevel3Distance && ZAxisDistance > CheckLevel3Distance;
 		// if distance > check level 3, don't check collision
 		if (bIsDistanceLevel3)
 		{
 			continue;
 		}
 
-		bool bIsDistanceLevel2 = XAxisDistance > CheckLevel2Distance || YAxisDistance > CheckLevel2Distance || ZAxisDistance > CheckLevel2Distance;
+		bool bIsDistanceLevel2 = XAxisDistance > CheckLevel2Distance && YAxisDistance > CheckLevel2Distance && ZAxisDistance > CheckLevel2Distance;
 		// if distance > check level 2, check collision for every one second
 		if (bIsDistanceLevel2)
 		{
@@ -176,7 +185,7 @@ void AInstancedPattern::UpdateTransformInstanceMeshes()
 			}
 		}
 
-		bool bIsDistanceLevel1 = XAxisDistance > CheckLevel1Distance || YAxisDistance > CheckLevel1Distance || ZAxisDistance > CheckLevel1Distance;
+		bool bIsDistanceLevel1 = XAxisDistance > CheckLevel1Distance && YAxisDistance > CheckLevel1Distance && ZAxisDistance > CheckLevel1Distance;
 		// if distance > check level 1, check collision for every 1/4 second
 		if (bIsDistanceLevel1)
 		{

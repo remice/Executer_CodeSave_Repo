@@ -6,6 +6,28 @@
 #include "Components/ActorComponent.h"
 #include "CharacterMontageManager.generated.h"
 
+DECLARE_DELEGATE(FOnEndSkillCooltimeSignature)
+
+USTRUCT()
+struct FSkillCoolTimeManager
+{
+	GENERATED_BODY()
+	
+public:
+	FSkillCoolTimeManager() : bOnCool(false), World(nullptr) {}
+	FSkillCoolTimeManager(UWorld* InWorld) : bOnCool(false), World(InWorld) {};
+	~FSkillCoolTimeManager() { World.Reset(); }
+
+public:
+	void ExecuteCooldown();
+
+	float CoolTime = 0.1f;
+	uint8 bOnCool : 1;
+
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> World;
+};
+
 DECLARE_DELEGATE(FOnEndSkillSigniture)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -41,7 +63,7 @@ private:
 
 	void SetCanMove();
 
-	void SetCoolTimeSkill(uint8 MontageIndex, bool InValue);
+	void OnCoolTimeSkill(uint8 MontageIndex);
 
 // Combo Animation Section
 private:
@@ -62,7 +84,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Data)
 	TObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
 
-	TArray<bool> SkillCoolTimes;
+	TArray<FSkillCoolTimeManager> SkillCoolTimes;
 
 	uint8 CurComboIndex = 0;
 	uint8 CurMontageIndex = 0;
