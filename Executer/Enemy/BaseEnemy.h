@@ -30,7 +30,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 public:
-	virtual void Initialize() override;
+	virtual void CallInitialize() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category=Character)

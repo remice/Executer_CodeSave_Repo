@@ -14,4 +14,9 @@ class EXECUTER_API UEXHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UEXHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+
+public:
+
 };

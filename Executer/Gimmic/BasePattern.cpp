@@ -5,6 +5,8 @@
 #include "Interface/IRotatableObject.h"
 #include "Components/ArrowComponent.h"
 #include "Gimmic/Projectile.h"
+#include "GameData/EXGameSingleton.h"
+#include "GameData/EnemyAttackData.h"
 
 // Sets default values
 ABasePattern::ABasePattern()
@@ -26,6 +28,11 @@ ABasePattern::ABasePattern()
 void ABasePattern::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EEnemyAttackData::Projectile];
+	FProjectileData* ProjectileData = (FProjectileData*)(uint8*)&AttackData;
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), ProjectileData->Damage);
 
 	if (DelayArray.IsEmpty() || BulletArray.IsEmpty())
 	{

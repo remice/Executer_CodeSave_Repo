@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AAttackBase();
 
+	virtual void BeginPlay() override;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	int32 AttackLevel;

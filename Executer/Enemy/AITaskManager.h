@@ -48,7 +48,7 @@ public:
 
 // Initializable interface Section
 public:
-	virtual void Initialize() override;
+	virtual void CallInitialize() override;
 // Section End
 
 protected:

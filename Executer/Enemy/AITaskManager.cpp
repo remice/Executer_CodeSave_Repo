@@ -16,10 +16,10 @@ void UAITaskManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Initialize();
+	CallInitialize();
 }
 
-void UAITaskManager::Initialize()
+void UAITaskManager::CallInitialize()
 {
 	AActor* ControllingActor = GetOwner();
 	ensure(IsValid(ControllingActor));

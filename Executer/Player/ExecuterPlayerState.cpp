@@ -17,7 +17,7 @@ void AExecuterPlayerState::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
-void AExecuterPlayerState::Initialize()
+void AExecuterPlayerState::CallInitialize()
 {
 	SetupSpecial(50);
 	SetupHealth(1000);

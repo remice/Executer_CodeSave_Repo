@@ -55,7 +55,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void Initialize() override;
+	virtual void CallInitialize() override;
 
 	virtual void Jump() override;
 	virtual void StopJumping() override;

@@ -57,7 +57,7 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return ActualDamage;
 }
 
-void ABaseEnemy::Initialize()
+void ABaseEnemy::CallInitialize()
 {
 	SetupHp(10000);
 }

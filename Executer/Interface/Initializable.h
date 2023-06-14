@@ -7,7 +7,7 @@
 #include "Initializable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, Category = "Custom", meta = (CannotImplementInterfaceInBlueprint))
 class UInitializable : public UInterface
 {
 	GENERATED_BODY()
@@ -22,6 +22,6 @@ class EXECUTER_API IInitializable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "Initialize"))
-	virtual void Initialize() = 0;
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+	virtual void CallInitialize() {};
 };

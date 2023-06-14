@@ -18,7 +18,7 @@ class EXECUTER_API AFirstBoss : public ABossBase, public IAIManagerGettable
 public:
 	AFirstBoss();
 
-	virtual UObject* GetManager() { return AITaskManager; }
+	virtual UObject* GetManager() override { return Cast<UObject>(AITaskManager); }
 
 protected:
 	UPROPERTY()

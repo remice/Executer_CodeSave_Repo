@@ -128,7 +128,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Initialize();
+	CallInitialize();
 
 	SetTickEnable(false);
 }
@@ -185,7 +185,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Subsystem->AddMappingContext(PlayerController->PlayerMappingContext, 0);
 }
 
-void APlayerCharacter::Initialize()
+void APlayerCharacter::CallInitialize()
 {
 	SetupManagers();
 

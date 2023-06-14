@@ -85,7 +85,7 @@ void AMainPlayerController::InitHUDWidget()
 	IInitializable* PreInitActor = GetPlayerState<IInitializable>();
 	if (PreInitActor)
 	{
-		PreInitActor->Initialize();
+		PreInitActor->CallInitialize();
 	}
 	else
 	{
@@ -95,7 +95,7 @@ void AMainPlayerController::InitHUDWidget()
 	PreInitActor = Cast<IInitializable>(GI->GetMapBoss());
 	if (PreInitActor)
 	{
-		PreInitActor->Initialize();
+		PreInitActor->CallInitialize();
 	}
 	else
 	{

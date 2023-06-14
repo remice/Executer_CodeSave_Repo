@@ -25,7 +25,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 public:
-	virtual void Initialize() override;
+	virtual void CallInitialize() override;
 
 	float GetDamaged(const float Damage);
 	void GetDodged(const float& DodgeAmount);
