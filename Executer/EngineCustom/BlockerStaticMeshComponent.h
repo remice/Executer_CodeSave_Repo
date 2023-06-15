@@ -11,7 +11,7 @@ DECLARE_DELEGATE(FOnDeadSignature)
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, ClassGroup = (Rendering, Common), hidecategories = (Object, Activation, "Components|Activation"), ShowCategories = (Mobility), editinlinenew, meta = (BlueprintSpawnableComponent))
 class EXECUTER_API UBlockerStaticMeshComponent : public UStaticMeshComponent
 {
 	GENERATED_BODY()

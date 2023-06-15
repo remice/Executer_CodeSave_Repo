@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameData/EXGameSingleton.h"
+
 #include "AttackBase.generated.h"
 
 UCLASS()
@@ -22,13 +24,12 @@ protected:
 	int32 AttackLevel;
 
 	UPROPERTY()
-	float Damage;
-
-	UPROPERTY()
 	int32 Id;
+
+	EEnemyAttackData AttackType;
 
 public:
 	FORCEINLINE float GetAttackLevel() const { return AttackLevel; }
-	FORCEINLINE float GetDamage() const { return Damage; }
 	FORCEINLINE void SetId(const int32& InId) { Id = InId; }
+	float GetDamage() const;
 };

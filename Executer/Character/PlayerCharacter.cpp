@@ -203,7 +203,7 @@ void APlayerCharacter::Jump()
 {
 	Super::Jump();
 
-	if (bLockMove)
+	if (bLockMove || bOnCurveMove)
 	{
 		return;
 	}
@@ -309,6 +309,7 @@ void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMo
 	MoveCurveVector = CurveData;
 	MoveCurveVector->GetTimeRange(CurCurveMoveTime, MaxCurveMoveTime);
 	LastInputVector = GetCharacterMovement()->GetLastInputVector();
+	PreCurveVector = FVector::ZeroVector;
 	if (GetCharacterMovement()->GetLastInputVector() == FVector::ZeroVector)
 	{
 		LastInputVector = GetControlRotation().Quaternion().GetForwardVector();
@@ -424,6 +425,18 @@ void APlayerCharacter::ExCurveMove(float DeltaTime)
 {
 	CurCurveMoveTime += DeltaTime;
 
+	GetCharacterMovement()->Velocity = FVector(0, 0, GetCharacterMovement()->Velocity.Z);
+
+	FVector CurveVector = MoveCurveVector->GetVectorValue(CurCurveMoveTime);
+	CurveVector.Y = CurveVector.X * LastInputVector.Y;
+	CurveVector.X = CurveVector.X * LastInputVector.X;
+
+	FVector MoveVector = CurveVector - PreCurveVector;
+	PreCurveVector = CurveVector;
+	SetActorLocation(GetActorLocation() + MoveVector, true);
+
+	AddMovementInput(LastInputVector, 0.01f);
+
 	bool IsCurveMoveOver = CurCurveMoveTime > MaxCurveMoveTime;
 	if (IsCurveMoveOver)
 	{
@@ -431,13 +444,14 @@ void APlayerCharacter::ExCurveMove(float DeltaTime)
 		return;
 	}
 
+	/* depricated code
 	FVector CurveVector = MoveCurveVector->GetVectorValue(CurCurveMoveTime);
 	FVector InputApplyCurve = CurveVector * GetCharacterMovement()->MaxWalkSpeed;
 	InputApplyCurve.Y = InputApplyCurve.X * LastInputVector.Y;
 	InputApplyCurve.X = InputApplyCurve.X * LastInputVector.X;
 	GetCharacterMovement()->Velocity.X = InputApplyCurve.X;
 	GetCharacterMovement()->Velocity.Y = InputApplyCurve.Y;
-	AddMovementInput(LastInputVector, 0.01f);
+	*/
 }
 
 void APlayerCharacter::EndCurveMove()
@@ -445,6 +459,7 @@ void APlayerCharacter::EndCurveMove()
 	bOnCurveMove = false;
 	bLockMove = false;
 	CurCurveMoveTime = 0.f;
+	PreCurveVector = FVector::ZeroVector;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 }

@@ -3,7 +3,6 @@
 
 #include "Gimmic/AttackBase.h"
 
-#include "GameData/EXGameSingleton.h"
 #include "GameData/EnemyAttackData.h"
 
 // Sets default values
@@ -13,15 +12,19 @@ AAttackBase::AAttackBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	AttackLevel = 0;
-	Damage = 50.f;
+	AttackType = EEnemyAttackData::Default;
 	Id = FMath::Rand();
 }
 
 void AAttackBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EEnemyAttackData::Projectile];
-	const FProjectileData* ProjectileData = AttackData.GetValidData<FProjectileData>(AttackLevel);
+float AAttackBase::GetDamage() const
+{
+	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[AttackType];
+	const FBaseEnemyAttackData* EnemyAttackData = AttackData.GetValidData<FBaseEnemyAttackData>(AttackLevel);
+	return EnemyAttackData->Damage;
 }
 

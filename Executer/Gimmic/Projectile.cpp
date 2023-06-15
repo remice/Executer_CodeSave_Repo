@@ -2,6 +2,7 @@
 
 
 #include "Projectile.h"
+
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
@@ -41,7 +42,7 @@ AProjectile::AProjectile()
 
 	InitialLifeSpan = 5.f;
 
-	Damage = 50.f;
+	AttackType = EEnemyAttackData::Projectile;
 }
 
 // Called when the game starts or when spawned
@@ -63,7 +64,7 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(OtherComp);
 	if (BlockerMeshComponent)
 	{
-		BlockerMeshComponent->EvaluationDamage(AttackLevel, Damage);
+		BlockerMeshComponent->EvaluationDamage(AttackLevel, GetDamage());
 	}
 
 	if (HitEffect)
@@ -71,7 +72,7 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, GetActorLocation(), FRotator(0.f));
 	}
 	FDamageEvent DamageEvent;
-	OtherActor->TakeDamage(Damage, DamageEvent, nullptr, this);
+	OtherActor->TakeDamage(GetDamage(), DamageEvent, nullptr, this);
 	Destroy();
 }
 

@@ -2,6 +2,7 @@
 
 
 #include "Gimmic/Lasor.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
@@ -19,7 +20,6 @@ ALasor::ALasor()
 	LasorEndPoint = FLasorValueVector(TEXT("End"), FVector::ZeroVector);
 	LasorWidth = FLasorValueFloat(TEXT("Width"), 30.f);
 	AttackDelay = 0.1f;
-	Damage = 20.f;
 
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
@@ -29,6 +29,8 @@ ALasor::ALasor()
 	DodgeObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 
 	SetLifeSpan(5.f);
+
+	AttackType = EEnemyAttackData::Lasor;
 }
 
 void ALasor::BeginPlay()
@@ -102,7 +104,7 @@ void ALasor::ExLasor()
 	}
 
 	FDamageEvent DamageEvent;
-	HitPawn->TakeDamage(Damage, DamageEvent, nullptr, this);
+	HitPawn->TakeDamage(GetDamage(), DamageEvent, nullptr, this);
 	IgnoreActorArray.Emplace(HitResult.GetActor());
 
 	FTimerHandle TimerHandle;

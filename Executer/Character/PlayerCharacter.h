@@ -202,6 +202,7 @@ private:
 
 	float MaxCurveMoveTime = 1.f;
 	float CurCurveMoveTime = 1.f;
+	FVector PreCurveVector = FVector::ZeroVector;
 	uint8 bOnCurveMove : 1;
 	uint8 bLockMove : 1;
 };

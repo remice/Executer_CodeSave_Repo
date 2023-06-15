@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SkillSpawnUp.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class EXECUTER_API ASkillSpawnUp : public AActor
 {
 	GENERATED_BODY()
