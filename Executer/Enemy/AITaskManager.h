@@ -37,6 +37,36 @@ public:
 	TWeakObjectPtr<UWorld> World;
 };
 
+DECLARE_DELEGATE(FOnLocChangedSignature)
+
+USTRUCT()
+struct FSmoothMover
+{
+	GENERATED_BODY()
+
+	public:
+	FSmoothMover() : World(nullptr) {}
+	FSmoothMover(UWorld* InWorld) : World(InWorld) {}
+
+public:
+	void CalcSmoothMove();
+	void StartMove(FVector InActorLoc, FVector InTargetLoc, FOnLocChangedSignature InDelegate, bool IsXYPlain = true);
+
+public:
+	FOnLocChangedSignature OnLocChanged;
+
+	float InterpSpeed = 30;
+
+public:
+	FVector TargetLoc = FVector::ZeroVector;
+	FVector CurLoc = FVector::ZeroVector;
+
+	FTimerHandle TimerHandle;
+
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> World;
+};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EXECUTER_API UAITaskManager : public UActorComponent, public IInitializable
@@ -56,8 +86,19 @@ protected:
 	
 public:
 	virtual void TurnToLoc(const FVector& TargetLocation);
+	virtual void MoveToLoc(const FVector& TargetLocation, float InterpSpeed);
+	virtual void MoveToLocUseMovementComponent(const FVector& TargetLocation);
+	virtual void StopMove();
 
 private:
+	FTimerHandle TimerHandler;
+	FVector MoveTarget;
+	FVector MoveDir;
+	float ArriveChecker;
+
 	UPROPERTY()
 	FSmoothRotator SmoothRotator;
+
+	UPROPERTY()
+	FSmoothMover SmoothMover;
 };

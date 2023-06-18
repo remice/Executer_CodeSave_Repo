@@ -4,6 +4,7 @@
 
 #define BBPROPERTY_PlayerPawn TEXT("PlayerPawn")
 #define BBPROPERTY_DistanceState TEXT("DistanceState")
+#define BBPROPERTY_MoveTarget TEXT("MoveTarget")
 
 UENUM(BlueprintType)
 enum class EDistanceState : uint8

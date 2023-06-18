@@ -2,14 +2,18 @@
 
 
 #include "Enemy/AITaskManager.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/Pawn.h"
 
 UAITaskManager::UAITaskManager()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SmoothRotator = FSmoothRotator();
+	SmoothMover = FSmoothMover();
+	ArriveChecker = 10.f;
 }
 
 void UAITaskManager::BeginPlay()
@@ -25,7 +29,7 @@ void UAITaskManager::CallInitialize()
 	ensure(IsValid(ControllingActor));
 
 	SmoothRotator = FSmoothRotator(GetOwner()->GetWorld());
-
+	SmoothMover = FSmoothMover(GetOwner()->GetWorld());
 }
 
 void UAITaskManager::TurnToLoc(const FVector& TargetLocation)
@@ -48,6 +52,64 @@ void UAITaskManager::TurnToLoc(const FVector& TargetLocation)
 		});
 
 	SmoothRotator.StartRotate(ControllingActor->GetActorRotation(), LookRot, RotDelegate, false);
+}
+
+void UAITaskManager::MoveToLoc(const FVector& TargetLocation, float InterpSpeed)
+{
+	AActor* ControllingActor = GetOwner();
+	ensure(IsValid(ControllingActor));
+
+	FOnLocChangedSignature MoveDelegate;
+	MoveDelegate.BindLambda(
+		[&]() {
+			AActor* OwningActor = GetOwner();
+			if (IsValid(OwningActor))
+			{
+				OwningActor->SetActorLocation(SmoothMover.CurLoc);
+			}});
+
+	SmoothMover.InterpSpeed = InterpSpeed;
+	SmoothMover.StartMove(ControllingActor->GetActorLocation(), TargetLocation, MoveDelegate, false);
+}
+
+void UAITaskManager::MoveToLocUseMovementComponent(const FVector& TargetLocation)
+{
+	if (TimerHandler.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandler);
+	}
+
+	MoveTarget = TargetLocation;
+
+	FVector Direction = MoveTarget - GetOwner()->GetActorLocation();
+	MoveDir = Direction.GetSafeNormal2D(0.001f);
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandler, FTimerDelegate::CreateLambda(
+		[&]() {
+			APawn* OwningPawn = Cast<APawn>(GetOwner());
+			if (OwningPawn)
+			{
+				if (FVector::Distance(OwningPawn->GetActorLocation(), MoveTarget) < ArriveChecker)
+				{
+					GetWorld()->GetTimerManager().ClearTimer(TimerHandler);
+					return;
+				}
+				
+				if (MoveDir.Dot(MoveTarget - GetOwner()->GetActorLocation()) < 0)
+				{
+					GetWorld()->GetTimerManager().ClearTimer(TimerHandler);
+					return;
+				}
+			}
+		}
+	), 0.01f, true);
+}
+
+void UAITaskManager::StopMove()
+{
+	if (GetWorld() == false) return;
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandler);
+	GetWorld()->GetTimerManager().ClearTimer(SmoothMover.TimerHandle);
 }
 
 // Struct Section
@@ -100,6 +162,60 @@ void FSmoothRotator::StartRotate(FRotator InActorRot, FRotator InTargetRot, FOnR
 		[&]() {
 			CalcSmoothRot();
 			OnRotChanged.ExecuteIfBound();
+		});
+
+	World->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.01f, true);
+}
+
+void FSmoothMover::CalcSmoothMove()
+{
+	if (World.IsValid() == false)
+	{
+		World->GetTimerManager().ClearTimer(TimerHandle);
+		return;
+	}
+
+	if (FVector::Distance(TargetLoc, CurLoc) <= 10.f)
+	{
+		World->GetTimerManager().ClearTimer(TimerHandle);
+		return;
+	}
+
+	CurLoc = UKismetMathLibrary::VInterpTo_Constant(CurLoc, TargetLoc, World->GetDeltaSeconds(), InterpSpeed);
+}
+
+void FSmoothMover::StartMove(FVector InActorLoc, FVector InTargetLoc, FOnLocChangedSignature InDelegate, bool IsXYPlain)
+{
+	if (World.IsValid() == false)
+	{
+		return;
+	}
+
+	if (OnLocChanged.IsBound())
+	{
+		OnLocChanged.Unbind();
+	}
+
+	if (TimerHandle.IsValid())
+	{
+		World->GetTimerManager().ClearTimer(TimerHandle);
+	}
+
+	CurLoc = InActorLoc;
+	TargetLoc = InTargetLoc;
+
+	if (IsXYPlain)
+	{
+		TargetLoc = FVector(TargetLoc.X, TargetLoc.Y, CurLoc.Z);
+	}
+
+	OnLocChanged = InDelegate;
+
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda(
+		[&]() {
+			CalcSmoothMove();
+			OnLocChanged.ExecuteIfBound();
 		});
 
 	World->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.01f, true);

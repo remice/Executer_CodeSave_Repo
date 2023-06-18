@@ -48,13 +48,13 @@ void APattern_RepeatOneShot::SpawnBullets()
 
 		FActorSpawnParameters SpawnParameters;
 		AActor* SpawnObject = GetWorld()->SpawnActor(SpawnBulletClass, &SpawnLoc, &SpawnRot, SpawnParameters);
-		AAttackBase* Projectile = Cast<AAttackBase>(SpawnObject);
-		if (Projectile == nullptr)
+		AAttackBase* AttackCauser = Cast<AAttackBase>(SpawnObject);
+		if (AttackCauser == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Pattern_RepeatOneShot/Cast to Projectil was failed."));
+			UE_LOG(LogTemp, Warning, TEXT("Pattern_RepeatOneShot/Cast to AttackBase was failed."));
 			continue;
 		}
-		Projectile->SetId(PatternId);
+		AttackCauser->SetId(PatternId);
 		PatternId++;
 	}
 }

@@ -95,6 +95,7 @@ APlayerCharacter::APlayerCharacter()
 	// Apply find assets
 	GetMesh()->SetSkeletalMesh(SK_KALLARI.Object);
 	GetMesh()->SetAnimInstanceClass(ABP_KALLARI.Object->GeneratedClass);
+	GetMesh()->bWaitForParallelClothTask = true;
 	JumpCurve = CURVE_JUMP.Object;
 	DashCurve = CURVE_DASH.Object;
 	DashEffect = DASH_EFFECT.Object;
