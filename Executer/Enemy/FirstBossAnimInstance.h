@@ -23,13 +23,13 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	TObjectPtr<class ACharacter> Owner;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	TObjectPtr<class UCharacterMovementComponent> Movement;
+	TObjectPtr<class AFirstBoss> Owner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	FVector Velocity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	FRotator MoveDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	float GroundSpeed;

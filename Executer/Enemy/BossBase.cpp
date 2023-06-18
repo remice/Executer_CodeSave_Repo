@@ -2,6 +2,7 @@
 
 
 #include "Enemy/BossBase.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "Gimmic/PatternBase.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -10,22 +11,20 @@
 
 ABossBase::ABossBase()
 {
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	ensure(Mesh);
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
+	GetMesh()->bCastDynamicShadow = true;
+	GetMesh()->bAffectDynamicIndirectLighting = true;
+	GetMesh()->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	GetMesh()->SetupAttachment(GetCapsuleComponent());
+	GetMesh()->SetCollisionProfileName(TEXT("Boss"));
+	GetMesh()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetCanEverAffectNavigation(false);
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 
-	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
-	Mesh->bCastDynamicShadow = true;
-	Mesh->bAffectDynamicIndirectLighting = true;
-	Mesh->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-	Mesh->SetupAttachment(Collider);
-	Mesh->SetCollisionProfileName(TEXT("Boss"));
-	Mesh->SetGenerateOverlapEvents(false);
-	Mesh->SetCanEverAffectNavigation(false);
-	Mesh->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
-
-	GetCollider()->SetSimulatePhysics(true);
-	GetCollider()->SetEnableGravity(true);
-	GetCollider()->SetCollisionProfileName(TEXT("Boss"));
+	GetCapsuleComponent()->SetSimulatePhysics(true);
+	GetCapsuleComponent()->SetEnableGravity(true);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Boss"));
 
 	bOnCurve = false;
 	SaveLocation = FVector();
@@ -59,10 +58,10 @@ void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, F
 	// Spawn bullet
 	FVector3d SpawnPos = RootComponent->GetComponentLocation();
 	FRotator3d SpawnRot = RootComponent->GetComponentRotation();
-	if (Mesh->DoesSocketExist(SocketName))
+	if (GetMesh()->DoesSocketExist(SocketName))
 	{
-		SpawnPos = Mesh->GetSocketLocation(SocketName);
-		SpawnRot = Mesh->GetSocketRotation(SocketName);
+		SpawnPos = GetMesh()->GetSocketLocation(SocketName);
+		SpawnRot = GetMesh()->GetSocketRotation(SocketName);
 	}
 
 	// Spawn & attachment rules
@@ -84,9 +83,9 @@ void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, F
 	if (NewPatternManager)
 	{
 		NewPatternManager->SetupPattern(PlayerActor);
-		if (Mesh->DoesSocketExist(SocketName))
+		if (GetMesh()->DoesSocketExist(SocketName))
 		{
-			NewPatternManager->AttachToComponent(Mesh, AttachmentRules, SocketName);
+			NewPatternManager->AttachToComponent(GetMesh(), AttachmentRules, SocketName);
 		}
 		else
 		{
@@ -108,7 +107,7 @@ void ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const
 		UE_LOG(LogTemp, Warning, TEXT("Boss AI Pattern data doesn't have montage!!"));
 	}
 
-	UAnimInstance* AnimInstance = Mesh->GetAnimInstance();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Boss Anim Instance doesn't exist!!"));
@@ -132,7 +131,7 @@ void ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const
 
 void ABossBase::StopAnimation()
 {
-	UAnimInstance* AnimInstance = Mesh->GetAnimInstance();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Boss Anim Instance doesn't exist!!"));
@@ -160,14 +159,14 @@ void ABossBase::StartCurveMove(UCurveVector* CurveData)
 	AnimCurveData = CurveData;
 	ensure(AnimCurveData);
 
-	SaveLocation = GetActorLocation();
-	GetCollider()->SetSimulatePhysics(false);
+	SaveLocation = FVector::ZeroVector;
+	GetCapsuleComponent()->SetEnableGravity(false);
 	bOnCurve = true;
 }
 
 void ABossBase::RunCurveMove()
 {
-	UAnimInstance* AnimInstance = Mesh->GetAnimInstance();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Boss Anim Instance doesn't exist!!"));
@@ -187,12 +186,13 @@ void ABossBase::RunCurveMove()
 
 	FVector CurveLocation = AnimCurveData->GetVectorValue(AnimPosition);
 	FVector ActualLocation = FVector(CurveLocation.X * SaveForwardVector.X, CurveLocation.X * SaveForwardVector.Y, CurveLocation.Z);
-	ActualLocation += SaveLocation;
-	SetActorLocation(ActualLocation);
+	FVector DeltaLocation = ActualLocation - SaveLocation;
+	SaveLocation = ActualLocation;
+	SetActorLocation(GetActorLocation() + DeltaLocation, true);
 }
 
 void ABossBase::EndCurveMove()
 {
-	GetCollider()->SetSimulatePhysics(true);
+	GetCapsuleComponent()->SetEnableGravity(true);
 	bOnCurve = false;
 }

@@ -14,18 +14,14 @@ ATutorialRanger::ATutorialRanger()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create default object
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 
 	// Set mesh & attachment
 	ConstructorHelpers::FObjectFinder<UStaticMesh> M_SPHERE(PATH_SPHERE);
 	check(M_SPHERE.Succeeded());
 
-	Mesh->SetStaticMesh(M_SPHERE.Object);
-	Mesh->SetupAttachment(GetCollider());
-
-	Arrow->SetupAttachment(Mesh);
-	Arrow->SetRelativeLocation(FVector3d(40.f, 0.f, 0.f));
+	StaticMesh->SetStaticMesh(M_SPHERE.Object);
+	StaticMesh->SetupAttachment(GetCapsuleComponent());
 
 	CurDelay = 0.f;
 	DelayIndex = 0;

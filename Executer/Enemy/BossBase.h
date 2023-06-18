@@ -34,20 +34,20 @@ protected:
 
 // Curve Movement Section
 protected:
-	void StartCurveMove(class UCurveVector* CurveData);
+	virtual void StartCurveMove(class UCurveVector* CurveData);
 	void RunCurveMove();
 	void EndCurveMove();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh")
-	TObjectPtr<class USkeletalMeshComponent> Mesh;
-
 	float AnimPlayRate = 1.0f;
 
 	FOnEndAnimationSigniture EndAnimationDelegate;
 
 // Curve Movement Section
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	TObjectPtr<class USkeletalMeshComponent> Mesh;
+
 	UPROPERTY()
 	TObjectPtr<class UCurveVector> AnimCurveData;
 
@@ -55,4 +55,7 @@ protected:
 	float PlayRate = 1.f;
 	FVector SaveLocation;
 	FVector SaveForwardVector;
+
+protected:
+	class USkeletalMeshComponent* GetMesh() const { return Mesh; }
 };

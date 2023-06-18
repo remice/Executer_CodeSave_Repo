@@ -2,6 +2,7 @@
 
 
 #include "BaseEnemy.h"
+
 #include "Game/MyGameInstance.h"
 
 // Sets default values
@@ -10,7 +11,6 @@ ABaseEnemy::ABaseEnemy()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Create Capsule Component
 	Collider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collider"));
 	SetRootComponent(Collider);
 	Collider->SetCapsuleRadius(44.f);
@@ -35,15 +35,10 @@ void ABaseEnemy::PostInitializeComponents()
 	HP = MaxHP;
 }
 
-// Called every frame
-void ABaseEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	float ResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
 	float NewHP = FMath::Clamp(HP - DamageAmount, 0, MaxHP);
 	float ActualDamage = FMath::Clamp(HP - NewHP, 0, MaxHP);
 	HP = NewHP;

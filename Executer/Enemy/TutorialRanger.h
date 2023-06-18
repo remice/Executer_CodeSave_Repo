@@ -26,10 +26,7 @@ public:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<class UStaticMeshComponent> Mesh;
-
-	UPROPERTY()
-	TObjectPtr<class UArrowComponent> Arrow;
+	TObjectPtr<class UStaticMeshComponent> StaticMesh;
 
 	UPROPERTY(EditAnywhere, Category=Pattern)
 	TArray<TSubclassOf<class APatternBase>> PatternClass;

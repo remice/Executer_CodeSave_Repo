@@ -2,37 +2,35 @@
 
 
 #include "Enemy/FirstBossAnimInstance.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "FirstBoss.h"
 
 
 UFirstBossAnimInstance::UFirstBossAnimInstance()
 {
 	MovingThreshould = 3.f;
 	JumpingThreshould = 100.f;
+	bIsFalling = false;
+	bIsJumping = false;
 }
 
 void UFirstBossAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	Owner = Cast<ACharacter>(GetOwningActor());
-	if (Owner)
-	{
-		Movement = Owner->GetCharacterMovement();
-	}
+	Owner = Cast<AFirstBoss>(GetOwningActor());
 }
 
 void UFirstBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (Movement)
+	if (Owner)
 	{
-		Velocity = Movement->Velocity;
+		Velocity = Owner->GetVelocity();
 		GroundSpeed = Velocity.Size2D();
 		bIsIdle = GroundSpeed < MovingThreshould;
-		bIsFalling = Movement->IsFalling();
+		bIsFalling = Velocity.Z > JumpingThreshould || Velocity.Z < (-0.05) * JumpingThreshould;
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
+		MoveDirection = Owner->GetGroundMoveRot();
 	}
 }
