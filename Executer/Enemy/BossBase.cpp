@@ -99,19 +99,20 @@ void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, F
 	}
 }
 
-void ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc)
+bool ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc)
 {
 	UAnimMontage* Montage = PatternData->LinkAnimationMontage;
 	if (IsValid(Montage) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Boss AI Pattern data doesn't have montage!!"));
+		return false;
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Boss Anim Instance doesn't exist!!"));
-		return;
+		return false;
 	}
 
 	float CalcPlayRate = AnimPlayRate * PatternData->PlayRate;
@@ -127,6 +128,7 @@ void ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const
 	FOnMontageEnded EndDelegate;
 	EndDelegate.BindUObject(this, &ABossBase::EndAnimation);
 	AnimInstance->Montage_SetEndDelegate(EndDelegate, Montage);
+	return true;
 }
 
 void ABossBase::StopAnimation()

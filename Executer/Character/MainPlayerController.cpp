@@ -64,6 +64,28 @@ void AMainPlayerController::BeginPlay()
 	InitHUDWidget();
 }
 
+void AMainPlayerController::OnBossHpBar()
+{
+	HudWidget->K2_OnBossBar();
+
+	UMyGameInstance* GI = GetGameInstance<UMyGameInstance>();
+	if (IsValid(GI) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[MainPlayerController] GameInstance are not exist!!"));
+		return;
+	}
+
+	IInitializable* PreInitActor = Cast<IInitializable>(GI->GetMapBoss());
+	if (PreInitActor)
+	{
+		PreInitActor->CallInitialize();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[MainPlayerController] MapBoss are not exist!!"));
+	}
+}
+
 void AMainPlayerController::InitHUDWidget()
 {
 	HudWidget = CreateWidget<UEXHUDWidget>(this, HudWidgetClass);

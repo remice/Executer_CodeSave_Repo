@@ -2,11 +2,13 @@
 
 
 #include "AI/BTTask_FindPlayer.h"
+
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "BlackboardValueName.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Interface/ExecuterControllerInterface.h"
 
 UBTTask_FindPlayer::UBTTask_FindPlayer()
 {
@@ -68,9 +70,15 @@ EBTNodeResult::Type UBTTask_FindPlayer::ExecuteTask(UBehaviorTreeComponent& Owne
 
 		AActor* HitActor = FindResult.GetActor();
 		APawn* HitPawn = Cast<APawn>(HitActor);
-		if (HitPawn == false)
+		if (HitPawn == nullptr)
 		{
 			continue;
+		}
+
+		IExecuterControllerInterface* PawnController = Cast<IExecuterControllerInterface>(HitPawn->GetController());
+		if (PawnController)
+		{
+			PawnController->OnBossHpBar();
 		}
 
 		BlackboardComp->SetValueAsObject(BBPROPERTY_PlayerPawn, FindResult.GetActor());

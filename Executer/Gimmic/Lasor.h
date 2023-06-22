@@ -77,6 +77,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Property")
 	FLasorValueFloat LasorWidth;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	float InterpSpeed;
+
 	UPROPERTY()
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 

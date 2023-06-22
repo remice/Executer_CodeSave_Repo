@@ -26,7 +26,7 @@ protected:
 public:
 	virtual void SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation) override;
 
-	virtual void PlayAnimationFromData(const class UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc) override;
+	virtual bool PlayAnimationFromData(const class UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc) override;
 	virtual void StopAnimation() override;
 
 protected:

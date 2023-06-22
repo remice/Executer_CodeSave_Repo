@@ -37,7 +37,7 @@ void UBTService_CheckDistance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		return;
 	}
 
-	float Distance = (ControllingPawn->GetActorLocation() - Target->GetActorLocation()).Size();
+	float Distance = FVector::Distance(ControllingPawn->GetActorLocation(), Target->GetActorLocation());
 
 	if (Distance < NearDistance)
 	{

@@ -44,4 +44,6 @@ public:
 
 	FORCEINLINE UStaticMeshComponent* GetBody() const { return Body; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	virtual void SpawnHitEffect();
 };

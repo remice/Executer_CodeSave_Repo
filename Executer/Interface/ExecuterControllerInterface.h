@@ -4,26 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "AnimationTaskable.generated.h"
+#include "ExecuterControllerInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UAnimationTaskable : public UInterface
+class UExecuterControllerInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-DECLARE_DELEGATE(FOnEndAnimationSigniture)
-
 /**
  * 
  */
-class EXECUTER_API IAnimationTaskable
+class EXECUTER_API IExecuterControllerInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual bool PlayAnimationFromData(const class UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc) { return false; };
-	virtual void StopAnimation() {};
+	virtual void OnBossHpBar() {}
 };

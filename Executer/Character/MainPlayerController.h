@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interface/ExecuterControllerInterface.h"
+
 #include "MainPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EXECUTER_API AMainPlayerController : public APlayerController
+class EXECUTER_API AMainPlayerController : public APlayerController, public IExecuterControllerInterface
 {
 	GENERATED_BODY()
 	
@@ -19,6 +21,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	virtual void OnBossHpBar() override;
 
 private:
 	void InitHUDWidget();

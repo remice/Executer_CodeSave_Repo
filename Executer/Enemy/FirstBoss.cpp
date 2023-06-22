@@ -79,6 +79,13 @@ float AFirstBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return ResultDamage;
 }
 
+bool AFirstBoss::PlayAnimationFromData(const UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc)
+{
+	bool SaveResult = Super::PlayAnimationFromData(PatternData, EndFunc);
+	if(SaveResult) StopMove();
+	return SaveResult;
+}
+
 FRotator AFirstBoss::GetGroundMoveRot()
 {
 	if (GetActorLocation() == PrePosition)

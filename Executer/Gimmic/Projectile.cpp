@@ -67,10 +67,7 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 		BlockerMeshComponent->EvaluationDamage(AttackLevel, GetDamage());
 	}
 
-	if (HitEffect)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, GetActorLocation(), FRotator(0.f));
-	}
+	SpawnHitEffect();
 	FDamageEvent DamageEvent;
 	OtherActor->TakeDamage(GetDamage(), DamageEvent, nullptr, this);
 	Destroy();
@@ -79,4 +76,12 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 int32 AProjectile::GetId()
 {
 	return Id;
+}
+
+void AProjectile::SpawnHitEffect()
+{
+	if (HitEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, GetActorLocation(), FRotator(0.f));
+	}
 }

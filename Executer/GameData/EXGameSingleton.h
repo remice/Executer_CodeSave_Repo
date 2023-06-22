@@ -14,6 +14,7 @@ enum class EEnemyAttackData : uint8
 	Default = 0,
 	Projectile,
 	Lasor,
+	Bomb,
 	EAD_Max,
 };
 
@@ -58,4 +59,7 @@ public:
 public:
 	UPROPERTY()
 	TMap<EEnemyAttackData, FEnemyAttackDataStruct> EnemyAttackDataMap;
+
+private:
+	void AddAttackDataToMap(const UDataTable* InDataTable, EEnemyAttackData DataType);
 };

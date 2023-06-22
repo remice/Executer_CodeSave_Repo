@@ -2,6 +2,7 @@
 
 
 #include "InstancedPattern.h"
+
 #include "Interface/CanDodgeActor.h"
 #include "Interface/IRotatableObject.h"
 #include "Components/ArrowComponent.h"
@@ -11,6 +12,7 @@
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 #include "EngineCustom/BlockerStaticMeshComponent.h"
+#include "GameData/EXGameSingleton.h"
 
 AInstancedPattern::AInstancedPattern()
 {
@@ -77,10 +79,14 @@ void AInstancedPattern::ExFire()
 {
 	APatternBase::ExFire();
 
+	UE_LOG(LogTemp, Warning, TEXT("1"));
+
 	if (CurPatternTime < NextDelay)
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("2"));
 
 	// Update next delay 
 	NextDelay += DelayBetweenSpawn;
@@ -119,15 +125,19 @@ void AInstancedPattern::SpawnBullets()
 
 void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform)
 {
+	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EEnemyAttackData::Projectile];
+	const FBaseEnemyAttackData* EnemyAttackData = AttackData.GetValidData<FBaseEnemyAttackData>(AttackLevel);
+	float SingletonDamage = EnemyAttackData->Damage;
+
 	FDamageEvent DamageEvent;
-	HitResult.GetActor()->TakeDamage(BulletDamage, DamageEvent, nullptr, this);
+	HitResult.GetActor()->TakeDamage(SingletonDamage, DamageEvent, nullptr, this);
 
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, ComponentTransform.GetLocation(), FRotator(0.f));
 
 	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(HitResult.GetComponent());
 	if (BlockerMeshComponent)
 	{
-		BlockerMeshComponent->EvaluationDamage(AttackLevel, BulletDamage);
+		BlockerMeshComponent->EvaluationDamage(AttackLevel, SingletonDamage);
 	}
 
 	/* deprecate code

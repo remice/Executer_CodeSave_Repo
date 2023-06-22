@@ -37,6 +37,19 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FBombData : public FBaseEnemyAttackData
+{
+	GENERATED_BODY()
+
+	public:
+	FBombData() : Size(1) {}
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Data")
+	float Size;
+};
+
+USTRUCT(BlueprintType)
 struct FEnemyAttackData : public FBaseEnemyAttackData
 {
 	GENERATED_BODY()

@@ -31,6 +31,7 @@ ALasor::ALasor()
 	SetLifeSpan(5.f);
 
 	AttackType = EEnemyAttackData::Lasor;
+	InterpSpeed = 20.f;
 }
 
 void ALasor::BeginPlay()
@@ -78,7 +79,7 @@ void ALasor::Tick(float DeltaTime)
 void ALasor::RotateLasor(float DeltaTime)
 {
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	FRotator NewRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), LookRotation, DeltaTime, 20.f);
+	FRotator NewRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), LookRotation, DeltaTime, InterpSpeed);
 	SetActorRotation(NewRotation);
 }
 

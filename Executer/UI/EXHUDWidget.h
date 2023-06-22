@@ -18,5 +18,6 @@ public:
 	UEXHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 
 public:
-
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnBossBar"))
+	void K2_OnBossBar();
 };
