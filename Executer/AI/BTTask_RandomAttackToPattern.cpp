@@ -39,19 +39,36 @@ EBTNodeResult::Type UBTTask_RandomAttackToPattern::ExecuteTask(UBehaviorTreeComp
 	{
 		if (SumWeight <= RandomValue && RandomValue < SumWeight + RandomAttackData.Weight)
 		{
-			FOnEndAnimationSigniture OnTaskEnd;
-			OnTaskEnd.BindLambda(
-				[&]()
-				{
-					FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-				}
-			);
-			TaskPawn->PlayAnimationFromData(RandomAttackData.BossPatternData, OnTaskEnd);
-
-			return EBTNodeResult::InProgress;
+			if (ExecutePattern(OwnerComp, TaskPawn, RandomAttackData.BossPatternData))
+			{
+				return EBTNodeResult::InProgress;
+			}
+			else
+			{
+				return EBTNodeResult::Failed;
+			}
 		}
 
 		SumWeight += RandomAttackData.Weight;
 	}
 	return EBTNodeResult::Failed;
+}
+
+bool UBTTask_RandomAttackToPattern::ExecutePattern(UBehaviorTreeComponent& OwnerComp, class IAnimationTaskable* TaskPawn, UBossPatternData* InPatternData)
+{
+	if (InPatternData == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BTTask_RandomAttackToPattern] Pattern Data is nullptr"));
+		return false;
+	}
+	FOnEndAnimationSigniture OnTaskEnd;
+	OnTaskEnd.BindLambda(
+		[&]()
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	);
+	TaskPawn->PlayAnimationFromData(InPatternData, OnTaskEnd);
+
+	return true;
 }

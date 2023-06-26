@@ -32,6 +32,9 @@ protected:
 	ERotateOption RotateOption;
 
 	UPROPERTY(EditAnywhere, Category = Rotation)
+	ERotateDirection RotateDirection;
+
+	UPROPERTY(EditAnywhere, Category = Rotation)
 	float RotAngle;
 
 	UPROPERTY(EditAnywhere, Category = Rotation)

@@ -36,7 +36,7 @@ private:
 	void PlayMontage(class UAnimMontage* Montage, bool IsPrimitive = true);
 	
 	// ExecuterAIInterface Section
-	virtual void TurnToLoc(const FVector& TargetLocation) override;
+	virtual void TurnToLoc(const FVector& TargetLocation, float InterpSpeed) override;
 	virtual void MoveToLoc(const FVector& TargetLocation, float InterpSpeed) override;
 	virtual void MoveToLocUseMovementComponent(const FVector& TargetLocation) override;
 	virtual void StopMove() override;

@@ -85,7 +85,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 public:
-	virtual void TurnToLoc(const FVector& TargetLocation);
+	virtual void TurnToLoc(const FVector& TargetLocation, float InterpSpeed);
 	virtual void MoveToLoc(const FVector& TargetLocation, float InterpSpeed);
 	virtual void MoveToLocUseMovementComponent(const FVector& TargetLocation);
 	virtual void StopMove();

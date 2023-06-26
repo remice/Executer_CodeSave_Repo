@@ -14,6 +14,14 @@ enum class ERotateOption : uint8
 	Default
 };
 
+UENUM()
+enum class ERotateDirection : uint8
+{
+	Roll = 0,
+	Yaw,
+	Pitch
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UIRotatableObject : public UInterface

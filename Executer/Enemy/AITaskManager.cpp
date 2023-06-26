@@ -32,7 +32,7 @@ void UAITaskManager::CallInitialize()
 	SmoothMover = FSmoothMover(GetOwner()->GetWorld());
 }
 
-void UAITaskManager::TurnToLoc(const FVector& TargetLocation)
+void UAITaskManager::TurnToLoc(const FVector& TargetLocation, float InterpSpeed)
 {
 	AActor* ControllingActor = GetOwner();
 	ensure(IsValid(ControllingActor));
@@ -51,6 +51,7 @@ void UAITaskManager::TurnToLoc(const FVector& TargetLocation)
 			}
 		});
 
+	SmoothRotator.InterpSpeed = InterpSpeed;
 	SmoothRotator.StartRotate(ControllingActor->GetActorRotation(), LookRot, RotDelegate, false);
 }
 

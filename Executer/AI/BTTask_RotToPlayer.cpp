@@ -11,6 +11,7 @@
 UBTTask_RotToPlayer::UBTTask_RotToPlayer()
 {
 	NodeName = TEXT("RotToPlayer");
+	InterpSpeed = 30.f;
 }
 
 EBTNodeResult::Type UBTTask_RotToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -19,27 +20,10 @@ EBTNodeResult::Type UBTTask_RotToPlayer::ExecuteTask(UBehaviorTreeComponent& Own
 
 	// Get controlling pawn
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	if (ControllingPawn == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[BTTask_RotToPlayer] AI doesn't have owner pawn"));
-		return EBTNodeResult::Failed;
-	}
+	IAIManagerGettable* HasAIManagerActor = ControllingPawn ? Cast<IAIManagerGettable>(ControllingPawn) : nullptr;
+	UObject* AIManagerObject = HasAIManagerActor ? HasAIManagerActor->GetManager() : nullptr;
 
-	IAIManagerGettable* HasAIManagerActor = Cast<IAIManagerGettable>(ControllingPawn);
-	if (HasAIManagerActor == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[BTTask_RotToPlayer] AI pawn doesn't implement IAIManagerGettable"));
-		return EBTNodeResult::Failed;
-	}
-	
-	UObject* AIManagerObject = HasAIManagerActor->GetManager();
-	if (IsValid(AIManagerObject) == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[BTTask_RotToPlayer] Can't get manager"));
-		return EBTNodeResult::Failed;
-	}
-
-	UAITaskManager* AIManager = Cast<UAITaskManager>(AIManagerObject);
+	UAITaskManager* AIManager = AIManagerObject ? Cast<UAITaskManager>(AIManagerObject) : nullptr;
 	if (AIManager == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[BTTask_RotToPlayer] Cast fail to AIManager"));
@@ -60,7 +44,7 @@ EBTNodeResult::Type UBTTask_RotToPlayer::ExecuteTask(UBehaviorTreeComponent& Own
 	AActor* TargetActor = Cast<AActor>(TargetObject);
 	if (IsValid(TargetActor) == false) return EBTNodeResult::Failed;
 
-	AIManager->TurnToLoc(TargetActor->GetActorLocation());
+	AIManager->TurnToLoc(TargetActor->GetActorLocation(), InterpSpeed);
 
 	return EBTNodeResult::Succeeded;
 }

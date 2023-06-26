@@ -118,9 +118,9 @@ void AFirstBoss::PlayMontage(UAnimMontage* Montage, bool IsPrimitive)
 	AnimInstance->Montage_Play(Montage);
 }
 
-void AFirstBoss::TurnToLoc(const FVector& TargetLocation)
+void AFirstBoss::TurnToLoc(const FVector& TargetLocation, float InterpSpeed)
 {
-	AITaskManager->TurnToLoc(TargetLocation);
+	AITaskManager->TurnToLoc(TargetLocation, InterpSpeed);
 }
 
 void AFirstBoss::MoveToLoc(const FVector& TargetLocation, float InterpSpeed)

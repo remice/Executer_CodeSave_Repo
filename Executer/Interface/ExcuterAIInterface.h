@@ -22,7 +22,7 @@ class EXECUTER_API IExcuterAIInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void TurnToLoc(const FVector& TargetLocation) {}
+	virtual void TurnToLoc(const FVector& TargetLocation, float InterpSpeed) {}
 	virtual void MoveToLoc(const FVector& TargetLocation, float InterpSpeed) {}
 	virtual void MoveToLocUseMovementComponent(const FVector& TargetLocation) {}
 	virtual void StopMove() {}

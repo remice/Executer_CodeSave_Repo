@@ -36,6 +36,8 @@ public:
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	virtual bool ExecutePattern(UBehaviorTreeComponent& OwnerComp, class IAnimationTaskable* TaskPawn, class UBossPatternData* InPatternData);
+
 public:
 	UPROPERTY(EditAnywhere, Category = "Task")
 	TArray<FRandomAttackData> RandomAttackDatas;
