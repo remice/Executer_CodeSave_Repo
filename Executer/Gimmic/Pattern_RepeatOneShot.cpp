@@ -55,6 +55,7 @@ void APattern_RepeatOneShot::SpawnBullets()
 			continue;
 		}
 		AttackCauser->SetId(PatternId);
+		BulletArray.Emplace(AttackCauser);
 		PatternId++;
 	}
 }

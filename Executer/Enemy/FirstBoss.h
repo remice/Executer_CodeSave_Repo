@@ -29,6 +29,9 @@ public:
 
 	virtual FRotator GetGroundMoveRot();
 
+	virtual void OnStun() override;
+	virtual void EndStun() override;
+
 protected:
 	virtual void StartCurveMove(class UCurveVector* CurveData);
 
@@ -48,6 +51,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UHitMontageDataAsset> HitMontages;
+
+	UPROPERTY()
+	TObjectPtr<class UStunMontageDataAsset> StunMontageData;
 
 	UPROPERTY()
 	TObjectPtr<class UAnimInstance> AnimInstance;

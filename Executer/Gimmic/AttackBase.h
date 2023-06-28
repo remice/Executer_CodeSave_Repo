@@ -18,6 +18,7 @@ public:
 	AAttackBase();
 
 	virtual void BeginPlay() override;
+	virtual void DestroySelf();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Attack", meta = (AllowPrivateAccess = "true"))

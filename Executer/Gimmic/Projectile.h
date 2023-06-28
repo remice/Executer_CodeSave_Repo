@@ -25,6 +25,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void DestroySelf() override;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = Effect)

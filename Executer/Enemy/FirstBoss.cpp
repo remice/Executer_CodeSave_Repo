@@ -7,26 +7,31 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "AITaskManager.h"
 #include "Animation/HitMontageDataAsset.h"
+#include "Animation/StunMontageDataAsset.h"
 
 #define PATH_ANIMINSTANCE_C TEXT("/Game/Character/Enemy/ABP_Gideon.ABP_Gideon_c")
 #define PATH_SKELETALMESH TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGideon/Characters/Heroes/Gideon/Skins/Inquisitor/Meshes/Gideon_Inquisitor.Gideon_Inquisitor'")
 #define PATH_DAHITMONTAGE TEXT("/Script/Executer.HitMontageDataAsset'/Game/DataAssets/DA_GideonHitMontage.DA_GideonHitMontage'")
+#define PATH_DASTUNMONTAGE TEXT("/Script/Executer.StunMontageDataAsset'/Game/DataAssets/DA_GideonStunMontage.DA_GideonStunMontage'")
 
 AFirstBoss::AFirstBoss()
 {
 	ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceRef(PATH_ANIMINSTANCE_C);
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshRef(PATH_SKELETALMESH);
 	ConstructorHelpers::FObjectFinder<UHitMontageDataAsset> DAHitMontageRef(PATH_DAHITMONTAGE);
+	ConstructorHelpers::FObjectFinder<UStunMontageDataAsset> DAStunMontageRef(PATH_DASTUNMONTAGE);
 
 	ensure(AnimInstanceRef.Succeeded());
 	ensure(SkeletalMeshRef.Succeeded());
 	ensure(DAHitMontageRef.Succeeded());
+	ensure(DAStunMontageRef.Succeeded());
 
 	GetMesh()->SetAnimInstanceClass(AnimInstanceRef.Class);
 	GetMesh()->SetSkeletalMesh(SkeletalMeshRef.Object);
 	GetMesh()->bWaitForParallelClothTask = true;
 
 	HitMontages = DAHitMontageRef.Object;
+	StunMontageData = DAStunMontageRef.Object;
 
 	AIControllerClass = AFirstBossAIController::StaticClass();
 
@@ -95,6 +100,19 @@ FRotator AFirstBoss::GetGroundMoveRot()
 	FRotator Rot = (GetActorLocation() - PrePosition).Rotation() - GetActorForwardVector().Rotation();
 	PrePosition = GetActorLocation();
 	return Rot;
+}
+
+void AFirstBoss::OnStun()
+{
+	PlayMontage(StunMontageData->StunMontage, false);
+}
+
+void AFirstBoss::EndStun()
+{
+	if (AnimInstance->Montage_IsPlaying(StunMontageData->StunMontage))
+	{
+		AnimInstance->Montage_JumpToSection(*StunMontageData->EndSectionName, StunMontageData->StunMontage);
+	}
 }
 
 void AFirstBoss::StartCurveMove(UCurveVector* CurveData)

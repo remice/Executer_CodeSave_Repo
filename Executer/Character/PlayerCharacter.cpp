@@ -19,6 +19,7 @@
 #include "Game/MyGameInstance.h"
 #include "Curves/CurveVector.h"
 #include "Engine/DamageEvents.h"
+#include "Enemy/BossBase.h"
 
 /***********************
 * Addresses of Asset
@@ -173,6 +174,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(PlayerController->CameraFixedAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CameraFixedMode);
 	EnhancedInputComponent->BindAction(PlayerController->ComboAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ComboAttack);
 	EnhancedInputComponent->BindAction(PlayerController->SkillAction, ETriggerEvent::Triggered, this, &APlayerCharacter::QERTSkill);
+	EnhancedInputComponent->BindAction(PlayerController->SpecialAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SpecialAttack);
 
 	// Get local player
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -335,6 +337,34 @@ bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVecto
 
 	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PreFrameLocation, SocketLocation,
 		ObjectTypesArray, true, IgnoreActorArray, EDrawDebugTrace::None, HitResult, true);
+
+	if (IsCollide)
+	{
+		FDamageEvent DamageEvent;
+		HitResult.GetActor()->TakeDamage(500.f, DamageEvent, GetController(), this);
+	}
+
+	return IsCollide;
+}
+
+bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
+{
+	FVector SocketLocation = GetLocationToSocket(SocketName);
+
+	bool IsCollide = false;
+	switch (CheckType)
+	{
+	case ECheckType::Sphere:
+		IsCollide = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), SocketLocation, SocketLocation, CheckValue.SphereRadius,
+			ObjectTypesArray, true, IgnoreActorArray, CheckValue.bDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, HitResult, true);
+		break;
+
+	case ECheckType::Box:
+		IsCollide = UKismetSystemLibrary::BoxTraceSingleForObjects(GetWorld(), SocketLocation, SocketLocation,
+			FVector(CheckValue.BoxWidth, CheckValue.BoxWidth, CheckValue.BoxHeight / 2), FRotator(0, 0, 0),
+			ObjectTypesArray, true, IgnoreActorArray, CheckValue.bDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, HitResult, true);
+		break;
+	}
 
 	if (IsCollide)
 	{
@@ -603,6 +633,19 @@ void APlayerCharacter::QERTSkill(const FInputActionValue& ActionValue)
 	{
 		MontageManager->PlaySkillMontage(SkillTMontageIndex);
 		return;
+	}
+}
+
+void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
+{
+	UMyGameInstance* GI = Cast<UMyGameInstance>(GetOwner()->GetGameInstance());
+	ensure(GI);
+
+	ABossBase* Boss = Cast<ABossBase>(GI->GetMapBoss());
+	if (Boss)
+	{
+		FBadState_Stun* StunState = new FBadState_Stun(10.f);
+		Boss->ChangeBadState(StunState);
 	}
 }
 

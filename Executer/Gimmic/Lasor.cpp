@@ -34,6 +34,11 @@ ALasor::ALasor()
 	InterpSpeed = 20.f;
 }
 
+void ALasor::DestroySelf()
+{
+	Destroy();
+}
+
 void ALasor::BeginPlay()
 {
 	Super::BeginPlay();

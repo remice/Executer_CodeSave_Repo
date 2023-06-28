@@ -4,19 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
+#include "Interface/AttackCheckable.h"
 
-#include "AnimNotifyState_DetectTarget.generated.h"
+#include "AnimNotifyState_AttackCollider.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EXECUTER_API UAnimNotifyState_DetectTarget : public UAnimNotifyState
+class EXECUTER_API UAnimNotifyState_AttackCollider : public UAnimNotifyState
 {
 	GENERATED_BODY()
-
+	
 public:
-	UAnimNotifyState_DetectTarget();
+	UAnimNotifyState_AttackCollider();
 
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
@@ -28,8 +29,6 @@ public:
 	TArray<FName> SocketNames;
 
 private:
-	void SaveSocketLocations(USkeletalMeshComponent* MeshComp);
-
 	void CheckCollision(USkeletalMeshComponent* MeshComp);
 
 	// Collision Check Section
@@ -37,12 +36,26 @@ private:
 	UPROPERTY()
 	TArray<FName> ValidSockets;
 
-	UPROPERTY()
-	TArray<FVector> PreFrameLocations;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	ECheckType CheckType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	float SphereRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	float BoxWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	float BoxHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	uint8 bOnDebug : 1;
 
 	UPROPERTY()
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 
 	UPROPERTY()
 	TArray<TObjectPtr<AActor>> IgnoreActorArray;
+
+	FCheckValue CheckValue;
 };

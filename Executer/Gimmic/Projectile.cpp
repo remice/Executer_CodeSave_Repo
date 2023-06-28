@@ -59,6 +59,12 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
+void AProjectile::DestroySelf()
+{
+	SpawnHitEffect();
+	Super::DestroySelf();
+}
+
 void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(OtherComp);
@@ -67,10 +73,9 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 		BlockerMeshComponent->EvaluationDamage(AttackLevel, GetDamage());
 	}
 
-	SpawnHitEffect();
 	FDamageEvent DamageEvent;
 	OtherActor->TakeDamage(GetDamage(), DamageEvent, nullptr, this);
-	Destroy();
+	DestroySelf();
 }
 
 int32 AProjectile::GetId()

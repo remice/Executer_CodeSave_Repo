@@ -51,6 +51,8 @@ class EXECUTER_API ALasor : public AAttackBase
 public:
 	ALasor();
 
+	virtual void DestroySelf() override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

@@ -19,12 +19,11 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void ExFire() override;
-
 	virtual void SpawnBullets() override;
+	virtual void DestroyBullets() override;
 
 	UFUNCTION()
 	virtual void OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform);

@@ -23,7 +23,9 @@ protected:
 
 protected:
 	virtual bool ScaleVelocity();
-	virtual bool CheckCeiling();
+	virtual bool CheckGeometry(bool bIsUp);
+	virtual void SmartMove(float DeltaTime);
+	void ScaleGravity(float ScaleAmount, float DeltaTime);
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
@@ -32,8 +34,20 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMax = "0"))
 	float MinZVelocity;
 
+	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	float UpGravityScaler;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	float DownGravityScaler;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	float GravityInterpScale;
+
 	UPROPERTY(EditAnywhere, Category = "Trace", meta = (AllowPrivateAccess = "true"))
 	float CheckCeilLineLength;
+
+	UPROPERTY(EditAnywhere, Category = "Trace", meta = (AllowPrivateAccess = "true"))
+	float CheckFloorLineLength;
 
 	UPROPERTY(EditAnywhere, Category = "Trace", meta = (AllowPrivateAccess = "true"))
 	uint8 bOnDebugLine : 1;

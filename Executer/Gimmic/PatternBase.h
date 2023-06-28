@@ -32,8 +32,17 @@ public:
 
 	UFUNCTION()
 	virtual void Fire();
+	virtual void StopPattern(bool bIsBulletDestroy);
 
 	FORCEINLINE void SetPatternId(const float& InPatternId) { PatternId = InPatternId; }
+
+protected:
+	UFUNCTION()
+	virtual void ExFire();
+
+	UFUNCTION()
+	virtual void SpawnBullets();
+	virtual void DestroyBullets();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = Pattern)
@@ -48,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	TArray<TObjectPtr<class UArrowComponent>> FirePointArray;
 
+	UPROPERTY()
+	TArray<TWeakObjectPtr<class AAttackBase>> BulletArray;
+
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	int32 PatternId;
 
@@ -56,12 +68,4 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AActor> TargetCharacter;
-
-protected:
-	UFUNCTION()
-	virtual void ExFire();
-
-	UFUNCTION()
-	virtual void SpawnBullets();
-
 };

@@ -57,6 +57,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> SkillAction;
 
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> SpecialAction;
+
 // UI Section
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")

@@ -31,6 +31,13 @@ ABossBase::ABossBase()
 	SaveForwardVector = FVector();
 }
 
+void ABossBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	BadState = new FBadState_Base(this);
+}
+
 void ABossBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -96,6 +103,7 @@ void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, F
 		//PatternManager->OnEnd.BindSP(this, &ATutorialRanger::ExNextPattern);
 		//PatternManager->OnEnd.BindUObject(this, &ATutorialRanger::ExNextPattern);
 		NewPatternManager->Fire();
+		PatternManagerArray.Emplace(NewPatternManager);
 	}
 }
 
@@ -143,11 +151,40 @@ void ABossBase::StopAnimation()
 	AnimInstance->Montage_Stop(0.f);
 }
 
+void ABossBase::ChangeBadState(FBadState_Base* StateStruct)
+{
+	BadState->OffState();
+	delete BadState;
+	BadState = StateStruct;
+	BadState->SetOwner(this);
+	BadState->OnState();
+}
+
+void ABossBase::OnStun()
+{
+	return;
+}
+
 void ABossBase::EndAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded)
 {
 	EndCurveMove();
 
 	EndAnimationDelegate.ExecuteIfBound();
+}
+
+void ABossBase::EndStun()
+{
+	return;
+}
+
+void ABossBase::StopAllPattern(bool bIsDestroyBullet)
+{
+	for (const auto PatternManager : PatternManagerArray)
+	{
+		if (PatternManager.IsValid())
+			PatternManager.Get()->StopPattern(bIsDestroyBullet);
+	}
+	PatternManagerArray.Empty();
 }
 
 void ABossBase::StartCurveMove(UCurveVector* CurveData)
@@ -197,4 +234,31 @@ void ABossBase::EndCurveMove()
 {
 	GetCapsuleComponent()->SetEnableGravity(true);
 	bOnCurve = false;
+}
+
+// FBadeState struct section
+void FBadState_Stun::OnState()
+{
+	if (Owner.IsValid() == false) return;
+	Owner.Get()->StopAllPattern(true);
+	Owner.Get()->OnStun();
+
+	FTimerDelegate EndStunDelegate;
+	EndStunDelegate.BindLambda(
+		[&]() {
+			if (Owner.IsValid())
+			{
+				FBadState_Base* NormalState = new FBadState_Base();
+				Owner.Get()->ChangeBadState(NormalState);
+			}
+		});
+
+	Owner.Get()->GetWorldTimerManager().SetTimer(TimerHandle, EndStunDelegate, 0.1f, false, StunTime);
+}
+
+void FBadState_Stun::OffState()
+{
+	if (Owner.IsValid() == false) return;
+	Owner.Get()->EndStun();
+	Owner.Get()->GetWorldTimerManager().ClearTimer(TimerHandle);
 }

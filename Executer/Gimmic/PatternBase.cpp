@@ -2,7 +2,9 @@
 
 
 #include "Gimmic/PatternBase.h"
+
 #include "Components/ArrowComponent.h"
+#include "AttackBase.h"
 
 // Sets default values
 APatternBase::APatternBase()
@@ -76,6 +78,16 @@ void APatternBase::Fire()
 	bOnFire = true;
 }
 
+void APatternBase::StopPattern(bool bIsBulletDestroy)
+{
+	if (bIsBulletDestroy) DestroyBullets();
+
+	bOnFire = false;
+	CurPatternTime = MaxPatternTime + 1.f;
+
+	return;
+}
+
 void APatternBase::ExFire()
 {
 	return;
@@ -85,5 +97,17 @@ void APatternBase::ExFire()
 // [params] BulletIndex >> Select bullet in bullet array
 void APatternBase::SpawnBullets()
 {
+	return;
+}
+
+void APatternBase::DestroyBullets()
+{
+	for (const auto Bullet : BulletArray)
+	{
+		if (Bullet.IsValid())
+		{
+			Bullet.Get()->DestroySelf();
+		}
+	}
 	return;
 }

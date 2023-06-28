@@ -35,6 +35,8 @@ struct FDashBone
 	float RibbonLength;
 };
 
+struct FInputActionValue;
+
 UCLASS()
 class EXECUTER_API APlayerCharacter : public ACharacter, public ICanDodgeActor, public ICurveMovable, public IAttackCheckable, public IInitializable
 {
@@ -83,6 +85,7 @@ public:
 // Attack section
 public:
 	virtual bool CheckAttachToSocket(const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
+	virtual bool CheckAttachToSocket(const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
 	virtual FVector GetLocationToSocket(const FName& SocketName) override;
 
 // Tick section
@@ -92,7 +95,7 @@ private:
 // Move action section
 private:
 	UFUNCTION()
-	void LongJump(const struct FInputActionValue& ActionValue);
+	void LongJump(const FInputActionValue& ActionValue);
 
 	UFUNCTION()
 	void ExDash(float DeltaTime);
@@ -105,13 +108,13 @@ private:
 // input actions
 private:
 	UFUNCTION()
-	void Move(const struct FInputActionValue& ActionValue);
+	void Move(const FInputActionValue& ActionValue);
 
 	UFUNCTION()
-	void Look(const struct FInputActionValue& ActionValue);
+	void Look(const FInputActionValue& ActionValue);
 
 	UFUNCTION()
-	void Dash(const struct FInputActionValue& ActionValue);
+	void Dash(const FInputActionValue& ActionValue);
 
 	UFUNCTION()
 	void CameraAutoPosMode();
@@ -119,7 +122,10 @@ private:
 	void CameraFixedMode();
 
 	UFUNCTION()
-	void QERTSkill(const struct FInputActionValue& ActionValue);
+	void QERTSkill(const FInputActionValue& ActionValue);
+
+	UFUNCTION()
+	void SpecialAttack(const FInputActionValue& ActionValue);
 
 // manager section
 private:

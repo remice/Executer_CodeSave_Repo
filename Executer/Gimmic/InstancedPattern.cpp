@@ -79,14 +79,10 @@ void AInstancedPattern::ExFire()
 {
 	APatternBase::ExFire();
 
-	UE_LOG(LogTemp, Warning, TEXT("1"));
-
 	if (CurPatternTime < NextDelay)
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("2"));
 
 	// Update next delay 
 	NextDelay += DelayBetweenSpawn;
@@ -121,6 +117,17 @@ void AInstancedPattern::SpawnBullets()
 		FTransform3d SpawnTrans(SpawnRot, SpawnLoc, SpawnScale);
 		InstancedStaticMeshes->AddInstance(SpawnTrans, true);
 	}
+}
+
+void AInstancedPattern::DestroyBullets()
+{
+	FTransform InstanceTransform;
+	for (int ix = 0; ix < InstancedStaticMeshes->GetInstanceCount(); ++ix)
+	{
+		InstancedStaticMeshes->GetInstanceTransform(ix, InstanceTransform, true);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, InstanceTransform.GetLocation(), FRotator(0.f));
+	}
+	InstancedStaticMeshes->DestroyComponent();
 }
 
 void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform)

@@ -19,6 +19,7 @@
 #define PATH_IA_CAMERAFIXED TEXT("/Game/Input/Action/IA_CameraFixed.IA_CameraFixed")
 #define PATH_IA_COMBOATTACK TEXT("/Game/Input/Action/IA_ComboAttack.IA_ComboAttack")
 #define PATH_IA_SKILL TEXT("/Game/Input/Action/IA_Skill.IA_Skill")
+#define PATH_IA_SPECIAL TEXT("/Game/Input/Action/IA_Special.IA_Special")
 #define PATH_HUDWIDGET_C TEXT("/Game/UI/WBP_EXHUD.WBP_EXHUD_C")
 
 AMainPlayerController::AMainPlayerController()
@@ -32,6 +33,7 @@ AMainPlayerController::AMainPlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_CAMERAFIXED(PATH_IA_CAMERAFIXED);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_COMBOATTACK(PATH_IA_COMBOATTACK);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SKILL(PATH_IA_SKILL);
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SPECIAL(PATH_IA_SPECIAL);
 	static ConstructorHelpers::FClassFinder<UEXHUDWidget> HUDWIDGET_C(PATH_HUDWIDGET_C);
 
 	check(IMC.Succeeded());
@@ -43,6 +45,7 @@ AMainPlayerController::AMainPlayerController()
 	check(IA_CAMERAFIXED.Succeeded());
 	check(IA_COMBOATTACK.Succeeded());
 	check(IA_SKILL.Succeeded());
+	check(IA_SPECIAL.Succeeded());
 	check(HUDWIDGET_C.Succeeded());
 
 	PlayerMappingContext = IMC.Object;
@@ -54,6 +57,7 @@ AMainPlayerController::AMainPlayerController()
 	CameraFixedAction = IA_CAMERAFIXED.Object;
 	ComboAttackAction = IA_COMBOATTACK.Object;
 	SkillAction = IA_SKILL.Object;
+	SpecialAction = IA_SPECIAL.Object;
 	HudWidgetClass = HUDWIDGET_C.Class;
 }
 

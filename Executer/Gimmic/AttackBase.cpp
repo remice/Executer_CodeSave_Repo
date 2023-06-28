@@ -21,6 +21,12 @@ void AAttackBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AAttackBase::DestroySelf()
+{
+	Destroy();
+	return;
+}
+
 float AAttackBase::GetDamage() const
 {
 	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[AttackType];
