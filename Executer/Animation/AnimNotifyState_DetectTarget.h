@@ -45,4 +45,7 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<AActor>> IgnoreActorArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	float Damage;
 };

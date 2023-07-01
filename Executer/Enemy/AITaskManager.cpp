@@ -14,6 +14,7 @@ UAITaskManager::UAITaskManager()
 	SmoothRotator = FSmoothRotator();
 	SmoothMover = FSmoothMover();
 	ArriveChecker = 10.f;
+	bOnEnable = true;
 }
 
 void UAITaskManager::BeginPlay()
@@ -34,6 +35,8 @@ void UAITaskManager::CallInitialize()
 
 void UAITaskManager::TurnToLoc(const FVector& TargetLocation, float InterpSpeed)
 {
+	if (bOnEnable == false) return;
+
 	AActor* ControllingActor = GetOwner();
 	ensure(IsValid(ControllingActor));
 	
@@ -57,6 +60,8 @@ void UAITaskManager::TurnToLoc(const FVector& TargetLocation, float InterpSpeed)
 
 void UAITaskManager::MoveToLoc(const FVector& TargetLocation, float InterpSpeed)
 {
+	if (bOnEnable == false) return;
+
 	AActor* ControllingActor = GetOwner();
 	ensure(IsValid(ControllingActor));
 
@@ -75,6 +80,8 @@ void UAITaskManager::MoveToLoc(const FVector& TargetLocation, float InterpSpeed)
 
 void UAITaskManager::MoveToLocUseMovementComponent(const FVector& TargetLocation)
 {
+	if (bOnEnable == false) return;
+
 	if (TimerHandler.IsValid())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandler);

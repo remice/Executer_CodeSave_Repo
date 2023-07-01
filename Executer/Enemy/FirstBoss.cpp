@@ -79,6 +79,8 @@ float AFirstBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 				PlayMontage(HitMontages->LeftHitMontage);
 			}
 		}
+
+		StopMove();
 	}
 
 	return ResultDamage;
@@ -104,15 +106,28 @@ FRotator AFirstBoss::GetGroundMoveRot()
 
 void AFirstBoss::OnStun()
 {
+	Super::OnStun();
+
 	PlayMontage(StunMontageData->StunMontage, false);
+	AITaskManager->SetEnalbeComponent(false);
 }
 
 void AFirstBoss::EndStun()
 {
+	Super::EndStun();
+
 	if (AnimInstance->Montage_IsPlaying(StunMontageData->StunMontage))
 	{
 		AnimInstance->Montage_JumpToSection(*StunMontageData->EndSectionName, StunMontageData->StunMontage);
 	}
+
+	AFirstBossAIController* AIController = Cast<AFirstBossAIController>(GetController());
+	if (AIController)
+	{
+		AIController->RestartAI();
+	}
+
+	AITaskManager->SetEnalbeComponent(true);
 }
 
 void AFirstBoss::StartCurveMove(UCurveVector* CurveData)

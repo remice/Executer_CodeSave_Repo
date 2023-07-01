@@ -51,6 +51,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
 	uint8 bOnDebug : 1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notify", meta = (AllowPrivateAccess = "true"))
+	float Damage;
+
 	UPROPERTY()
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 

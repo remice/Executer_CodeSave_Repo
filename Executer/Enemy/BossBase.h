@@ -103,6 +103,7 @@ protected:
 	TObjectPtr<class UCurveVector> AnimCurveData;
 
 	uint8 bOnCurve : 1;
+	uint8 bOnStun : 1;
 	float PlayRate = 1.f;
 	FVector SaveLocation;
 	FVector SaveForwardVector;

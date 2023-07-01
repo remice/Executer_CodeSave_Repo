@@ -10,6 +10,7 @@ UAnimNotifyState_AttackCollider::UAnimNotifyState_AttackCollider()
 
 	CheckValue = FCheckValue();
 	bOnDebug = false;
+	Damage = 500.f;
 }
 
 void UAnimNotifyState_AttackCollider::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -65,7 +66,7 @@ void UAnimNotifyState_AttackCollider::CheckCollision(USkeletalMeshComponent* Mes
 	for (int32 Index = 0; Index < ValidSockets.Num(); Index++)
 	{
 		FHitResult TraceHit;
-		bool IsCollide = AttackablePawn->CheckAttachToSocket(ValidSockets[Index], CheckType, CheckValue, ObjectTypesArray, IgnoreActorArray, TraceHit);
+		bool IsCollide = AttackablePawn->CheckAttachToSocket(Damage, ValidSockets[Index], CheckType, CheckValue, ObjectTypesArray, IgnoreActorArray, TraceHit);
 
 		if (IsCollide)
 		{

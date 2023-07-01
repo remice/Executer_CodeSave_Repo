@@ -90,6 +90,56 @@ void AMainPlayerController::OnBossHpBar()
 	}
 }
 
+void AMainPlayerController::OnSkillCooldownUI(ESkillType SkillType, float Time)
+{
+	switch (SkillType)
+	{
+	case ESkillType::Q:
+		HudWidget->K2_OnQSkill(Time);
+		break;
+
+	case ESkillType::E:
+		HudWidget->K2_OnESkill(Time);
+		break;
+
+	case ESkillType::R:
+		HudWidget->K2_OnRSkill(Time);
+		break;
+
+	case ESkillType::T:
+		HudWidget->K2_OnTSkill(Time);
+		break;
+
+	case ESkillType::Special:
+		break;
+	}
+}
+
+void AMainPlayerController::OnChangedSkillUI(ESkillType SkillType, const UTexture2D* Icon)
+{
+	switch (SkillType)
+	{
+	case ESkillType::Q:
+		HudWidget->K2_OnQSkillIconChanged(Icon);
+		break;
+
+	case ESkillType::E:
+		HudWidget->K2_OnESkillIconChanged(Icon);
+		break;
+
+	case ESkillType::R:
+		HudWidget->K2_OnRSkillIconChanged(Icon);
+		break;
+
+	case ESkillType::T:
+		HudWidget->K2_OnTSkillIconChanged(Icon);
+		break;
+
+	case ESkillType::Special:
+		break;
+	}
+}
+
 void AMainPlayerController::InitHUDWidget()
 {
 	HudWidget = CreateWidget<UEXHUDWidget>(this, HudWidgetClass);

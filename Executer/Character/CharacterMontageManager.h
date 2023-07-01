@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interface/ExecuterControllerInterface.h"
+
 #include "CharacterMontageManager.generated.h"
 
 DECLARE_DELEGATE(FOnEndSkillCooltimeSignature)
@@ -46,9 +48,8 @@ public:
 // animation section
 public:
 	void GetComboAttackCommand();
-
-	void PlaySkillMontage(int32 MontageIndex);
-
+	const UTexture2D* GetSkillIcon(uint8 MontageIndex);
+	bool PlaySkillMontage(int32 MontageIndex, ESkillType SkillType);
 	bool IsCoolTimeSkill(uint8 MontageIndex);
 
 public:
@@ -63,7 +64,7 @@ private:
 
 	void SetCanMove();
 
-	void OnCoolTimeSkill(uint8 MontageIndex);
+	void OnCoolTimeSkill(uint8 MontageIndex, ESkillType SkillType);
 
 // Combo Animation Section
 private:

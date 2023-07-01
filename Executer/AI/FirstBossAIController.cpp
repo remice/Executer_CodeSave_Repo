@@ -42,6 +42,15 @@ void AFirstBossAIController::StopAI()
 	}
 }
 
+void AFirstBossAIController::RestartAI()
+{
+	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (BTComponent)
+	{
+		BTComponent->RestartTree();
+	}
+}
+
 void AFirstBossAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

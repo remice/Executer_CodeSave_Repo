@@ -24,6 +24,8 @@ protected:
 
 public:
 	virtual void OnBossHpBar() override;
+	virtual void OnSkillCooldownUI(ESkillType SkillType, float Time) override;
+	virtual void OnChangedSkillUI(ESkillType SkillType, const UTexture2D* Icon) override;
 
 private:
 	void InitHUDWidget();

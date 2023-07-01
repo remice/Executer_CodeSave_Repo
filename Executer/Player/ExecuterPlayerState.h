@@ -32,9 +32,11 @@ public:
 	void SetupHealth(const float InMaxHealth);
 	void SetupArmor(const float InArmor);
 	void SetupSpecial(const float InMaxSpecialGauge);
+	void SpecialAttack();
 	
 	FORCEINLINE float GetHealth() const { return CurHealth; }
 	FORCEINLINE float GetSpecialGauge() const { return CurSpecialGauge; }
+	FORCEINLINE bool IsSpecialGaugeFull() const { return CurSpecialGauge == MaxSpecialGauge; }
 
 // Delegate Section
 public:

@@ -128,6 +128,8 @@ void AInstancedPattern::DestroyBullets()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, InstanceTransform.GetLocation(), FRotator(0.f));
 	}
 	InstancedStaticMeshes->DestroyComponent();
+
+	Destroy();
 }
 
 void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform)
@@ -161,6 +163,8 @@ void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FT
 
 void AInstancedPattern::UpdateTransformInstanceMeshes()
 {
+	if (IsValid(InstancedStaticMeshes) == false) return;
+
 	if (InstancedStaticMeshes->GetInstanceCount() == 0)
 	{
 		return;

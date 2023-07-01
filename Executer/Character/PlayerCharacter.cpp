@@ -258,6 +258,11 @@ void APlayerCharacter::SetupManagers()
 
 	EPlayerState->OnHpChanged.AddDynamic(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
 	//EPlayerState->OnPlayerDead.AddUObject()
+
+	SkillChanged(ESkillType::Q, SkillQMontageIndex);
+	SkillChanged(ESkillType::E, SkillEMontageIndex);
+	SkillChanged(ESkillType::R, SkillRMontageIndex);
+	SkillChanged(ESkillType::T, SkillTMontageIndex);
 }
 
 void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData* Settingdata)
@@ -295,7 +300,7 @@ void APlayerCharacter::AddProjectileIdToSet(const int32& NearProjectileId)
 
 void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMove, bool LookControlRot)
 {
-	if (bOnCurveMove || bOnDash)
+	if (bOnDash)
 	{
 		return;
 	}
@@ -331,7 +336,7 @@ void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMo
 	}
 }
 
-bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
+bool APlayerCharacter::CheckAttachToSocket(float Damage, const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
 {
 	FVector SocketLocation = GetLocationToSocket(SocketName);
 
@@ -341,13 +346,13 @@ bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, const FVecto
 	if (IsCollide)
 	{
 		FDamageEvent DamageEvent;
-		HitResult.GetActor()->TakeDamage(500.f, DamageEvent, GetController(), this);
+		HitResult.GetActor()->TakeDamage(Damage, DamageEvent, GetController(), this);
 	}
 
 	return IsCollide;
 }
 
-bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
+bool APlayerCharacter::CheckAttachToSocket(float Damage, const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult)
 {
 	FVector SocketLocation = GetLocationToSocket(SocketName);
 
@@ -369,7 +374,7 @@ bool APlayerCharacter::CheckAttachToSocket(const FName& SocketName, ECheckType C
 	if (IsCollide)
 	{
 		FDamageEvent DamageEvent;
-		HitResult.GetActor()->TakeDamage(500.f, DamageEvent, GetController(), this);
+		HitResult.GetActor()->TakeDamage(Damage, DamageEvent, GetController(), this);
 	}
 
 	return IsCollide;
@@ -613,32 +618,37 @@ void APlayerCharacter::QERTSkill(const FInputActionValue& ActionValue)
 
 	if (OnQSkill)
 	{
-		MontageManager->PlaySkillMontage(SkillQMontageIndex);
+		MontageManager->PlaySkillMontage(SkillQMontageIndex, ESkillType::Q);
 		return;
 	}
 
 	if (OnESkill)
 	{
-		MontageManager->PlaySkillMontage(SkillEMontageIndex);
+		MontageManager->PlaySkillMontage(SkillEMontageIndex, ESkillType::E);
 		return;
 	}
 
 	if (OnRSkill)
 	{
-		MontageManager->PlaySkillMontage(SkillRMontageIndex);
+		MontageManager->PlaySkillMontage(SkillRMontageIndex, ESkillType::R);
 		return;
 	}
 
 	if (OnTSkill)
 	{
-		MontageManager->PlaySkillMontage(SkillTMontageIndex);
+		MontageManager->PlaySkillMontage(SkillTMontageIndex, ESkillType::T);
 		return;
 	}
 }
 
 void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 {
-	UMyGameInstance* GI = Cast<UMyGameInstance>(GetOwner()->GetGameInstance());
+	AExecuterPlayerState* EPS = Cast<AExecuterPlayerState>(GetPlayerState());
+	ensure(EPS);
+
+	if (EPS->IsSpecialGaugeFull() == false) return;
+
+	UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance());
 	ensure(GI);
 
 	ABossBase* Boss = Cast<ABossBase>(GI->GetMapBoss());
@@ -646,6 +656,18 @@ void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 	{
 		FBadState_Stun* StunState = new FBadState_Stun(10.f);
 		Boss->ChangeBadState(StunState);
+		EPS->SpecialAttack();
+	}
+}
+
+void APlayerCharacter::SkillChanged(ESkillType SkillType, uint8 SkillIndex)
+{
+	const UTexture2D* SkillIcon = MontageManager->GetSkillIcon(SkillIndex);
+
+	IExecuterControllerInterface* ExecuterController = Cast<IExecuterControllerInterface>(GetController());
+	if (ExecuterController)
+	{
+		ExecuterController->OnChangedSkillUI(SkillType, SkillIcon);
 	}
 }
 

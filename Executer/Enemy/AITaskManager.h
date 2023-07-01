@@ -89,12 +89,14 @@ public:
 	virtual void MoveToLoc(const FVector& TargetLocation, float InterpSpeed);
 	virtual void MoveToLocUseMovementComponent(const FVector& TargetLocation);
 	virtual void StopMove();
+	FORCEINLINE void SetEnalbeComponent(bool IsEnable) { bOnEnable = IsEnable; }
 
 private:
 	FTimerHandle TimerHandler;
 	FVector MoveTarget;
 	FVector MoveDir;
 	float ArriveChecker;
+	uint8 bOnEnable : 1;
 
 	UPROPERTY()
 	FSmoothRotator SmoothRotator;

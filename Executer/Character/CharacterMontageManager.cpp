@@ -62,18 +62,30 @@ void UCharacterMontageManager::GetComboAttackCommand()
 	}
 }
 
-void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
+const UTexture2D* UCharacterMontageManager::GetSkillIcon(uint8 MontageIndex)
 {
 	if (CheckDataValid() == false)
 	{
-		return;
+		return nullptr;
+	}
+
+	int32 ValidMontageIndex = FMath::Clamp(MontageIndex, 0, PlayerSkillData->SkillAnimMontageDatas.Num() - 1);
+
+	return PlayerSkillData->SkillAnimMontageDatas[ValidMontageIndex].Icon;
+}
+
+bool UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex, ESkillType SkillType)
+{
+	if (CheckDataValid() == false)
+	{
+		return false;
 	}
 
 	TArray<FSkillAnimMontageData> SkillMontages = PlayerSkillData->SkillAnimMontageDatas;
 	if (SkillMontages.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Skill anim montage data asset Montage is empty!!"));
-		return;
+		return false;
 	}
 
 	int32 ValidMontageIndex = FMath::Clamp(MontageIndex, 0, SkillMontages.Num() - 1);
@@ -81,23 +93,23 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 	if (SkillMontages.IsValidIndex(ValidMontageIndex) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Index %d SkillMontage doesn't exist!!"), ValidMontageIndex);
-		return;
+		return false;
 	}
 
 	UAnimMontage* ValidMontage = SkillMontages[ValidMontageIndex].Montage;
 	if (IsValid(ValidMontage) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[Player Montage Manager] Skill data asset Montage is empty!!"));
-		return;
+		return false;
 	}
 
 	if (bCanStop == false)
 	{
-		return;
+		return false;
 	}
 
-	if (IsCoolTimeSkill(ValidMontageIndex)) return;
-	OnCoolTimeSkill(ValidMontageIndex);
+	if (IsCoolTimeSkill(ValidMontageIndex)) return false;
+	OnCoolTimeSkill(ValidMontageIndex, SkillType);
 
 	StopMontage();
 
@@ -121,6 +133,8 @@ void UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex)
 			OwnerPawn->StartCurveMove(SkillMontages[ValidMontageIndex].CurveData, true, true);
 		}
 	}
+
+	return true;
 }
 
 bool UCharacterMontageManager::IsCoolTimeSkill(uint8 MontageIndex)
@@ -163,11 +177,18 @@ void UCharacterMontageManager::SetCanMove()
 	bCanStop = true;
 }
 
-void UCharacterMontageManager::OnCoolTimeSkill(uint8 MontageIndex)
+void UCharacterMontageManager::OnCoolTimeSkill(uint8 MontageIndex, ESkillType SkillType)
 {
 	uint8 ModifyIndex = FMath::Clamp(MontageIndex, 0, SkillCoolTimes.Num() - 1);
 
 	SkillCoolTimes[ModifyIndex].ExecuteCooldown();
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	IExecuterControllerInterface* UIController = Cast<IExecuterControllerInterface>(OwnerPawn ? OwnerPawn->GetController() : nullptr);
+	if (UIController)
+	{
+		UIController->OnSkillCooldownUI(SkillType, SkillCoolTimes[ModifyIndex].CoolTime);
+	}
 }
 
 void UCharacterMontageManager::ComboActionBegin()

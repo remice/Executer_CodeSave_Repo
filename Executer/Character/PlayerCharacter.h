@@ -9,6 +9,7 @@
 #include "Interface/CurveMovable.h"
 #include "Interface/AttackCheckable.h"
 #include "Interface/Initializable.h"
+#include "Interface/ExecuterControllerInterface.h"
 #include "PlayerCharacter.generated.h"
 
 USTRUCT()
@@ -84,8 +85,8 @@ public:
 
 // Attack section
 public:
-	virtual bool CheckAttachToSocket(const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
-	virtual bool CheckAttachToSocket(const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
+	virtual bool CheckAttachToSocket(float Damage, const FName& SocketName, const FVector& PreFrameLocation, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
+	virtual bool CheckAttachToSocket(float Damage, const FName& SocketName, ECheckType CheckType, FCheckValue CheckValue, TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray, TArray<TObjectPtr<AActor>> IgnoreActorArray, FHitResult& HitResult) override;
 	virtual FVector GetLocationToSocket(const FName& SocketName) override;
 
 // Tick section
@@ -126,6 +127,10 @@ private:
 
 	UFUNCTION()
 	void SpecialAttack(const FInputActionValue& ActionValue);
+
+// skill actions
+private:
+	void SkillChanged(ESkillType SkillType, uint8 SkillIndex);
 
 // manager section
 private:

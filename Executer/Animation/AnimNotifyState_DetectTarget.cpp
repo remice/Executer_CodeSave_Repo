@@ -8,6 +8,8 @@ UAnimNotifyState_DetectTarget::UAnimNotifyState_DetectTarget()
 {
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+
+	Damage = 500.f;
 }
 
 void UAnimNotifyState_DetectTarget::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -97,7 +99,7 @@ void UAnimNotifyState_DetectTarget::CheckCollision(USkeletalMeshComponent* MeshC
 	for (int32 Index = 0; Index < ValidSockets.Num(); Index++)
 	{
 		FHitResult TraceHit;
-		bool IsCollide = AttackablePawn->CheckAttachToSocket(ValidSockets[Index], PreFrameLocations[Index], ObjectTypesArray, IgnoreActorArray, TraceHit);
+		bool IsCollide = AttackablePawn->CheckAttachToSocket(Damage, ValidSockets[Index], PreFrameLocations[Index], ObjectTypesArray, IgnoreActorArray, TraceHit);
 
 		if (IsCollide)
 		{

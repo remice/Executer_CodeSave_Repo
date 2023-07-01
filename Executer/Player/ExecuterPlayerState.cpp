@@ -61,6 +61,11 @@ void AExecuterPlayerState::SetupSpecial(const float InMaxSpecialGauge)
 	ChangeSpecial(0);
 }
 
+void AExecuterPlayerState::SpecialAttack()
+{
+	ChangeSpecial(0);
+}
+
 void AExecuterPlayerState::ChangeHealth(const float& NewHp)
 {
 	const float ActualHealth = FMath::Clamp(NewHp, 0, MaxHealth);

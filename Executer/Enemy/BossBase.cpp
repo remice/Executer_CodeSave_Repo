@@ -27,6 +27,7 @@ ABossBase::ABossBase()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Boss"));
 
 	bOnCurve = false;
+	bOnStun = false;
 	SaveLocation = FVector();
 	SaveForwardVector = FVector();
 }
@@ -42,6 +43,8 @@ void ABossBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bOnStun) return;
+
 	if (bOnCurve)
 	{
 		RunCurveMove();
@@ -50,6 +53,8 @@ void ABossBase::Tick(float DeltaTime)
 
 void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation)
 {
+	if (bOnStun) return;
+
 	if (IsValid(NewPatternClass) == false)
 	{
 		return;
@@ -109,6 +114,8 @@ void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, F
 
 bool ABossBase::PlayAnimationFromData(const UBossPatternData* PatternData, const FOnEndAnimationSigniture& EndFunc)
 {
+	if (bOnStun) return false;
+
 	UAnimMontage* Montage = PatternData->LinkAnimationMontage;
 	if (IsValid(Montage) == false)
 	{
@@ -153,8 +160,11 @@ void ABossBase::StopAnimation()
 
 void ABossBase::ChangeBadState(FBadState_Base* StateStruct)
 {
-	BadState->OffState();
-	delete BadState;
+	if (BadState)
+	{
+		BadState->OffState();
+		delete BadState;
+	}
 	BadState = StateStruct;
 	BadState->SetOwner(this);
 	BadState->OnState();
@@ -162,6 +172,8 @@ void ABossBase::ChangeBadState(FBadState_Base* StateStruct)
 
 void ABossBase::OnStun()
 {
+	bOnStun = true;
+
 	return;
 }
 
@@ -174,6 +186,8 @@ void ABossBase::EndAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded)
 
 void ABossBase::EndStun()
 {
+	bOnStun = false;
+
 	return;
 }
 
@@ -189,6 +203,8 @@ void ABossBase::StopAllPattern(bool bIsDestroyBullet)
 
 void ABossBase::StartCurveMove(UCurveVector* CurveData)
 {
+	if (bOnStun) return;
+
 	if (IsValid(CurveData) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[Anim Notify] bOnMove is True, but CurveData was Nullptr!!"));
@@ -205,6 +221,8 @@ void ABossBase::StartCurveMove(UCurveVector* CurveData)
 
 void ABossBase::RunCurveMove()
 {
+	if (bOnStun) return;
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) == false)
 	{
@@ -232,6 +250,8 @@ void ABossBase::RunCurveMove()
 
 void ABossBase::EndCurveMove()
 {
+	if (bOnStun) return;
+
 	GetCapsuleComponent()->SetEnableGravity(true);
 	bOnCurve = false;
 }

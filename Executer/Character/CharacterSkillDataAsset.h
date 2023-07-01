@@ -19,6 +19,9 @@ struct FSkillAnimMontageData
 		CoolTime = 0.1f;
 	}
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TObjectPtr<class UTexture2D> Icon;
+
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TObjectPtr<class UAnimMontage> Montage;
 
