@@ -8,6 +8,7 @@
 #include "AITaskManager.h"
 #include "Animation/HitMontageDataAsset.h"
 #include "Animation/StunMontageDataAsset.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #define PATH_ANIMINSTANCE_C TEXT("/Game/Character/Enemy/ABP_Gideon.ABP_Gideon_c")
 #define PATH_SKELETALMESH TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGideon/Characters/Heroes/Gideon/Skins/Inquisitor/Meshes/Gideon_Inquisitor.Gideon_Inquisitor'")
@@ -93,15 +94,17 @@ bool AFirstBoss::PlayAnimationFromData(const UBossPatternData* PatternData, cons
 	return SaveResult;
 }
 
-FRotator AFirstBoss::GetGroundMoveRot()
+bool AFirstBoss::GetGroundMoveRot(FRotator& OutRotator)
 {
-	if (GetActorLocation() == PrePosition)
+	if (FMath::Abs(GetActorLocation().X - PrePosition.X) < 0.5f && FMath::Abs(GetActorLocation().Y - PrePosition.Y) < 0.5f)
 	{
-		return FRotator::ZeroRotator;
+		OutRotator = FRotator::ZeroRotator;
+		return false;
 	}
 	FRotator Rot = (GetActorLocation() - PrePosition).Rotation() - GetActorForwardVector().Rotation();
 	PrePosition = GetActorLocation();
-	return Rot;
+	OutRotator = Rot;
+	return true;
 }
 
 void AFirstBoss::OnStun()
@@ -128,6 +131,26 @@ void AFirstBoss::EndStun()
 	}
 
 	AITaskManager->SetEnalbeComponent(true);
+}
+
+FVector AFirstBoss::SetActorGroundLocation(const FVector& Location)
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	TArray<AActor*> IgnoredActors;
+	FHitResult HitResult;
+	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), Location, Location + FVector(0, 0, -150), ObjectTypes, false,
+		IgnoredActors, EDrawDebugTrace::None, HitResult, true);
+
+	FVector ResultLocation = HitResult.ImpactPoint + FVector(0, 0, 88.f);
+	if (IsCollide)
+	{
+		SetActorLocation(ResultLocation);
+		return ResultLocation;
+	}
+
+	SetActorLocation(Location);
+	return Location;
 }
 
 void AFirstBoss::StartCurveMove(UCurveVector* CurveData)

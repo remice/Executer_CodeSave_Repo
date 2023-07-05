@@ -66,8 +66,8 @@ private:
 	UPROPERTY()
 	TSet<int32> CurNearInstanceIds;
 
-	UPROPERTY(EditAnywhere, Category = Dodge)
-	float GaugeMultiflier;
+	UPROPERTY()
+	float GaugeMultiflier = 5.f;
 		
 	UPROPERTY()
 	float DodgeRange;

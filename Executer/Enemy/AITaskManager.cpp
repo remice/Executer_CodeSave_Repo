@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Pawn.h"
+#include "FirstBoss.h"
 
 UAITaskManager::UAITaskManager()
 {
@@ -68,10 +69,10 @@ void UAITaskManager::MoveToLoc(const FVector& TargetLocation, float InterpSpeed)
 	FOnLocChangedSignature MoveDelegate;
 	MoveDelegate.BindLambda(
 		[&]() {
-			AActor* OwningActor = GetOwner();
+			AFirstBoss* OwningActor = Cast<AFirstBoss>(GetOwner());
 			if (IsValid(OwningActor))
 			{
-				OwningActor->SetActorLocation(SmoothMover.CurLoc);
+				SmoothMover.CurLoc = OwningActor->SetActorGroundLocation(SmoothMover.CurLoc);
 			}});
 
 	SmoothMover.InterpSpeed = InterpSpeed;

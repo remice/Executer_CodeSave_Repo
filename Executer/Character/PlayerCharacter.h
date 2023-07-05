@@ -131,6 +131,7 @@ private:
 // skill actions
 private:
 	void SkillChanged(ESkillType SkillType, uint8 SkillIndex);
+	void SpecialMove(float DeltaSeconds);
 
 // manager section
 private:
@@ -216,4 +217,11 @@ private:
 	FVector PreCurveVector = FVector::ZeroVector;
 	uint8 bOnCurveMove : 1;
 	uint8 bLockMove : 1;
+
+// Special attack Section
+private:
+	FVector SaveStartPos = FVector::ZeroVector;
+	FVector SaveTargetPos = FVector::ZeroVector;
+	float AlphaValue = 0;
+	uint8 bOnSpecialMove : 1;
 };

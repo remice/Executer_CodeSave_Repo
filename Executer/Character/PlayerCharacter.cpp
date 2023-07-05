@@ -123,6 +123,7 @@ APlayerCharacter::APlayerCharacter()
 	SkillTMontageIndex = 3;
 	bOnCurveMove = false;
 	bLockMove = false;
+	bOnSpecialMove = false;
 }
 
 // Called when the game starts or when spawned
@@ -148,6 +149,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 	if (bOnCurveMove)
 	{
 		ExCurveMove(DeltaTime);
+	}
+
+	if (bOnSpecialMove)
+	{
+		SpecialMove(DeltaTime);
 	}
 
 	SetTickEnable(false);
@@ -253,7 +259,7 @@ void APlayerCharacter::SetupManagers()
 
 	// TODO : Use data asset
 	CameraManager->InitManager(GI->GetMapBoss(), Cam, CamArm, GetController(), 0.5f);
-	DodgeManager->InitManager(1.f, 150.f, DisableDodgeDelay);
+	DodgeManager->InitManager(5.f, 150.f, DisableDodgeDelay);
 	MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
 
 	EPlayerState->OnHpChanged.AddDynamic(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
@@ -409,6 +415,8 @@ void APlayerCharacter::SetTickEnable(bool IsOn)
 	{
 		return;
 	}
+
+	if (bOnSpecialMove) return;
 
 	// tick unable
 	PrimaryActorTick.SetTickFunctionEnable(IsOn);
@@ -657,6 +665,25 @@ void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 		FBadState_Stun* StunState = new FBadState_Stun(10.f);
 		Boss->ChangeBadState(StunState);
 		EPS->SpecialAttack();
+
+		SaveStartPos = GetActorLocation();
+		SaveTargetPos = Boss->GetActorLocation() + Boss->GetActorForwardVector() * 200.f + FVector(0, 0, 50);
+		AlphaValue = 0;
+		bOnSpecialMove = true;
+		SetTickEnable(true);
+
+		if (IsValid(DashEffect) == false)
+		{
+			return;
+		}
+		// Spawn start dash effect
+		UNiagaraFunctionLibrary::SpawnSystemAttached(DashEffect, GetMesh(), TEXT("NONE"), FVector(0.f), FRotator(0.f),
+			EAttachLocation::KeepRelativeOffset, true);
+
+		GetMesh()->SetVisibility(false);
+		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+		
+		CameraManager->SetFixedMode(true);
 	}
 }
 
@@ -668,6 +695,33 @@ void APlayerCharacter::SkillChanged(ESkillType SkillType, uint8 SkillIndex)
 	if (ExecuterController)
 	{
 		ExecuterController->OnChangedSkillUI(SkillType, SkillIcon);
+	}
+}
+
+void APlayerCharacter::SpecialMove(float DeltaSeconds)
+{
+	AlphaValue += DeltaSeconds * 2;
+	AlphaValue = FMath::Clamp(AlphaValue, 0, 1);
+
+	FVector MovePos = SaveStartPos * (1 - AlphaValue) + SaveTargetPos * AlphaValue;
+
+	SetActorLocation(MovePos);
+
+	if (AlphaValue >= 1)
+	{
+		bOnSpecialMove = false;
+		SetTickEnable(false);
+
+		if (IsValid(DashEffect) == false)
+		{
+			return;
+		}
+		// Spawn start dash effect
+		UNiagaraFunctionLibrary::SpawnSystemAttached(DashEffect, GetMesh(), TEXT("NONE"), FVector(0.f), FRotator(0.f),
+			EAttachLocation::KeepRelativeOffset, true);
+
+		GetMesh()->SetVisibility(true);
+		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	}
 }
 

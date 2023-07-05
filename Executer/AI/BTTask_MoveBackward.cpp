@@ -42,7 +42,7 @@ EBTNodeResult::Type UBTTask_MoveBackward::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	FHitResult HitResult;
 	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(ControllingPawn->GetWorld(), ControllingPawn->GetActorLocation(),
-		ControllingPawn->GetActorLocation() + FVector(0, 0, -90), ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+		ControllingPawn->GetActorLocation() + FVector(0, 0, -150), ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
 
 	if (IsCollide == false)
 	{
@@ -58,7 +58,7 @@ EBTNodeResult::Type UBTTask_MoveBackward::ExecuteTask(UBehaviorTreeComponent& Ow
 		if (PerformMove(ControllingPawn, ControllingPawn->GetActorLocation(), TargetLocation)) return EBTNodeResult::Succeeded;
 	}
 
-	return EBTNodeResult::Failed;
+	return EBTNodeResult::Succeeded;
 }
 
 bool UBTTask_MoveBackward::PerformMove(APawn* ControllingPawn, FVector ActorLocation, FVector TargetLocation)
@@ -69,8 +69,8 @@ bool UBTTask_MoveBackward::PerformMove(APawn* ControllingPawn, FVector ActorLoca
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
 
 	FHitResult HitResult;
-	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(ControllingPawn->GetWorld(), ActorLocation, TargetLocation,
-		ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+	bool IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(ControllingPawn->GetWorld(), ActorLocation + FVector(0, 0, 50), 
+		TargetLocation + FVector(0, 0, 50), ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
 
 	if (IsCollide)
 	{
@@ -78,7 +78,7 @@ bool UBTTask_MoveBackward::PerformMove(APawn* ControllingPawn, FVector ActorLoca
 	}
 
 	IsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(ControllingPawn->GetWorld(), TargetLocation + FVector(0, 0, 100),
-		TargetLocation + FVector(0, 0, -300), ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
+		TargetLocation + FVector(0, 0, -600), ObjectTypesArray, false, IgnoreActorArray, EDrawDebugTrace::ForDuration, HitResult, true);
 
 	if (IsCollide)
 	{

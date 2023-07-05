@@ -50,6 +50,7 @@ public:
 	// Set camera mode to fixed mode
 	UFUNCTION()
 	void ToggleFixedMode();
+	void SetFixedMode(bool bIsFixed);
 
 	// Set camera mode to auto pos mode
 	UFUNCTION()

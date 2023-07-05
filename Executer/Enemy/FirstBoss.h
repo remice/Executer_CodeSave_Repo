@@ -27,10 +27,12 @@ public:
 
 	virtual UObject* GetManager() override { return Cast<UObject>(AITaskManager); }
 
-	virtual FRotator GetGroundMoveRot();
+	virtual bool GetGroundMoveRot(FRotator& OutRotator);
 
 	virtual void OnStun() override;
 	virtual void EndStun() override;
+
+	virtual FVector SetActorGroundLocation(const FVector& Location);
 
 protected:
 	virtual void StartCurveMove(class UCurveVector* CurveData);

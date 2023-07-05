@@ -103,6 +103,25 @@ void UCharacterCameraManager::ToggleFixedMode()
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
+void UCharacterCameraManager::SetFixedMode(bool bIsFixed)
+{
+	if (IsValid(Boss) == false)
+	{
+		return;
+	}
+
+	InitAllSetting();
+
+	if (bIsFixed)
+	{
+		CurMode = ECameraMode::FixedMode;
+		DelayTime = 9999999;
+
+		// tick enable
+		PrimaryComponentTick.SetTickFunctionEnable(true);
+	}
+}
+
 void UCharacterCameraManager::OnAutoPositionMove()
 {
 	// if setting time is 0, do nothing

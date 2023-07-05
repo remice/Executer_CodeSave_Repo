@@ -27,10 +27,16 @@ void UFirstBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (Owner)
 	{
 		Velocity = Owner->GetVelocity();
-		GroundSpeed = Velocity.Size2D();
 		bIsIdle = GroundSpeed < MovingThreshould;
-		bIsFalling = Velocity.Z > JumpingThreshould || Velocity.Z < (-0.05) * JumpingThreshould;
+		bIsFalling = Velocity.Z > JumpingThreshould || Velocity.Z < (-0.2) * JumpingThreshould;
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
-		MoveDirection = Owner->GetGroundMoveRot();
+		if (Owner->GetGroundMoveRot(MoveDirection))
+		{
+			GroundSpeed = 200.f;
+		}
+		else
+		{
+			GroundSpeed = 0.f;
+		}
 	}
 }

@@ -13,7 +13,6 @@ UCharacterDodgeManager::UCharacterDodgeManager()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	GaugeMultiflier = 1.f;
 	DodgeRange = 150.f;
 }
 
@@ -22,7 +21,6 @@ UCharacterDodgeManager::UCharacterDodgeManager()
 void UCharacterDodgeManager::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 
