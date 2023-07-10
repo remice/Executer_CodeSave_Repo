@@ -47,8 +47,8 @@ bool AProjectile_Smart::CheckGeometry(bool bIsUp)
 {
 	check(GetWorld());
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
-	TArray<AActor*> IgnoreActors;
 	ObjectTypesArray.Emplace(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	TArray<AActor*> IgnoreActors;
 	FHitResult HitResult;
 
 	FVector EndPoint = bIsUp ? 
@@ -56,11 +56,8 @@ bool AProjectile_Smart::CheckGeometry(bool bIsUp)
 		:	GetActorLocation() + FVector(0, 0, -1) * CheckFloorLineLength;
 	bool bIsCollide = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), GetActorLocation(), EndPoint,
 		ObjectTypesArray, false, IgnoreActors, bOnDebugLine ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, HitResult, true);
-	if (bIsCollide)
-	{
-		return true;
-	}
-	return false;
+	
+	return bIsCollide;
 }
 
 void AProjectile_Smart::SmartMove(float DeltaTime)
