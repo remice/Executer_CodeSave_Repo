@@ -3,6 +3,7 @@
 
 #include "Enemy/BossBase.h"
 
+#include "Game/MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gimmic/PatternBase.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -49,6 +50,19 @@ void ABossBase::Tick(float DeltaTime)
 	{
 		RunCurveMove();
 	}
+}
+
+void ABossBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance());
+	if (GI)
+	{
+		GI->SetMapBoss(this);
+	}
+
+	HP = MaxHP;
 }
 
 void ABossBase::SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation)

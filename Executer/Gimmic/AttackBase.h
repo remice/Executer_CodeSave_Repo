@@ -27,6 +27,7 @@ protected:
 	UPROPERTY()
 	int32 Id;
 
+	UPROPERTY(EditAnywhere, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	EEnemyAttackData AttackType;
 
 public:

@@ -128,6 +128,9 @@ private:
 	UFUNCTION()
 	void SpecialAttack(const FInputActionValue& ActionValue);
 
+	UFUNCTION()
+	void InteractForObject();
+
 // skill actions
 private:
 	void SkillChanged(ESkillType SkillType, uint8 SkillIndex);
@@ -141,6 +144,8 @@ private:
 	TObjectPtr<class UCharacterCameraManager> CameraManager;
 	UPROPERTY()
 	TObjectPtr<class UCharacterMontageManager> MontageManager;
+	UPROPERTY()
+	TObjectPtr<class UCharacterInteractManager> InteractManager;
 
 	float DisableDodgeDelay = 1.f;
 

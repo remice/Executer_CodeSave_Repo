@@ -20,6 +20,7 @@
 #define PATH_IA_COMBOATTACK TEXT("/Game/Input/Action/IA_ComboAttack.IA_ComboAttack")
 #define PATH_IA_SKILL TEXT("/Game/Input/Action/IA_Skill.IA_Skill")
 #define PATH_IA_SPECIAL TEXT("/Game/Input/Action/IA_Special.IA_Special")
+#define PATH_IA_INTERACT TEXT("/Game/Input/Action/IA_Interact.IA_Interact")
 #define PATH_HUDWIDGET_C TEXT("/Game/UI/WBP_EXHUD.WBP_EXHUD_C")
 
 AMainPlayerController::AMainPlayerController()
@@ -34,6 +35,7 @@ AMainPlayerController::AMainPlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_COMBOATTACK(PATH_IA_COMBOATTACK);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SKILL(PATH_IA_SKILL);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SPECIAL(PATH_IA_SPECIAL);
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_INTERACT(PATH_IA_INTERACT);
 	static ConstructorHelpers::FClassFinder<UEXHUDWidget> HUDWIDGET_C(PATH_HUDWIDGET_C);
 
 	check(IMC.Succeeded());
@@ -46,6 +48,7 @@ AMainPlayerController::AMainPlayerController()
 	check(IA_COMBOATTACK.Succeeded());
 	check(IA_SKILL.Succeeded());
 	check(IA_SPECIAL.Succeeded());
+	check(IA_INTERACT.Succeeded());
 	check(HUDWIDGET_C.Succeeded());
 
 	PlayerMappingContext = IMC.Object;
@@ -58,6 +61,7 @@ AMainPlayerController::AMainPlayerController()
 	ComboAttackAction = IA_COMBOATTACK.Object;
 	SkillAction = IA_SKILL.Object;
 	SpecialAction = IA_SPECIAL.Object;
+	InteractAction = IA_INTERACT.Object;
 	HudWidgetClass = HUDWIDGET_C.Class;
 }
 
@@ -138,6 +142,11 @@ void AMainPlayerController::OnChangedSkillUI(ESkillType SkillType, const UTextur
 	case ESkillType::Special:
 		break;
 	}
+}
+
+void AMainPlayerController::OnOffInteractUI(bool IsEnable)
+{
+	HudWidget->K2_OnOffInteractUI(IsEnable);
 }
 
 void AMainPlayerController::InitHUDWidget()

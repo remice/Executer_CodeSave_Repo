@@ -26,6 +26,8 @@ public:
 	virtual void OnBossHpBar() override;
 	virtual void OnSkillCooldownUI(ESkillType SkillType, float Time) override;
 	virtual void OnChangedSkillUI(ESkillType SkillType, const UTexture2D* Icon) override;
+	UFUNCTION()
+	void OnOffInteractUI(bool IsEnable);
 
 private:
 	void InitHUDWidget();
@@ -61,6 +63,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> SpecialAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> InteractAction;
 
 // UI Section
 protected:

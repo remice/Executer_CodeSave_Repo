@@ -16,6 +16,7 @@
 #include "Character/CharacterDodgeManager.h"
 #include "Character/CharacterCameraManager.h"
 #include "Character/CharacterMontageManager.h"
+#include "Character/CharacterInteractManager.h"
 #include "Game/MyGameInstance.h"
 #include "Curves/CurveVector.h"
 #include "Engine/DamageEvents.h"
@@ -44,6 +45,7 @@ APlayerCharacter::APlayerCharacter()
 	DodgeManager = CreateDefaultSubobject<UCharacterDodgeManager>(TEXT("DodgeManager"));
 	CameraManager = CreateDefaultSubobject<UCharacterCameraManager>(TEXT("CameraManager"));
 	MontageManager = CreateDefaultSubobject<UCharacterMontageManager>(TEXT("MontageManager"));
+	InteractManager = CreateDefaultSubobject<UCharacterInteractManager>(TEXT("InteractManager"));
 
 	// Set collision size
 	GetCapsuleComponent()->InitCapsuleSize(34.f, 88.0f);
@@ -181,6 +183,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(PlayerController->ComboAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ComboAttack);
 	EnhancedInputComponent->BindAction(PlayerController->SkillAction, ETriggerEvent::Triggered, this, &APlayerCharacter::QERTSkill);
 	EnhancedInputComponent->BindAction(PlayerController->SpecialAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SpecialAttack);
+	EnhancedInputComponent->BindAction(PlayerController->InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::InteractForObject);
 
 	// Get local player
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -261,6 +264,7 @@ void APlayerCharacter::SetupManagers()
 	CameraManager->InitManager(GI->GetMapBoss(), Cam, CamArm, GetController(), 0.5f);
 	DodgeManager->InitManager(5.f, 150.f, DisableDodgeDelay);
 	MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
+	InteractManager->InitManager(Cam, 700.f);
 
 	EPlayerState->OnHpChanged.AddDynamic(DodgeManager, &UCharacterDodgeManager::OnDodgeDisable);
 	//EPlayerState->OnPlayerDead.AddUObject()
@@ -269,6 +273,12 @@ void APlayerCharacter::SetupManagers()
 	SkillChanged(ESkillType::E, SkillEMontageIndex);
 	SkillChanged(ESkillType::R, SkillRMontageIndex);
 	SkillChanged(ESkillType::T, SkillTMontageIndex);
+
+	AMainPlayerController* MPC = Cast<AMainPlayerController>(GetController());
+	if (MPC)
+	{
+		InteractManager->OnHit.BindUObject(MPC, &AMainPlayerController::OnOffInteractUI);
+	}
 }
 
 void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData* Settingdata)
@@ -685,6 +695,11 @@ void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 		
 		CameraManager->SetFixedMode(true);
 	}
+}
+
+void APlayerCharacter::InteractForObject()
+{
+	InteractManager->OnInteract();
 }
 
 void APlayerCharacter::SkillChanged(ESkillType SkillType, uint8 SkillIndex)

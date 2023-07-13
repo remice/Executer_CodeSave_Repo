@@ -44,4 +44,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnTSkillIconChanged"))
 	void K2_OnTSkillIconChanged(const UTexture2D* NewIcon);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnOffInteractUI"))
+	void K2_OnOffInteractUI(bool IsEnable);
 };

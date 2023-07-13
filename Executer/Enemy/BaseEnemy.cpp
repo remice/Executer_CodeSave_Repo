@@ -20,19 +20,9 @@ ABaseEnemy::ABaseEnemy()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
-}
 
-void ABaseEnemy::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance());
-	if (GI)
-	{
-		GI->SetMapBoss(this);
-	}
-
-	HP = MaxHP;
+	InitialHP = 10000;
+	bIsDead = false;
 }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -46,7 +36,7 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 	if (HP <= 0)
 	{
-		Destroy();
+		OnDeath();
 	}
 
 	return ActualDamage;
@@ -54,7 +44,12 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 void ABaseEnemy::CallInitialize()
 {
-	SetupHp(10000);
+	SetupHp(InitialHP);
+}
+
+void ABaseEnemy::OnDeath()
+{
+	OnDeathed.Broadcast();
 }
 
 void ABaseEnemy::SetupHp(float InMaxHp)

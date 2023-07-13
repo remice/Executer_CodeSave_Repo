@@ -68,6 +68,8 @@ public:
 protected:
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void PostInitializeComponents() override;
+
 // Interface Section
 public:
 	virtual void SpawnPatternManager(TSubclassOf<APatternBase> NewPatternClass, FName SocketName, bool bAttachLocation, bool bAttachRotation) override;
