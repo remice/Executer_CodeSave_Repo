@@ -6,6 +6,7 @@
 #include "Animation/HitMontageDataAsset.h"
 #include "Animation/StunMontageDataAsset.h"
 #include "AI/RangerAIController.h"
+#include "TutoAnimInstance.h"
 
 AEnemyTuto_Range::AEnemyTuto_Range()
 {
@@ -52,7 +53,10 @@ void AEnemyTuto_Range::OnStun()
 {
 	Super::OnStun();
 
-	PlayMontage(StunMontageData->StunMontage, false);
+	if (StunMontageData && StunMontageData->StunMontage)
+	{
+		PlayMontage(StunMontageData->StunMontage, false);
+	}
 }
 
 void AEnemyTuto_Range::EndStun()
@@ -77,14 +81,16 @@ void AEnemyTuto_Range::OnDeath()
 
 	if (DeathMontage == nullptr) return;
 
-	UAnimInstance* AI = Mesh->GetAnimInstance();
+	UTutoAnimInstance* AI = Cast<UTutoAnimInstance>(Mesh->GetAnimInstance());
 	if (IsValid(AI) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[EnemyTuto] AnimInstance are not exist!!"));
 		return;
 	}
 
+	AI->Montage_Stop(0.f);
 	AI->Montage_Play(DeathMontage);
+	AI->bOnDead = true;
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda(
@@ -94,6 +100,9 @@ void AEnemyTuto_Range::OnDeath()
 			bIsDead = true;
 
 			DetachFromControllerPendingDestroy();
+
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 			Mesh->SetAllBodiesSimulatePhysics(true);
 			Mesh->SetSimulatePhysics(true);

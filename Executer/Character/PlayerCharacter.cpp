@@ -693,7 +693,7 @@ void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 		GetMesh()->SetVisibility(false);
 		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 		
-		CameraManager->SetFixedMode(true);
+		CameraManager->OnAutoPositionMove();
 	}
 }
 
@@ -737,6 +737,8 @@ void APlayerCharacter::SpecialMove(float DeltaSeconds)
 
 		GetMesh()->SetVisibility(true);
 		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+
+		CameraManager->OnAutoPositionMove();
 	}
 }
 

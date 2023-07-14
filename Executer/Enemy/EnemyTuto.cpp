@@ -4,6 +4,7 @@
 #include "Enemy/EnemyTuto.h"
 
 #include "Animation/HitMontageDataAsset.h"
+#include "TutoAnimInstance.h"
 
 AEnemyTuto::AEnemyTuto()
 {
@@ -60,7 +61,7 @@ void AEnemyTuto::OnDeath()
 
 	if (DeathMontage == nullptr) return;
 
-	UAnimInstance* AI = Mesh->GetAnimInstance();
+	UTutoAnimInstance* AI = Cast<UTutoAnimInstance>(Mesh->GetAnimInstance());
 	if (IsValid(AI) == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[EnemyTuto] AnimInstance are not exist!!"));
@@ -68,6 +69,7 @@ void AEnemyTuto::OnDeath()
 	}
 
 	AI->Montage_Play(DeathMontage);
+	AI->bOnDead = true;
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda(
