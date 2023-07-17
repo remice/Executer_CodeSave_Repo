@@ -28,6 +28,7 @@ public:
 	virtual void OnChangedSkillUI(ESkillType SkillType, const UTexture2D* Icon) override;
 	UFUNCTION()
 	void OnOffInteractUI(bool IsEnable);
+	bool InteractTextUI();
 
 private:
 	void InitHUDWidget();

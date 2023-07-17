@@ -702,6 +702,17 @@ void APlayerCharacter::InteractForObject()
 	InteractManager->OnInteract();
 }
 
+bool APlayerCharacter::InteractForUI()
+{
+	AMainPlayerController* MPC = Cast<AMainPlayerController>(Controller);
+	if (MPC)
+	{
+		bool bResult = MPC->InteractTextUI();
+		return bResult;
+	}
+	return false;
+}
+
 void APlayerCharacter::SkillChanged(ESkillType SkillType, uint8 SkillIndex)
 {
 	const UTexture2D* SkillIcon = MontageManager->GetSkillIcon(SkillIndex);
@@ -744,5 +755,6 @@ void APlayerCharacter::SpecialMove(float DeltaSeconds)
 
 void APlayerCharacter::ComboAttack()
 {
+	if (InteractForUI()) return;
 	MontageManager->GetComboAttackCommand();
 }

@@ -87,10 +87,17 @@ void AEnemyTuto_Range::OnDeath()
 		UE_LOG(LogTemp, Warning, TEXT("[EnemyTuto] AnimInstance are not exist!!"));
 		return;
 	}
+	 
+	if (AI->bOnDead) return;
 
 	AI->Montage_Stop(0.f);
 	AI->Montage_Play(DeathMontage);
 	AI->bOnDead = true;
+
+	DetachFromControllerPendingDestroy();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda(
@@ -98,11 +105,6 @@ void AEnemyTuto_Range::OnDeath()
 			if (bIsDead) return;
 
 			bIsDead = true;
-
-			DetachFromControllerPendingDestroy();
-
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 			Mesh->SetAllBodiesSimulatePhysics(true);
 			Mesh->SetSimulatePhysics(true);

@@ -130,6 +130,7 @@ private:
 
 	UFUNCTION()
 	void InteractForObject();
+	bool InteractForUI();
 
 // skill actions
 private:

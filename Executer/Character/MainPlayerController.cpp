@@ -149,6 +149,13 @@ void AMainPlayerController::OnOffInteractUI(bool IsEnable)
 	HudWidget->K2_OnOffInteractUI(IsEnable);
 }
 
+bool AMainPlayerController::InteractTextUI()
+{
+	HudWidget->K2_OnInteractTextUI();
+	bool bResult = HudWidget->bIsSucceedInteract;
+	return bResult;
+}
+
 void AMainPlayerController::InitHUDWidget()
 {
 	HudWidget = CreateWidget<UEXHUDWidget>(this, HudWidgetClass);

@@ -68,6 +68,8 @@ void AEnemyTuto::OnDeath()
 		return;
 	}
 
+	if (AI->bOnDead) return;
+
 	AI->Montage_Play(DeathMontage);
 	AI->bOnDead = true;
 

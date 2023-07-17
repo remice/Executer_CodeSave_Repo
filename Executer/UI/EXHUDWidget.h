@@ -15,7 +15,7 @@ class EXECUTER_API UEXHUDWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	UEXHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+	UEXHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { bIsSucceedInteract = false; }
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnBossBar"))
@@ -47,4 +47,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnOffInteractUI"))
 	void K2_OnOffInteractUI(bool IsEnable);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnInteractTextUI"))
+	void K2_OnInteractTextUI();
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact")
+	uint8 bIsSucceedInteract : 1;
 };

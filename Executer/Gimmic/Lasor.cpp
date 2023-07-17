@@ -85,6 +85,7 @@ void ALasor::RotateLasor(float DeltaTime)
 {
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 	FRotator NewRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), LookRotation, DeltaTime, InterpSpeed);
+	
 	SetActorRotation(NewRotation);
 }
 
