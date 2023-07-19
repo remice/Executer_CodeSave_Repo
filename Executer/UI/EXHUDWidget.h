@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnBossBar"))
 	void K2_OnBossBar();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OffBossBar"))
+	void K2_OffBossBar();
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnQSkill"))
 	void K2_OnQSkill(float Cooldown);
 

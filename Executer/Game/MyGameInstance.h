@@ -17,6 +17,9 @@ class EXECUTER_API UMyGameInstance : public UGameInstance, public IExecuterGIInt
 	GENERATED_BODY()
 	
 public:
+	UMyGameInstance();
+	
+public:
 	// implement ExecuterGI interface
 	virtual void SetMapBoss(AActor* InMapBoss) override { MapBoss = InMapBoss; }
 	virtual AActor* GetMapBoss() const override { return MapBoss; }
@@ -24,9 +27,15 @@ public:
 	virtual const FPlayerSaveStat& GetSaveStat() const override { return PlayerStat; }
 	// end implement
 
+	UFUNCTION(BlueprintCallable, Category="ClearFlag")
+	void TutorialMapClear() {bTutoClear = true;}
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Boss", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AActor> MapBoss;
 
 	FPlayerSaveStat PlayerStat;
+
+	UPROPERTY(BlueprintReadOnly, Category="ClearFlag", meta = (AllowPrivateAccess = "true"))
+	uint8 bTutoClear : 1;
 };

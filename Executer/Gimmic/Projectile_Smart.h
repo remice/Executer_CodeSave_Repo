@@ -26,6 +26,9 @@ protected:
 	virtual bool CheckGeometry(bool bIsUp);
 	virtual void SmartMove(float DeltaTime);
 	void ScaleGravity(float ScaleAmount, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (AllowPrivateAccess = "true"))
+	void OnOverlapCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true", ClampMin = "0"))

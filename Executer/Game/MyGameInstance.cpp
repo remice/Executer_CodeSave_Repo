@@ -3,6 +3,12 @@
 
 #include "MyGameInstance.h"
 
+UMyGameInstance::UMyGameInstance()
+{
+	PlayerStat.Hp = 1000;
+	bTutoClear = false;
+}
+
 void UMyGameInstance::SetSaveStat(const FPlayerSaveStat& InSaveStat, ESaveMode SaveMode)
 {
 	FPlayerSaveStat ModifiedStat = PlayerStat;

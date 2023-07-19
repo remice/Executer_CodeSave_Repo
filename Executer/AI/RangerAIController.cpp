@@ -7,13 +7,13 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-#define PATH_BB TEXT("/Script/AIModule.BlackboardData'/Game/Character/Enemy/BB_TutoMinion_Range.BB_TutoMinion_Range'")
-#define PATH_BT TEXT("/Script/AIModule.BehaviorTree'/Game/Character/Enemy/BT_TutoMinion_Range.BT_TutoMinion_Range'")
+#define PATH_RANGER_BB TEXT("/Script/AIModule.BlackboardData'/Game/Character/Enemy/BB_TutoMinion_Range.BB_TutoMinion_Range'")
+#define PATH_RANGER_BT TEXT("/Script/AIModule.BehaviorTree'/Game/Character/Enemy/BT_TutoMinion_Range.BT_TutoMinion_Range'")
 
 ARangerAIController::ARangerAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(PATH_BB);
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(PATH_BT);
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(PATH_RANGER_BB);
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(PATH_RANGER_BT);
 
 	ensure(BBAssetRef.Succeeded());
 	ensure(BTAssetRef.Succeeded());

@@ -174,20 +174,20 @@ void AMainPlayerController::InitHUDWidget()
 
 	HudWidget->AddToViewport();
 
-	IInitializable* PreInitActor = GetPlayerState<IInitializable>();
-	if (PreInitActor)
+	IInitializable* PostInitActor = GetPlayerState<IInitializable>();
+	/*if (PostInitActor)
 	{
-		PreInitActor->CallInitialize();
+		PostInitActor->CallInitialize();
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[MainPlayerController] PlayerState are not exist!!"));
-	}
+	}*/
 
-	PreInitActor = Cast<IInitializable>(GI->GetMapBoss());
-	if (PreInitActor)
+	PostInitActor = Cast<IInitializable>(GI->GetMapBoss());
+	if (PostInitActor)
 	{
-		PreInitActor->CallInitialize();
+		PostInitActor->CallInitialize();
 	}
 	else
 	{

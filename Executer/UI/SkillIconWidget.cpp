@@ -21,6 +21,11 @@ void USkillIconWidget::NativeConstruct()
 
 void FPercentModifier::CalcPercent()
 {
+	if (World.IsValid() == false)
+	{
+		return;
+	}
+
 	CurTime += World->GetTimerManager().GetTimerRate(TimerHandle);
 
 	if (TargetTime <= 0)

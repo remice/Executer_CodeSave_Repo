@@ -45,6 +45,9 @@ class EXECUTER_API IExecuterGIInterface
 public:
 	virtual void SetMapBoss(AActor* InMapBoss) {}
 	virtual AActor* GetMapBoss() const { return nullptr; }
-	virtual const FPlayerSaveStat& GetSaveStat() const { return FPlayerSaveStat(); }
+	virtual const FPlayerSaveStat& GetSaveStat() const { return DefaultStat; }
 	virtual void SetSaveStat(const FPlayerSaveStat& InSaveStat, ESaveMode SaveMode = ESaveMode::Every) {}
+
+private:
+	FPlayerSaveStat DefaultStat = FPlayerSaveStat();
 };

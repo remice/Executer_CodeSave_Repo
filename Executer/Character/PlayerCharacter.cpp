@@ -17,10 +17,10 @@
 #include "Character/CharacterCameraManager.h"
 #include "Character/CharacterMontageManager.h"
 #include "Character/CharacterInteractManager.h"
-#include "Game/MyGameInstance.h"
 #include "Curves/CurveVector.h"
 #include "Engine/DamageEvents.h"
 #include "Enemy/BossBase.h"
+#include "Interface/ExecuterGIInterface.h"
 
 /***********************
 * Addresses of Asset
@@ -204,9 +204,6 @@ void APlayerCharacter::CallInitialize()
 	AExecuterPlayerState* ExecuterPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
 	check(ExecuterPlayerState);
 
-	ExecuterPlayerState->SetupHealth(1000);
-	ExecuterPlayerState->SetupArmor(0);
-
 	check(PlayerCharacterSettingData);
 	SetCharacterSettingData(PlayerCharacterSettingData);
 }
@@ -236,6 +233,20 @@ void APlayerCharacter::StopJumping()
 	CurJumpTime = LongJumpTime;
 }
 
+void APlayerCharacter::ChangeLevel()
+{
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
+
+	AExecuterPlayerState* EPS = Cast<AExecuterPlayerState>(GetPlayerState());
+	ensure(EPS);
+
+	FPlayerSaveStat SaveStat;
+	SaveStat.Hp = EPS->GetHealth();
+	SaveStat.SpecialGauge = EPS->GetSpecialGauge();
+	EGI->SetSaveStat(SaveStat);
+}
+
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -257,12 +268,12 @@ void APlayerCharacter::SetupManagers()
 	bool bHasAnimation = IsValid(GetMesh()->GetAnimInstance()) && PlayerComboAttackData != nullptr;
 	ensure(bHasAnimation);
 
-	UMyGameInstance* GI = Cast<UMyGameInstance>(GetOwner()->GetGameInstance());
-	ensure(GI);
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
 
 	// TODO : Use data asset
-	CameraManager->InitManager(GI->GetMapBoss(), Cam, CamArm, GetController(), 0.5f);
-	DodgeManager->InitManager(5.f, 150.f, DisableDodgeDelay);
+	CameraManager->InitManager(EGI->GetMapBoss(), Cam, CamArm, GetController(), 0.5f);
+	DodgeManager->InitManager(1.f, 150.f, DisableDodgeDelay);
 	MontageManager->InitManager(GetMesh()->GetAnimInstance(), PlayerComboAttackData);
 	InteractManager->InitManager(Cam, 700.f);
 
@@ -666,10 +677,10 @@ void APlayerCharacter::SpecialAttack(const FInputActionValue& ActionValue)
 
 	if (EPS->IsSpecialGaugeFull() == false) return;
 
-	UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance());
-	ensure(GI);
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
 
-	ABossBase* Boss = Cast<ABossBase>(GI->GetMapBoss());
+	ABossBase* Boss = Cast<ABossBase>(EGI->GetMapBoss());
 	if (Boss)
 	{
 		FBadState_Stun* StunState = new FBadState_Stun(10.f);

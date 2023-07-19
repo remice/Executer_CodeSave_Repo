@@ -82,6 +82,7 @@ EBTNodeResult::Type UBTTask_FindPlayer::ExecuteTask(UBehaviorTreeComponent& Owne
 		}
 
 		BlackboardComp->SetValueAsObject(BBPROPERTY_PlayerPawn, FindResult.GetActor());
+		BlackboardComp->SetValueAsBool(BBPROPERTY_bIsFace, false);
 		return EBTNodeResult::Succeeded;
 	}
 

@@ -29,9 +29,9 @@ public:
 
 	float GetDamaged(const float Damage);
 	void GetDodged(const float& DodgeAmount);
-	void SetupHealth(const float InMaxHealth);
+	void SetupHealth(const float InMaxHealth, float InCurHealth = 0);
 	void SetupArmor(const float InArmor);
-	void SetupSpecial(const float InMaxSpecialGauge);
+	void SetupSpecial(const float InMaxSpecialGauge, float InCurSpecialGauge = 0);
 	void SpecialAttack();
 	
 	FORCEINLINE float GetHealth() const { return CurHealth; }

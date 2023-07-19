@@ -91,3 +91,8 @@ void AProjectile_Smart::ScaleGravity(float ScaleAmount, float DeltaTime)
 		GetProjectileMovement()->ProjectileGravityScale = 0;
 	}
 }
+
+void AProjectile_Smart::OnOverlapCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	OnOverlapPlayer(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+}

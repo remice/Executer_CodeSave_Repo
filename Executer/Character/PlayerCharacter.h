@@ -63,6 +63,9 @@ public:
 	virtual void Jump() override;
 	virtual void StopJumping() override;
 
+	UFUNCTION(BlueprintCallable, Category="Custom")
+	void ChangeLevel();
+
 // Hit Section
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

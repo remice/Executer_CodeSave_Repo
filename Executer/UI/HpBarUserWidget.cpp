@@ -22,8 +22,6 @@ void UHpBarUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 void UHpBarUserWidget::SetTargetHp(const float& InTargetHp)
 {
-	if (TargetHp == InTargetHp) return;
-
 	CurHp = TargetHp;
 	TargetHp = InTargetHp;
 

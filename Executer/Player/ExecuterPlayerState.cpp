@@ -2,6 +2,7 @@
 
 
 #include "ExecuterPlayerState.h"
+#include "Interface/ExecuterGIInterface.h"
 
 AExecuterPlayerState::AExecuterPlayerState()
 {
@@ -19,9 +20,13 @@ void AExecuterPlayerState::PostInitializeComponents()
 
 void AExecuterPlayerState::CallInitialize()
 {
-	SetupSpecial(50);
-	SetupHealth(1000);
-	SetupArmor(5);
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
+
+	SetupHealth(1000, EGI->GetSaveStat().Hp);
+	SetupHealth(1000, 1000);
+	SetupArmor(0);
+	SetupSpecial(50, 0);
 }
 
 float AExecuterPlayerState::GetDamaged(const float Damage)
@@ -44,10 +49,11 @@ void AExecuterPlayerState::GetDodged(const float& DodgeLevel)
 	ChangeSpecial(FinalDodgeValue);
 }
 
-void AExecuterPlayerState::SetupHealth(const float InMaxHealth)
+void AExecuterPlayerState::SetupHealth(const float InMaxHealth, float InCurHealth)
 {
 	MaxHealth = InMaxHealth;
-	ChangeHealth(MaxHealth);
+	if (InCurHealth == 0) InCurHealth = MaxHealth;
+	ChangeHealth(InCurHealth);
 }
 
 void AExecuterPlayerState::SetupArmor(const float InArmor)
@@ -55,10 +61,10 @@ void AExecuterPlayerState::SetupArmor(const float InArmor)
 	Armor = InArmor;
 }
 
-void AExecuterPlayerState::SetupSpecial(const float InMaxSpecialGauge)
+void AExecuterPlayerState::SetupSpecial(const float InMaxSpecialGauge, float InCurSpecialGauge)
 {
 	MaxSpecialGauge = InMaxSpecialGauge;
-	ChangeSpecial(0);
+	ChangeSpecial(InCurSpecialGauge);
 }
 
 void AExecuterPlayerState::SpecialAttack()
