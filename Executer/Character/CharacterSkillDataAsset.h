@@ -20,7 +20,7 @@ struct FSkillAnimMontageData
 	}
 
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TObjectPtr<class UTexture2D> Icon;
+	TSoftObjectPtr<class UTexture2D> Icon;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TObjectPtr<class UAnimMontage> Montage;

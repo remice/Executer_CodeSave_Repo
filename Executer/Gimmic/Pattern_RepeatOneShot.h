@@ -23,7 +23,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Pattern")
-	TSubclassOf<class AAttackBase> SpawnBulletClass;
+	TSubclassOf<class ABaseAttack> SpawnBulletClass;
 
 	float ShotDelay = 99999.f;
 	float CurShotDelay = 0.f;

@@ -126,7 +126,6 @@ void FSmoothRotator::CalcSmoothRot()
 {
 	if (World.IsValid() == false)
 	{
-		World->GetTimerManager().ClearTimer(TimerHandle);
 		return;
 	}
 
@@ -137,6 +136,7 @@ void FSmoothRotator::CalcSmoothRot()
 	}
 
 	CurRot = UKismetMathLibrary::RInterpTo_Constant(CurRot, TargetRot, World->GetDeltaSeconds(), InterpSpeed);
+	OnRotChanged.ExecuteIfBound();
 }
 
 void FSmoothRotator::StartRotate(FRotator InActorRot, FRotator InTargetRot, FOnRotChangedSignature InDelegate, bool IsXYPlain)
@@ -170,7 +170,6 @@ void FSmoothRotator::StartRotate(FRotator InActorRot, FRotator InTargetRot, FOnR
 	TimerDelegate.BindLambda(
 		[&]() {
 			CalcSmoothRot();
-			OnRotChanged.ExecuteIfBound();
 		});
 
 	World->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.01f, true);
@@ -180,7 +179,6 @@ void FSmoothMover::CalcSmoothMove()
 {
 	if (World.IsValid() == false)
 	{
-		World->GetTimerManager().ClearTimer(TimerHandle);
 		return;
 	}
 
@@ -191,6 +189,7 @@ void FSmoothMover::CalcSmoothMove()
 	}
 
 	CurLoc = UKismetMathLibrary::VInterpTo_Constant(CurLoc, TargetLoc, World->GetDeltaSeconds(), InterpSpeed);
+	OnLocChanged.ExecuteIfBound();
 }
 
 void FSmoothMover::StartMove(FVector InActorLoc, FVector InTargetLoc, FOnLocChangedSignature InDelegate, bool IsXYPlain)
@@ -224,7 +223,6 @@ void FSmoothMover::StartMove(FVector InActorLoc, FVector InTargetLoc, FOnLocChan
 	TimerDelegate.BindLambda(
 		[&]() {
 			CalcSmoothMove();
-			OnLocChanged.ExecuteIfBound();
 		});
 
 	World->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.01f, true);

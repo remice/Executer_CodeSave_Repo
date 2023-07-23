@@ -9,6 +9,7 @@
 #include "Animation/HitMontageDataAsset.h"
 #include "Animation/StunMontageDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "FirstBossAnimInstance.h"
 
 #define PATH_ANIMINSTANCE_C TEXT("/Game/Character/Enemy/ABP_Gideon.ABP_Gideon_c")
 #define PATH_SKELETALMESH TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGideon/Characters/Heroes/Gideon/Skins/Inquisitor/Meshes/Gideon_Inquisitor.Gideon_Inquisitor'")
@@ -37,6 +38,7 @@ AFirstBoss::AFirstBoss()
 	AIControllerClass = AFirstBossAIController::StaticClass();
 
 	AITaskManager = CreateDefaultSubobject<UAITaskManager>(TEXT("AITaskManager"));
+	bOnDead = false;
 }
 
 void AFirstBoss::BeginPlay()
@@ -51,6 +53,8 @@ void AFirstBoss::BeginPlay()
 
 float AFirstBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bOnDead) return 0.f;
+
 	float ResultDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	if (DamageCauser)
@@ -160,6 +164,26 @@ void AFirstBoss::StartCurveMove(UCurveVector* CurveData)
 	StopMove();
 }
 
+void AFirstBoss::OnDeath()
+{
+	if (bOnDead) return;
+
+	Super::OnDeath();
+
+	UFirstBossAnimInstance* BossAI = Cast<UFirstBossAnimInstance>(AnimInstance);
+	if (BossAI == nullptr) return;
+
+	bOnDead = true;
+	BossAI->Montage_Stop(0.f);
+	BossAI->Montage_Play(DeathMontage);
+	BossAI->bOnDead = true;
+	FOnMontageEnded EndedDelegate;
+	EndedDelegate.BindUObject(this, &AFirstBoss::DeathMontageEnded);
+	BossAI->Montage_SetEndDelegate(EndedDelegate, DeathMontage);
+
+	DetachFromControllerPendingDestroy();
+}
+
 void AFirstBoss::PlayMontage(UAnimMontage* Montage, bool IsPrimitive)
 {
 	if (IsValid(AnimInstance) == false)
@@ -172,6 +196,13 @@ void AFirstBoss::PlayMontage(UAnimMontage* Montage, bool IsPrimitive)
 
 	StopMove();
 	AnimInstance->Montage_Play(Montage);
+}
+
+void AFirstBoss::DeathMontageEnded(UAnimMontage* TargetMontage, bool IsProperlyEnded)
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetEnableGravity(false);
 }
 
 void AFirstBoss::TurnToLoc(const FVector& TargetLocation, float InterpSpeed)

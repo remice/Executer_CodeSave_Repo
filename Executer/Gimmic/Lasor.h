@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gimmic/AttackBase.h"
+#include "Gimmic/BaseAttack.h"
 #include "Lasor.generated.h"
 
 USTRUCT()
@@ -12,15 +12,15 @@ struct FLasorValueVector
 	GENERATED_BODY()
 	
 public:
-	FLasorValueVector() : Name(), Value() {}
+	FLasorValueVector() {}
 	FLasorValueVector(FString InName, FVector InValue) : Name(InName), Value(InValue) {}
 
 public:
 	UPROPERTY(EditAnywhere, Category="Property")
-	FString Name;
+	FString Name = FString();
 
 	UPROPERTY(EditAnywhere, Category = "Property")
-	FVector Value;
+	FVector Value = FVector();
 };
 
 USTRUCT()
@@ -29,22 +29,22 @@ struct FLasorValueFloat
 	GENERATED_BODY()
 
 public:
-	FLasorValueFloat() : Name(), Value() {}
+	FLasorValueFloat() {}
 	FLasorValueFloat(FString InName, float InValue) : Name(InName), Value(InValue) {}
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Property")
-	FString Name;
+	FString Name = FString();
 
 	UPROPERTY(EditAnywhere, Category = "Property")
-	float Value;
+	float Value = 0;
 };
 
 /**
  * 
  */
 UCLASS()
-class EXECUTER_API ALasor : public AAttackBase
+class EXECUTER_API ALasor : public ABaseAttack
 {
 	GENERATED_BODY()
 	

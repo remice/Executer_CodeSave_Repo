@@ -36,9 +36,12 @@ public:
 
 protected:
 	virtual void StartCurveMove(class UCurveVector* CurveData);
+	virtual void OnDeath() override;
 
 private:
 	void PlayMontage(class UAnimMontage* Montage, bool IsPrimitive = true);
+	UFUNCTION()
+	void DeathMontageEnded(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
 	
 	// ExecuterAIInterface Section
 	virtual void TurnToLoc(const FVector& TargetLocation, float InterpSpeed) override;
@@ -61,4 +64,6 @@ protected:
 	TObjectPtr<class UAnimInstance> AnimInstance;
 
 	FVector PrePosition = FVector::ZeroVector;
+
+	uint8 bOnDead : 1;
 };

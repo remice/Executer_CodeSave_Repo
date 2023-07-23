@@ -14,7 +14,7 @@ AProjectile_CosmicBomb::AProjectile_CosmicBomb()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetLifeSpan(10.f);
-	AttackType = EEnemyAttackData::Bomb;
+	rAttackType = EAttackData::Bomb;
 }
 
 void AProjectile_CosmicBomb::BeginPlay()
@@ -89,7 +89,7 @@ void AProjectile_CosmicBomb::Explosion()
 			UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(OuterActor->GetComponentByClass(UBlockerStaticMeshComponent::StaticClass()));
 			if (BlockerMeshComponent)
 			{
-				BlockerMeshComponent->EvaluationDamage(AttackLevel, GetDamage());
+				BlockerMeshComponent->EvaluationDamage(GetAttackLevel(), GetDamage());
 			}
 
 			FDamageEvent DamageEvent;

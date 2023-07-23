@@ -11,6 +11,7 @@ UFirstBossAnimInstance::UFirstBossAnimInstance()
 	JumpingThreshould = 100.f;
 	bIsFalling = false;
 	bIsJumping = false;
+	bOnDead = false;
 }
 
 void UFirstBossAnimInstance::NativeInitializeAnimation()

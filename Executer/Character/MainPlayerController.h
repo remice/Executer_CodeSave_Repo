@@ -22,6 +22,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* aPawn) override;
+
 public:
 	virtual void OnBossHpBar() override;
 	virtual void OnSkillCooldownUI(ESkillType SkillType, float Time) override;
@@ -29,6 +31,7 @@ public:
 	UFUNCTION()
 	void OnOffInteractUI(bool IsEnable);
 	bool InteractTextUI();
+	void OnLevelEnd();
 
 private:
 	void InitHUDWidget();

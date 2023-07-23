@@ -68,7 +68,12 @@ AMainPlayerController::AMainPlayerController()
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void AMainPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
 	InitHUDWidget();
 }
 
@@ -154,6 +159,11 @@ bool AMainPlayerController::InteractTextUI()
 	HudWidget->K2_OnInteractTextUI();
 	bool bResult = HudWidget->bIsSucceedInteract;
 	return bResult;
+}
+
+void AMainPlayerController::OnLevelEnd()
+{
+	HudWidget->K2_OnLevelEnd();
 }
 
 void AMainPlayerController::InitHUDWidget()

@@ -25,8 +25,6 @@
 /***********************
 * Addresses of Asset
 ************************/
-#define PATH_SK_KALLARI TEXT("/Game/ParagonKallari/Characters/Heroes/Kallari/Skins/Rogue/Meshes/Kallari_Rogue.Kallari_Rogue")
-#define PATH_ABP_KALLARI TEXT("/Game/ParagonKallari/Characters/Heroes/Kallari/Kallari_AnimBlueprint.Kallari_AnimBlueprint")
 #define PATH_CURVE_JUMP TEXT("/Game/Curve/JumpCurve.JumpCurve")
 #define PATH_CURVE_DASH TEXT("/Game/Curve/DashCurve.DashCurve")
 #define PATH_DASH_EFFECT TEXT("/Game/ImproveFights_Vfx/Particles/P_Darkness_Dash.P_Darkness_Dash")
@@ -79,16 +77,12 @@ APlayerCharacter::APlayerCharacter()
 	Cam->SetupAttachment(CamArm, USpringArmComponent::SocketName);
 	Cam->bUsePawnControlRotation = false;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_KALLARI(PATH_SK_KALLARI);
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> ABP_KALLARI(PATH_ABP_KALLARI);
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CURVE_JUMP(PATH_CURVE_JUMP);
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CURVE_DASH(PATH_CURVE_DASH);
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DASH_EFFECT(PATH_DASH_EFFECT);
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DASHTRAIL_EFFECT(PATH_DASHTRAIL_EFFECT);
 	static ConstructorHelpers::FObjectFinder<UPlayerCharacterSettingData> SETTING_DATA(PATH_SETTINGDATA);
 
-	check(SK_KALLARI.Succeeded());
-	check(ABP_KALLARI.Succeeded());
 	check(CURVE_JUMP.Succeeded());
 	check(CURVE_DASH.Succeeded());
 	check(DASH_EFFECT.Succeeded());
@@ -96,8 +90,6 @@ APlayerCharacter::APlayerCharacter()
 	check(SETTING_DATA.Succeeded());
 
 	// Apply find assets
-	GetMesh()->SetSkeletalMesh(SK_KALLARI.Object);
-	GetMesh()->SetAnimInstanceClass(ABP_KALLARI.Object->GeneratedClass);
 	GetMesh()->bWaitForParallelClothTask = true;
 	JumpCurve = CURVE_JUMP.Object;
 	DashCurve = CURVE_DASH.Object;
@@ -241,10 +233,15 @@ void APlayerCharacter::ChangeLevel()
 	AExecuterPlayerState* EPS = Cast<AExecuterPlayerState>(GetPlayerState());
 	ensure(EPS);
 
+	AMainPlayerController* PlayerController = Cast<AMainPlayerController>(Controller);
+	ensure(PlayerController);
+
 	FPlayerSaveStat SaveStat;
 	SaveStat.Hp = EPS->GetHealth();
 	SaveStat.SpecialGauge = EPS->GetSpecialGauge();
 	EGI->SetSaveStat(SaveStat);
+	MontageManager->DisableAllTimer();
+	PlayerController->OnLevelEnd();
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

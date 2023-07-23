@@ -4,7 +4,7 @@
 #include "Gimmic/PatternBase.h"
 
 #include "Components/ArrowComponent.h"
-#include "AttackBase.h"
+#include "BaseAttack.h"
 
 // Sets default values
 APatternBase::APatternBase()

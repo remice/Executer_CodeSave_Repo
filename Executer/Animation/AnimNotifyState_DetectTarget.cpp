@@ -50,6 +50,8 @@ void UAnimNotifyState_DetectTarget::NotifyTick(USkeletalMeshComponent* MeshComp,
 void UAnimNotifyState_DetectTarget::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
+
+	IgnoreActorArray.Empty();
 }
 
 void UAnimNotifyState_DetectTarget::SaveSocketLocations(USkeletalMeshComponent* MeshComp)

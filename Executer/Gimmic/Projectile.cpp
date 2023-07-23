@@ -42,7 +42,7 @@ AProjectile::AProjectile()
 
 	InitialLifeSpan = 5.f;
 
-	AttackType = EEnemyAttackData::Projectile;
+	rAttackType = EAttackData::Projectile;
 }
 
 // Called when the game starts or when spawned
@@ -70,7 +70,7 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 	UBlockerStaticMeshComponent* BlockerMeshComponent = Cast<UBlockerStaticMeshComponent>(OtherComp);
 	if (BlockerMeshComponent)
 	{
-		BlockerMeshComponent->EvaluationDamage(AttackLevel, GetDamage());
+		BlockerMeshComponent->EvaluationDamage(GetAttackLevel(), GetDamage());
 	}
 
 	FDamageEvent DamageEvent;
@@ -80,7 +80,7 @@ void AProjectile::OnOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AAct
 
 int32 AProjectile::GetId()
 {
-	return Id;
+	return rId;
 }
 
 void AProjectile::SpawnHitEffect()

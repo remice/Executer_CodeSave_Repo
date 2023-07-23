@@ -29,7 +29,7 @@ void ABasePattern::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EEnemyAttackData::Projectile];
+	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EAttackData::Projectile];
 	FProjectileData* ProjectileData = (FProjectileData*)(uint8*)&AttackData;
 
 	UE_LOG(LogTemp, Warning, TEXT("%f"), ProjectileData->Damage);

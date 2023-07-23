@@ -9,7 +9,7 @@
 #include "EXGameSingleton.generated.h"
 
 UENUM()
-enum class EEnemyAttackData : uint8
+enum class EAttackData : uint8
 {
 	Default = 0,
 	Projectile,
@@ -58,8 +58,8 @@ public:
 
 public:
 	UPROPERTY()
-	TMap<EEnemyAttackData, FEnemyAttackDataStruct> EnemyAttackDataMap;
+	TMap<EAttackData, FEnemyAttackDataStruct> EnemyAttackDataMap;
 
 private:
-	void AddAttackDataToMap(const UDataTable* InDataTable, EEnemyAttackData DataType);
+	void AddAttackDataToMap(const UDataTable* InDataTable, EAttackData DataType);
 };

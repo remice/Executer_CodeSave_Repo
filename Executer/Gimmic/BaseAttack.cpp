@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Gimmic/AttackBase.h"
+#include "Gimmic/BaseAttack.h"
 
 #include "GameData/EnemyAttackData.h"
 
 // Sets default values
-AAttackBase::AAttackBase()
+ABaseAttack::ABaseAttack()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	rAttackLevel = 0;
@@ -16,18 +16,18 @@ AAttackBase::AAttackBase()
 	rId = FMath::Rand();
 }
 
-void AAttackBase::BeginPlay()
+void ABaseAttack::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AAttackBase::DestroySelf()
+void ABaseAttack::DestroySelf()
 {
 	Destroy();
 	return;
 }
 
-float AAttackBase::GetDamage() const
+float ABaseAttack::GetDamage() const
 {
 	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[rAttackType];
 	const FBaseEnemyAttackData* EnemyAttackData = AttackData.GetValidData<FBaseEnemyAttackData>(rAttackLevel);

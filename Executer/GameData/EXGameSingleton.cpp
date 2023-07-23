@@ -16,9 +16,9 @@ UEXGameSingleton::UEXGameSingleton()
 	check(LasorTableRef.Succeeded());
 	check(BombTableRef.Succeeded());
 
-	AddAttackDataToMap(ProjectileTableRef.Object, EEnemyAttackData::Projectile);
-	AddAttackDataToMap(LasorTableRef.Object, EEnemyAttackData::Lasor);
-	AddAttackDataToMap(BombTableRef.Object, EEnemyAttackData::Bomb);
+	AddAttackDataToMap(ProjectileTableRef.Object, EAttackData::Projectile);
+	AddAttackDataToMap(LasorTableRef.Object, EAttackData::Lasor);
+	AddAttackDataToMap(BombTableRef.Object, EAttackData::Bomb);
 }
 
 UEXGameSingleton& UEXGameSingleton::Get()
@@ -27,7 +27,7 @@ UEXGameSingleton& UEXGameSingleton::Get()
 	return *SingletonObject;
 }
 
-void UEXGameSingleton::AddAttackDataToMap(const UDataTable* InDataTable, EEnemyAttackData DataType)
+void UEXGameSingleton::AddAttackDataToMap(const UDataTable* InDataTable, EAttackData DataType)
 {
 	check(InDataTable->GetRowMap().Num() > 0);
 

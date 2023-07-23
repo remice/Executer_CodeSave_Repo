@@ -146,7 +146,7 @@ private:
 	TObjectPtr<class UCharacterDodgeManager> DodgeManager;
 	UPROPERTY()
 	TObjectPtr<class UCharacterCameraManager> CameraManager;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Manager, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCharacterMontageManager> MontageManager;
 	UPROPERTY()
 	TObjectPtr<class UCharacterInteractManager> InteractManager;

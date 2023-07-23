@@ -12,6 +12,14 @@ void USkillIconWidget::SetupPercent(float Percent)
 	PercentModifier.SetPercent(Percent);
 }
 
+void USkillIconWidget::DisableAllTimer()
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(PercentModifier.TimerHandle);
+	}
+}
+
 void USkillIconWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

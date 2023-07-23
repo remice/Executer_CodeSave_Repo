@@ -22,7 +22,7 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Pattern")
-	TSubclassOf<class AAttackBase> SpawnBulletClass;
+	TSubclassOf<class ABaseAttack> SpawnBulletClass;
 
 	UPROPERTY(EditAnywhere, Category="Pattern")
 	float NextDelay;

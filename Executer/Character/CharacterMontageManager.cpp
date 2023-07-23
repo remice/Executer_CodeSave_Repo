@@ -7,20 +7,12 @@
 #include "Interface/CurveMovable.h"
 #include "Curves/CurveVector.h"
 
-#define PATH_SKILLDATA TEXT("/Script/Executer.CharacterSkillDataAsset'/Game/DataAssets/DA_PlayerSkill.DA_PlayerSkill'")
-
 // Sets default values for this component's properties
 UCharacterMontageManager::UCharacterMontageManager()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	static ConstructorHelpers::FObjectFinder<UCharacterSkillDataAsset> SK_SKILLDATA(PATH_SKILLDATA);
-
-	check(SK_SKILLDATA.Succeeded());
-
-	PlayerSkillData = SK_SKILLDATA.Object;
 
 	bHasNextComboCommand = false;
 	bCanStop = true;
@@ -30,8 +22,12 @@ void UCharacterMontageManager::InitManager(UAnimInstance* InAnimInstance, UCombo
 {
 	PawnAnimInstance = InAnimInstance;
 	PlayerComboAttackData = InPlayerComboAttackData;
+	if (PlayerSkillData.IsPending())
+	{
+		PlayerSkillData.LoadSynchronous();
+	}
 
-	for (const auto SkillDatas : PlayerSkillData->SkillAnimMontageDatas)
+	for (const auto SkillDatas : PlayerSkillData.Get()->SkillAnimMontageDatas)
 	{
 		FSkillCoolTimeManager CoolTimeManager = FSkillCoolTimeManager(GetOwner()->GetWorld());
 		CoolTimeManager.CoolTime = SkillDatas.CoolTime;
@@ -71,7 +67,12 @@ const UTexture2D* UCharacterMontageManager::GetSkillIcon(uint8 MontageIndex)
 
 	int32 ValidMontageIndex = FMath::Clamp(MontageIndex, 0, PlayerSkillData->SkillAnimMontageDatas.Num() - 1);
 
-	return PlayerSkillData->SkillAnimMontageDatas[ValidMontageIndex].Icon;
+	if (PlayerSkillData->SkillAnimMontageDatas[ValidMontageIndex].Icon.IsPending())
+	{
+		PlayerSkillData->SkillAnimMontageDatas[ValidMontageIndex].Icon.LoadSynchronous();
+	}
+
+	return PlayerSkillData->SkillAnimMontageDatas[ValidMontageIndex].Icon.Get();
 }
 
 bool UCharacterMontageManager::PlaySkillMontage(int32 MontageIndex, ESkillType SkillType)
@@ -144,6 +145,14 @@ bool UCharacterMontageManager::IsCoolTimeSkill(uint8 MontageIndex)
 	return SkillCoolTimes[ModifyIndex].bOnCool;
 }
 
+void UCharacterMontageManager::DisableAllTimer()
+{
+	for (auto CooldownManager : SkillCoolTimes)
+	{
+		CooldownManager.StopTimer();
+	}
+}
+
 bool UCharacterMontageManager::StopMontage()
 {
 	if (bCanStop == false)
@@ -214,11 +223,16 @@ void UCharacterMontageManager::ComboActionBegin()
 
 bool UCharacterMontageManager::CheckDataValid()
 {
-	bool bIsValidAllPtr = IsValid(PawnAnimInstance) && IsValid(PlayerComboAttackData) && IsValid(PlayerSkillData);
+	bool bIsValidAllPtr = IsValid(PawnAnimInstance) && IsValid(PlayerComboAttackData);
 
 	if (bIsValidAllPtr == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("montage manager has unvalid pointer"));
+	}
+
+	if (PlayerSkillData.IsPending())
+	{
+		PlayerSkillData.LoadSynchronous();
 	}
 
 	return bIsValidAllPtr;
@@ -283,11 +297,19 @@ void FSkillCoolTimeManager::ExecuteCooldown()
 
 	bOnCool = true;
 
-	FTimerHandle TimerHandle;
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindLambda(
 		[&] {
+			if (World.IsValid() == false) return;
 			bOnCool = false;
 		});
 	World.Get()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, CoolTime, false);
+}
+
+void FSkillCoolTimeManager::StopTimer()
+{
+	if (World.IsValid())
+	{
+		World.Get()->GetTimerManager().ClearTimer(TimerHandle);
+	}
 }

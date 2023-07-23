@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnInteractTextUI"))
 	void K2_OnInteractTextUI();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Custom", meta = (DisplayName = "OnLevelEnd"))
+	void K2_OnLevelEnd();
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact")
 	uint8 bIsSucceedInteract : 1;

@@ -30,7 +30,7 @@ ALasor::ALasor()
 
 	SetLifeSpan(5.f);
 
-	AttackType = EEnemyAttackData::Lasor;
+	rAttackType = EAttackData::Lasor;
 	InterpSpeed = 20.f;
 }
 
@@ -134,7 +134,7 @@ void ALasor::DodgeLasor()
 	ICanDodgeActor* DodgePawn = Cast<ICanDodgeActor>(PawnHitResult.GetActor());
 	if (DodgePawn)
 	{
-		DodgePawn->AddProjectileIdToSet(Id);
+		DodgePawn->AddProjectileIdToSet(rId);
 		IgnoreDodgeActorArray.Emplace(PawnHitResult.GetActor());
 
 		FTimerHandle TimerHandle;

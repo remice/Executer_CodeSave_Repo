@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttackBase.h"
+#include "BaseAttack.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/CanBeDodgedActor.h"
 #include "Projectile.generated.h"
 
 UCLASS()
-class EXECUTER_API AProjectile : public AAttackBase, public ICanBeDodgedActor
+class EXECUTER_API AProjectile : public ABaseAttack, public ICanBeDodgedActor
 {
 	GENERATED_BODY()
 	

@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "SetupPercent"))
 	void SetupPercent(float Percent);
 
+	UFUNCTION(BlueprintCallable, Category = "Custom", meta = (DisplayName = "DisableAllTimer"))
+	void DisableAllTimer();
+
 private:
 	FPercentModifier PercentModifier;
 };

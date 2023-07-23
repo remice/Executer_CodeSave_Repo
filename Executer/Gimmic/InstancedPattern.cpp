@@ -134,7 +134,7 @@ void AInstancedPattern::DestroyBullets()
 
 void AInstancedPattern::OnCollideSomething(const FHitResult& HitResult, const FTransform& ComponentTransform)
 {
-	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EEnemyAttackData::Projectile];
+	FEnemyAttackDataStruct AttackData = UEXGameSingleton::Get().EnemyAttackDataMap[EAttackData::Projectile];
 	const FBaseEnemyAttackData* EnemyAttackData = AttackData.GetValidData<FBaseEnemyAttackData>(AttackLevel);
 	float SingletonDamage = EnemyAttackData->Damage;
 

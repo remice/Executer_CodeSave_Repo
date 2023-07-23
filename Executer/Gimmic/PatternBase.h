@@ -58,7 +58,7 @@ protected:
 	TArray<TObjectPtr<class UArrowComponent>> FirePointArray;
 
 	UPROPERTY()
-	TArray<TWeakObjectPtr<class AAttackBase>> BulletArray;
+	TArray<TWeakObjectPtr<class ABaseAttack>> BulletArray;
 
 	UPROPERTY(EditAnywhere, Category = Pattern)
 	int32 PatternId;

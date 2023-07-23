@@ -22,12 +22,15 @@ public:
 
 public:
 	void ExecuteCooldown();
+	void StopTimer();
 
 	float CoolTime = 0.1f;
 	uint8 bOnCool : 1;
 
 	UPROPERTY()
 	TWeakObjectPtr<UWorld> World;
+
+	FTimerHandle TimerHandle;
 };
 
 DECLARE_DELEGATE(FOnEndSkillSigniture)
@@ -50,7 +53,8 @@ public:
 	void GetComboAttackCommand();
 	const UTexture2D* GetSkillIcon(uint8 MontageIndex);
 	bool PlaySkillMontage(int32 MontageIndex, ESkillType SkillType);
-	bool IsCoolTimeSkill(uint8 MontageIndex);
+	bool IsCoolTimeSkill(uint8 MontageIndex); 
+	void DisableAllTimer();
 
 public:
 	FOnEndSkillSigniture OnEndSkill;
@@ -70,6 +74,7 @@ private:
 private:
 	void ComboActionBegin();
 	bool CheckDataValid();
+	UFUNCTION()
 	void ComboActionEnd(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
 	void SetComboCheckTimer();
 	void ComboCheck();
@@ -83,7 +88,7 @@ private:
 	TObjectPtr<class UComboAttackDataAsset> PlayerComboAttackData;
 
 	UPROPERTY(EditAnywhere, Category = Data)
-	TObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
+	TSoftObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
 
 	TArray<FSkillCoolTimeManager> SkillCoolTimes;
 

@@ -6,16 +6,16 @@
 #include "GameFramework/Actor.h"
 #include "GameData/EXGameSingleton.h"
 
-#include "AttackBase.generated.h"
+#include "BaseAttack.generated.h"
 
 UCLASS()
-class EXECUTER_API AAttackBase : public AActor
+class EXECUTER_API ABaseAttack : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	AAttackBase();
+	ABaseAttack();
 
 	virtual void BeginPlay() override;
 	virtual void DestroySelf();
@@ -34,4 +34,5 @@ public:
 	FORCEINLINE float GetAttackLevel() const { return rAttackLevel; }
 	FORCEINLINE void SetId(const int32& InId) { rId = InId; }
 	float GetDamage() const;
+
 };

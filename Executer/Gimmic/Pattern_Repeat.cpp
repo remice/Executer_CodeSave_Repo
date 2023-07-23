@@ -4,7 +4,7 @@
 #include "Gimmic/Pattern_Repeat.h"
 #include "Interface/IRotatableObject.h"
 #include "Components/ArrowComponent.h"
-#include "AttackBase.h"
+#include "BaseAttack.h"
 
 APattern_Repeat::APattern_Repeat()
 {
@@ -49,10 +49,10 @@ void APattern_Repeat::SpawnBullets()
 
 		FActorSpawnParameters SpawnParameters;
 		AActor* SpawnObject = GetWorld()->SpawnActor(SpawnBulletClass, &SpawnLoc, &SpawnRot, SpawnParameters);
-		AAttackBase* AttackCauser = Cast<AAttackBase>(SpawnObject);
+		ABaseAttack* AttackCauser = Cast<ABaseAttack>(SpawnObject);
 		if (AttackCauser == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[Pattern_Repeat] Cast to AttackBase was failed."));
+			UE_LOG(LogTemp, Warning, TEXT("[Pattern_Repeat] Cast to BaseAttack was failed."));
 			continue;
 		}
 		AttackCauser->SetId(PatternId);
