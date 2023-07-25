@@ -29,6 +29,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="ClearFlag")
 	void TutorialMapClear() {bTutoClear = true;}
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+	bool ToggleMoveTowardCamera();
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+	bool GetMoveTowardCamera() { return PlayerStat.bMoveTowardCameraOnly; }
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Boss", meta = (AllowPrivateAccess = "true"))

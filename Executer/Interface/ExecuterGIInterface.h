@@ -11,7 +11,8 @@ enum class ESaveMode
 {
 	Every = 0,
 	HpOnly,
-	GaugeOnly
+	GaugeOnly,
+	MoveTowardCameraOnly
 };
 
 USTRUCT()
@@ -20,11 +21,12 @@ struct FPlayerSaveStat
 	GENERATED_BODY()
 	
 public:
-	FPlayerSaveStat() {}
+	FPlayerSaveStat() { bMoveTowardCameraOnly = false; }
 
 public:
 	float Hp = 0;
 	float SpecialGauge = 0;
+	uint8 bMoveTowardCameraOnly : 1;
 };
 
 // This class does not need to be modified.

@@ -55,6 +55,7 @@ public:
 	bool PlaySkillMontage(int32 MontageIndex, ESkillType SkillType);
 	bool IsCoolTimeSkill(uint8 MontageIndex); 
 	void DisableAllTimer();
+	void OnDead();
 
 public:
 	FOnEndSkillSigniture OnEndSkill;
@@ -69,6 +70,9 @@ private:
 	void SetCanMove();
 
 	void OnCoolTimeSkill(uint8 MontageIndex, ESkillType SkillType);
+
+	UFUNCTION()
+	void DeathMontageEnded(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
 
 // Combo Animation Section
 private:
@@ -89,6 +93,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Data)
 	TSoftObjectPtr<class UCharacterSkillDataAsset> PlayerSkillData;
+
+	UPROPERTY(EditAnywhere, Category = "Data | Animation")
+	TObjectPtr<class UAnimMontage> DeathMontage;
 
 	TArray<FSkillCoolTimeManager> SkillCoolTimes;
 

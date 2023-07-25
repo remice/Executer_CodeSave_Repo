@@ -6,6 +6,7 @@
 #include "CharacterSkillDataAsset.h"
 #include "Interface/CurveMovable.h"
 #include "Curves/CurveVector.h"
+#include "Character/PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UCharacterMontageManager::UCharacterMontageManager()
@@ -153,6 +154,19 @@ void UCharacterMontageManager::DisableAllTimer()
 	}
 }
 
+void UCharacterMontageManager::OnDead()
+{
+	if (CheckDataValid() == false) return;
+
+	if (DeathMontage == nullptr) return;
+
+	PawnAnimInstance->Montage_Stop(0.f);
+	PawnAnimInstance->Montage_Play(DeathMontage);
+	FOnMontageEnded MontageEnded;
+	MontageEnded.BindUObject(this, &UCharacterMontageManager::DeathMontageEnded);
+	PawnAnimInstance->Montage_SetEndDelegate(MontageEnded);
+}
+
 bool UCharacterMontageManager::StopMontage()
 {
 	if (bCanStop == false)
@@ -197,6 +211,15 @@ void UCharacterMontageManager::OnCoolTimeSkill(uint8 MontageIndex, ESkillType Sk
 	if (UIController)
 	{
 		UIController->OnSkillCooldownUI(SkillType, SkillCoolTimes[ModifyIndex].CoolTime);
+	}
+}
+
+void UCharacterMontageManager::DeathMontageEnded(UAnimMontage* TargetMontage, bool IsProperlyEnded)
+{
+	APlayerCharacter* OwnerCharacter = Cast<APlayerCharacter>(GetOwner());
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->PostDead();
 	}
 }
 

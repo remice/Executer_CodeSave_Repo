@@ -21,6 +21,7 @@
 #define PATH_IA_SKILL TEXT("/Game/Input/Action/IA_Skill.IA_Skill")
 #define PATH_IA_SPECIAL TEXT("/Game/Input/Action/IA_Special.IA_Special")
 #define PATH_IA_INTERACT TEXT("/Game/Input/Action/IA_Interact.IA_Interact")
+#define PATH_IA_OPTION TEXT("/Game/Input/Action/IA_Option.IA_Option")
 #define PATH_HUDWIDGET_C TEXT("/Game/UI/WBP_EXHUD.WBP_EXHUD_C")
 
 AMainPlayerController::AMainPlayerController()
@@ -36,6 +37,7 @@ AMainPlayerController::AMainPlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SKILL(PATH_IA_SKILL);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_SPECIAL(PATH_IA_SPECIAL);
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_INTERACT(PATH_IA_INTERACT);
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_OPTION(PATH_IA_OPTION);
 	static ConstructorHelpers::FClassFinder<UEXHUDWidget> HUDWIDGET_C(PATH_HUDWIDGET_C);
 
 	check(IMC.Succeeded());
@@ -49,6 +51,7 @@ AMainPlayerController::AMainPlayerController()
 	check(IA_SKILL.Succeeded());
 	check(IA_SPECIAL.Succeeded());
 	check(IA_INTERACT.Succeeded());
+	check(IA_OPTION.Succeeded());
 	check(HUDWIDGET_C.Succeeded());
 
 	PlayerMappingContext = IMC.Object;
@@ -62,6 +65,7 @@ AMainPlayerController::AMainPlayerController()
 	SkillAction = IA_SKILL.Object;
 	SpecialAction = IA_SPECIAL.Object;
 	InteractAction = IA_INTERACT.Object;
+	OptionAction = IA_OPTION.Object;
 	HudWidgetClass = HUDWIDGET_C.Class;
 }
 
@@ -164,6 +168,13 @@ bool AMainPlayerController::InteractTextUI()
 void AMainPlayerController::OnLevelEnd()
 {
 	HudWidget->K2_OnLevelEnd();
+}
+
+void AMainPlayerController::OnWidget(UUserWidget* Widget)
+{
+	SetShowMouseCursor(true);
+	Pause();
+	Widget->AddToViewport();
 }
 
 void AMainPlayerController::InitHUDWidget()

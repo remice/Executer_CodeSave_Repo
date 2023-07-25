@@ -21,6 +21,7 @@
 #include "Engine/DamageEvents.h"
 #include "Enemy/BossBase.h"
 #include "Interface/ExecuterGIInterface.h"
+#include "Blueprint/UserWidget.h"
 
 /***********************
 * Addresses of Asset
@@ -118,6 +119,8 @@ APlayerCharacter::APlayerCharacter()
 	bOnCurveMove = false;
 	bLockMove = false;
 	bOnSpecialMove = false;
+	bOnDead = false;
+	bMoveTowardCamera = false;
 }
 
 // Called when the game starts or when spawned
@@ -176,6 +179,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(PlayerController->SkillAction, ETriggerEvent::Triggered, this, &APlayerCharacter::QERTSkill);
 	EnhancedInputComponent->BindAction(PlayerController->SpecialAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SpecialAttack);
 	EnhancedInputComponent->BindAction(PlayerController->InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::InteractForObject);
+	EnhancedInputComponent->BindAction(PlayerController->OptionAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CreateOptionWidget);
 
 	// Get local player
 	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -195,6 +199,11 @@ void APlayerCharacter::CallInitialize()
 
 	AExecuterPlayerState* ExecuterPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
 	check(ExecuterPlayerState);
+
+	if (ExecuterPlayerState->OnPlayerDead.IsBound() == false)
+	{
+		ExecuterPlayerState->OnPlayerDead.AddUObject(this, &APlayerCharacter::OnDead);
+	}
 
 	check(PlayerCharacterSettingData);
 	SetCharacterSettingData(PlayerCharacterSettingData);
@@ -239,20 +248,57 @@ void APlayerCharacter::ChangeLevel()
 	FPlayerSaveStat SaveStat;
 	SaveStat.Hp = EPS->GetHealth();
 	SaveStat.SpecialGauge = EPS->GetSpecialGauge();
+	SaveStat.bMoveTowardCameraOnly = bMoveTowardCamera;
 	EGI->SetSaveStat(SaveStat);
 	MontageManager->DisableAllTimer();
 	PlayerController->OnLevelEnd();
 }
 
+void APlayerCharacter::ChangeSetting()
+{
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
+
+	bMoveTowardCamera = EGI->GetSaveStat().bMoveTowardCameraOnly;
+}
+
+void APlayerCharacter::OnDead()
+{
+	if (bOnDead) return;
+
+	AExecuterPlayerState* EPS = Cast<AExecuterPlayerState>(GetPlayerState());
+	EPS->OnSpecialChanged.Clear();
+
+	DodgeManager->SetDisableManager();
+
+	bOnDead = true;
+	DetachFromControllerPendingDestroy();
+	MontageManager->OnDead();
+}
+
+void APlayerCharacter::PostDead()
+{
+	if (DeadWidget)
+	{
+		UUserWidget* NewWidget = CreateWidget(GetWorld(), DeadWidget);
+		if (NewWidget)
+			NewWidget->AddToViewport();
+	}
+
+	Destroy();
+}
+
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bOnDead) return 0.f;
+
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	AExecuterPlayerState* EPlayerState = Cast<AExecuterPlayerState>(GetPlayerState());
 	ensure(IsValid(EPlayerState));
 	EPlayerState->GetDamaged(DamageAmount);
 
-	return 0.0f;
+	return DamageAmount;
 }
 
 void APlayerCharacter::SetupManagers()
@@ -310,6 +356,11 @@ void APlayerCharacter::SetCharacterSettingData(const UPlayerCharacterSettingData
 	CamArm->TargetArmLength = Settingdata->TargetArmLength;
 	CamArm->SetRelativeRotation(Settingdata->RelativeRotation);
 	CamArm->bUsePawnControlRotation = Settingdata->bUsePawnControlRotation;
+
+	IExecuterGIInterface* EGI = Cast<IExecuterGIInterface>(GetGameInstance());
+	ensure(EGI);
+
+	bMoveTowardCamera = EGI->GetSaveStat().bMoveTowardCameraOnly;
 }
 
 void APlayerCharacter::AddProjectileIdsToSet(const TSet<int32> NearProjectileIds)
@@ -342,7 +393,7 @@ void APlayerCharacter::StartCurveMove(UCurveVector* CurveData, bool LockPlayerMo
 	MoveCurveVector->GetTimeRange(CurCurveMoveTime, MaxCurveMoveTime);
 	LastInputVector = GetCharacterMovement()->GetLastInputVector();
 	PreCurveVector = FVector::ZeroVector;
-	if (GetCharacterMovement()->GetLastInputVector() == FVector::ZeroVector)
+	if (bMoveTowardCamera || GetCharacterMovement()->GetLastInputVector() == FVector::ZeroVector)
 	{
 		LastInputVector = GetControlRotation().Quaternion().GetForwardVector();
 	}
@@ -719,6 +770,24 @@ bool APlayerCharacter::InteractForUI()
 		return bResult;
 	}
 	return false;
+}
+
+void APlayerCharacter::CreateOptionWidget()
+{
+	if (OptionWidget)
+	{
+		UUserWidget* NewWidget = CreateWidget(GetWorld(), OptionWidget);
+		
+		if (NewWidget)
+		{
+			AMainPlayerController* MPC = Cast<AMainPlayerController>(GetController());
+			if (MPC)
+			{
+				//MPC->OnWidget(NewWidget);
+			}
+			NewWidget->AddToViewport();
+		}
+	}
 }
 
 void APlayerCharacter::SkillChanged(ESkillType SkillType, uint8 SkillIndex)

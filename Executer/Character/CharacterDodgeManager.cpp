@@ -14,6 +14,7 @@ UCharacterDodgeManager::UCharacterDodgeManager()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	DodgeRange = 150.f;
+	bIsDisable = false;
 }
 
 
@@ -27,6 +28,8 @@ void UCharacterDodgeManager::BeginPlay()
 // Called every frame
 void UCharacterDodgeManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (bIsDisable) return;
+
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	CheckDynamicDodge();
@@ -34,6 +37,8 @@ void UCharacterDodgeManager::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UCharacterDodgeManager::SetTickEnable(bool Enable)
 {
+	if (bIsDisable) return;
+
 	CurNearInstanceIds.Empty();
 	PreNearInstanceIds.Empty();
 
@@ -42,20 +47,25 @@ void UCharacterDodgeManager::SetTickEnable(bool Enable)
 
 void UCharacterDodgeManager::AddProjectileIdsToSet(const TSet<int32> NearProjectileIds)
 {
+	if (bIsDisable) return;
+
 	CurNearInstanceIds.Append(NearProjectileIds);
 }
 
 void UCharacterDodgeManager::AddProjectileIdToSet(const int32& NearProjectileId)
 {
+	if (bIsDisable) return;
+
 	CurNearInstanceIds.Emplace(NearProjectileId);
 }
 
 TSet<int32> UCharacterDodgeManager::CheckNearProjectiles()
 {
-	check(IsValid(GetOwner()));
+	if (bIsDisable) return TSet<int32>();
 
 	TSet<int32> ResultSet;
 
+	// Collide section
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 	TArray<AActor*> IgnoreActorArray;
 
@@ -69,17 +79,21 @@ TSet<int32> UCharacterDodgeManager::CheckNearProjectiles()
 
 	for (const auto TraceHit : TraceHits)
 	{
+		// 만약 회피 가능한 액터라면 결과 Set에 Id를 추가
 		if (ICanBeDodgedActor* DodgedActor = Cast<ICanBeDodgedActor>(TraceHit.GetActor()))
 		{
 			ResultSet.Add(DodgedActor->GetId());
 		}
 	}
+	// Collide section end
 
 	return ResultSet;
 }
 
 void UCharacterDodgeManager::CheckDynamicDodge()
 {
+	if (bIsDisable) return;
+
 	// Update set
 	CurNearInstanceIds.Append(CheckNearProjectiles());
 
@@ -98,6 +112,8 @@ void UCharacterDodgeManager::CheckDynamicDodge()
 
 void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 {
+	if (bIsDisable) return;
+
 	if (ProjectileCount == 0)
 	{
 		return;
@@ -109,13 +125,14 @@ void UCharacterDodgeManager::AddSpecialAttackGauge(const int32 ProjectileCount)
 	if (PlayerPawn)
 	{
 		AExecuterPlayerState* PlayerState = PlayerPawn->GetPlayerState<AExecuterPlayerState>();
-
-		PlayerState->GetDodged(DodgeAmount);
+		if(PlayerState) PlayerState->GetDodged(DodgeAmount);
 	}
 }
 
 void UCharacterDodgeManager::OnDodgeDisable(float CurHp, float MaxHp)
 {
+	if (bIsDisable) return;
+
 	DisableDodgeTimerHandle.Invalidate();
 
 	SetTickEnable(false);
@@ -126,4 +143,5 @@ void UCharacterDodgeManager::OnDodgeDisable(float CurHp, float MaxHp)
 void UCharacterDodgeManager::OnDodgeEnable()
 {
 	SetTickEnable(true);
+	bIsDisable = false;
 }

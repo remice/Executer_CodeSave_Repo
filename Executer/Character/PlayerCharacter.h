@@ -66,6 +66,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Custom")
 	void ChangeLevel();
 
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+	void ChangeSetting();
+
+	UFUNCTION()
+	void OnDead();
+	void PostDead();
+
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+	bool GetIsDead() { return bOnDead; }
+
 // Hit Section
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -135,6 +145,9 @@ private:
 	void InteractForObject();
 	bool InteractForUI();
 
+	UFUNCTION()
+	void CreateOptionWidget();
+
 // skill actions
 private:
 	void SkillChanged(ESkillType SkillType, uint8 SkillIndex);
@@ -162,6 +175,9 @@ private:
 	TObjectPtr<class UCameraComponent> Cam;
 
 private:
+	uint8 bOnDead : 1;
+	uint8 bMoveTowardCamera : 1;
+
 	// Jump property
 	float LongJumpTime;
 	float CurJumpTime;
@@ -233,4 +249,12 @@ private:
 	FVector SaveTargetPos = FVector::ZeroVector;
 	float AlphaValue = 0;
 	uint8 bOnSpecialMove : 1;
+
+// Widget section
+private:
+	UPROPERTY(EditAnywhere, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> OptionWidget;
+
+	UPROPERTY(EditAnywhere, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> DeadWidget;
 };

@@ -29,6 +29,7 @@ public:
 	{
 		GaugeMultiflier = InGaugeMultiflier; DodgeRange = InDodgeRange; DodgeDisableTime = InDodgeDisableTime;
 	}
+	void SetDisableManager() { bIsDisable = false; }
 
 // enable option section
 public:
@@ -74,4 +75,6 @@ private:
 
 	FTimerHandle DisableDodgeTimerHandle;
 	float DodgeDisableTime = 1.f;
+
+	uint8 bIsDisable : 1;
 };

@@ -32,6 +32,7 @@ public:
 	void OnOffInteractUI(bool IsEnable);
 	bool InteractTextUI();
 	void OnLevelEnd();
+	void OnWidget(UUserWidget* Widget);
 
 private:
 	void InitHUDWidget();
@@ -70,6 +71,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> InteractAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> OptionAction;
 
 // UI Section
 protected:
